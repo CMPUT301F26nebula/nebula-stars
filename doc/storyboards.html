@@ -62,8 +62,12 @@
             display: flex;
             flex-direction: column;
         }
-        .w1 { flex: 1 0 auto; }
-        .cen { justify-content: center; }
+        .w1 {
+            flex: 1 0 auto;
+        }
+        .cen {
+            justify-content: center;
+        }
         .sboard {
             background-color: black;
             color: white;
@@ -90,18 +94,30 @@
             display: grid;
             grid-template-columns: var(--scrw);
         }
-        .scrw { width: var(--scrw); }
-        .scrh { height: var(--scrh); }
-        .bold { font-weight: bold; }
+        .scrw {
+            width: var(--scrw);
+        }
+        .scrh {
+            height: var(--scrh); 
+        }
+        .bold { 
+            font-weight: bold; 
+        }
         .text {
             border: none;
             font-family: "Helvetica", "Arial", sans-serif;
             font-size: 24px;
             text-align: left;
         }
-        .text.nor::placeholder { color: var(--light); }
-        .text.inv::placeholder { color: var(--dark); }
-        .text:focus { outline: none; }
+        .text.nor::placeholder { 
+            color: var(--light); 
+        }
+        .text.inv::placeholder { 
+            color: var(--dark); 
+        }
+        .text:focus { 
+            outline: none; 
+        }
         button {
             border: none;
             font-family: "Helvetica", "Arial", sans-serif;
@@ -121,52 +137,55 @@
             color: var(--dark);
             background-color: var(--light);
         }
-        .square1 { background-color: var(--acc1); }
-        .square2 { background-color: var(--acc2); }
-        .square3 { background-color: var(--acc3); }
-        .square4 { background-color: var(--dark); }
+        .square1 { 
+            background-color: var(--acc1); 
+        }
+        .square2 { 
+            background-color: var(--acc2); 
+        }
+        .square3 { 
+            background-color: var(--acc3); 
+        }
+        .square4 { 
+            background-color: var(--dark); 
+        }
         .uline {
             padding-bottom: 0px;
             border-bottom: 2px solid;
         }
         .li {
             margin: 6px 12px;
-            padding: 5px 5px 5px 12px;
-            height: 100px;
-            min-height: 100px;
+            padding: 0;
+            height: 112px;
+            min-height: 112px;
             font-size: 16px;
             color: var(--light);
             border-radius: 4px 4px 4px 24px;
             display: flex;
             flex-direction: row;
-        }
-        .lir {
+            overflow: hidden;
         }
         .litext {
+            margin: 6px 12px;
             display: grid;
             grid-template-rows: 30px 20px 20px 20px;
         }
         .lithumbnail {
-            margin: 5px 12px 6px 0;
-            height: 88px;
-            width: 88px;
-            background-color: var(--white);
-            background-position: center;
-            background-size: 120px;
-            background-image: url("https://upload.wikimedia.org/wikipedia/commons/1/14/Beaver_Creek_Backcountry_Campsite_%284780d386-e88a-4d54-8405-18af92fbca7e%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original");
-            border-radius: 2px 2px 2px 16px;
-            border: 1px solid; 
-        }
-        .li2 .lithumbnail {
-            margin: 5px;
-            border-radius: 2px 2px 16px 2px;
+            margin: 0;
+            height: 112px;
+            width: 112px;
+            object-fit: cover;
+            object-position: center;
+            content: url("https://upload.wikimedia.org/wikipedia/commons/1/14/Beaver_Creek_Backcountry_Campsite_%284780d386-e88a-4d54-8405-18af92fbca7e%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original");
         }
         .lih {
             font-size: 24px;
             font-weight: bold;
             text-decoration: underline 2px;
         }
-        .li1 { background-color: var(--acc1); }
+        .li1 { 
+            background-color: var(--acc1);
+        }
         .li2 {
             background-color: var(--acc2);
             border-radius: 4px 4px 24px 4px;
@@ -176,23 +195,25 @@
             border-radius: 4px 4px 4px 4px;
         }
         .modal {
-            padding: 12px;
             overflow: scroll;
         }
-        .modalbg { background-color: rgba(0, 0, 0, 0.5); }
+        .modalbg {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
         .modalthumb {
-            margin: 0;
             object-fit: scale-down;
             object-position: center;
-            width: 376px;
+            width: 400px;
+            content: url("https://upload.wikimedia.org/wikipedia/commons/1/14/Beaver_Creek_Backcountry_Campsite_%284780d386-e88a-4d54-8405-18af92fbca7e%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original");
         }
         .modaltext {
-            max-width: 376px;
-            margin: 0;
+            max-width: 400px;
             padding: 12px;
             font-size: 16px;
             color: var(--black);
             background-color: var(--white);
+            border-radius: 2px;
+            overflow: hidden;
         }
         .modalhd {
             font-size: 20px;
@@ -201,6 +222,14 @@
         .modaltitle { 
             font-size: 24px;
             font-weight: bold;
+        }
+        .waitlist .li {
+            border-radius: 4px 24px 24px 4px;
+        }
+        .lidate {
+            width: 106px;
+            min-height: 106px;
+            font-size: 30px;
         }
     </style>
 </head>
@@ -306,14 +335,22 @@
     <!-- CAMPSITE SEARCH -->
     <div class="sboard col">
         <div class="screen" style="grid-template-rows: 50px 680px 70px;">
-            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
-                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
-                    <span class="bold">CAMPSITES</span>
-                </p>
+            <div class="inv row" style="grid-row: 1 / 2;">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                        CAMPSITES
+                    </p>
+                </div>
+                <div class="w1"></div>
+                <div class="row cen nor" style="width: 66px; margin: 4px; border-radius: 0 10px 0 0; background-color: var(--acc3);">
+                    <div class="col cen">
+                        <p class="min" style="font-size: 32px;">▼</p>
+                    </div>
+                </div>
             </div>
             <div class="col" style="overflow: scroll; padding: 6px 0;">
                 <div class="li li1">
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 1</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -321,7 +358,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                 </div>
-                <div class="li lir li2">
+                <div class="li li2">
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 2</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -329,7 +366,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                     <div class="w1"></div>
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                 </div>
                 <div class="li li3">
                     <div class="litext">                    
@@ -340,7 +377,7 @@
                     </div>
                 </div>
                 <div class="li li1">
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 4</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -356,7 +393,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                     <div class="w1"></div>
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                 </div>
                 <div class="li li3">
                     <div class="litext">                    
@@ -367,7 +404,7 @@
                     </div>
                 </div>
                 <div class="li li1">
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 1</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -375,7 +412,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                 </div>
-                <div class="li lir li2">
+                <div class="li li2">
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 2</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -383,7 +420,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                     <div class="w1"></div>
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                 </div>
                 <div class="li li3">
                     <div class="litext">                    
@@ -398,8 +435,8 @@
                 <div class="col cen w1" style="padding: 0px 18px;">
                     <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
                 </div>
-                <input type="reset" class="text nor bold" value="Go" style="width: 65px; padding: 0px 12px; text-align: center; margin: 5px;
-                    border-radius: 0 0 10px 0;"/>
+                <input type="reset" class="text nor bold" value="Go" style="width: 66px; padding: 0px 12px; text-align: center; margin: 4px;
+                    border-radius: 0 0 10px 0; background-color: var(--acc1);"/>
             </form>
         </div>
         <div class="sbdesc"> 
@@ -419,24 +456,31 @@
     <!-- CAMPSITE DETAILS MODAL -->
     <div class="sboard col">
         <div class="screen" style="grid-template-rows: 50px 680px 70px;">
-            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
-                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
-                    <span class="bold">CAMPSITES</span>
-                </p>
+            <div class="inv row" style="grid-row: 1 / 2;">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                        CAMPSITES
+                    </p>
+                </div>
+                <div class="w1"></div>
+                <div class="row cen nor" style="width: 66px; margin: 4px; border-radius: 0 10px 0 0; background-color: var(--acc3);">
+                    <div class="col cen">
+                        <p class="min" style="font-size: 32px;">▼</p>
+                    </div>
+                </div>
             </div>
             <div class="row cen modalbg" style="z-index: 20; grid-row: 2 / 4; grid-column: 1;">
                 <div class="col cen">
-                    <div style="display: grid; grid-template-rows: 50px 500px 50px; max-width: 400px; max-height: 600px; border-radius: 0 16px 0 16px; overflow: hidden;">
+                    <div style="display: grid; grid-template-rows: 50px 500px 50px; max-width: 400px; max-height: 600px;
+                        border-radius: 0 16px 0 16px; overflow: hidden;">
                         <div class="col cen" style="grid-row: 1 / 2; background-color: var(--acc1); padding: 0 12px;">
                             <p class="min modaltitle">
                                 Public Domain Campsite Img
                             </p>
                         </div>
                         <div class="nor modal" style="grid-row: 2 / 3; ">
-                            <div class="modaltext" style="padding: 0; border-radius: 6px 6px 0 0; overflow: hidden;">
-                                <img class="modalthumb" src="https://upload.wikimedia.org/wikipedia/commons/1/14/Beaver_Creek_Backcountry_Campsite_%284780d386-e88a-4d54-8405-18af92fbca7e%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"/>
-                            </div>
-                            <div class="modaltext" style="border-radius: 0 0 6px 6px;">
+                            <img class="modalthumb"/>
+                            <div class="modaltext">
                                 <p class="min">
                                     <span class="modalhd">Heres some info:</span>
                                     <br>
@@ -470,7 +514,7 @@
             </div>
             <div class="col" style="z-index: 10; grid-row: 2 / 3; grid-column: 1; overflow: scroll; padding: 6px 0;">
                 <div class="li li1">
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 1</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -478,7 +522,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                 </div>
-                <div class="li lir li2">
+                <div class="li li2">
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 2</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -486,7 +530,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                     <div class="w1"></div>
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                 </div>
                 <div class="li li3">
                     <div class="litext">                    
@@ -497,7 +541,7 @@
                     </div>
                 </div>
                 <div class="li li1">
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                     <div class="litext">                    
                         <p class="min lih" style="grid-row: 1;">Example Campsite 4</p>
                         <p class="min" style="grid-row: 2;">★★★★☆</p>
@@ -513,7 +557,7 @@
                         <p class="min" style="grid-row: 4;">Even more campsite info</p>
                     </div>
                     <div class="w1"></div>
-                    <div class="lithumbnail col cen"></div>
+                    <img class="lithumbnail"/>
                 </div>
                 <div class="li li3">
                     <div class="litext">                    
@@ -528,7 +572,8 @@
                 <div class="col cen w1" style="padding: 0px 18px;">
                     <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
                 </div>
-                <input type="reset" class="text nor bold" value="Go" style="width: 65px; padding: 0px 12px; text-align: center; margin: 5px; border-radius: 0 0 10px 0;"/>
+                <input type="reset" class="text nor bold" value="Go" style="width: 66px; padding: 0px 12px; text-align: center; margin: 4px;
+                    border-radius: 0 0 10px 0; background-color: var(--acc1);"/>
             </form>
         </div>
         <div class="sbdesc"> 
@@ -546,11 +591,181 @@
     <!-- WAITLISTS -->
     <div class="sboard col">
         <div class="screen" style="grid-template-rows: 50px 680px 70px;">
-            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
-                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
-                    <span class="bold">WAITLISTS</span>
-                </p>
+            <div class="inv row" style="grid-row: 1 / 2;">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                        WAITLISTS
+                    </p>
+                </div>
+                <div class="w1"></div>
+                <div class="row cen nor" style="width: 66px; margin: 4px; border-radius: 0 10px 0 0; background-color: var(--acc3);">
+                    <div class="col cen">
+                        <p class="min" style="font-size: 32px;">▼</p>
+                    </div>
+                </div>
             </div>
+            <div class="col waitlist" style="overflow: scroll; padding: 6px 0;">
+                <div class="li li1 row">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist A</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Oct 30</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist B</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Oct 18</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist C</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Nov 6</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li1">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist D</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Oct 30</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist E</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Oct 18</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist F</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Nov 6</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li1">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist G</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Oct 30</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist H</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Oct 18</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Waitlist I</p>
+                        <p class="min" style="grid-row: 2;">Campsite name</p>
+                        <p class="min" style="grid-row: 3;">There are One Million people waiting...</p>
+                        <p class="min" style="grid-row: 4;">Latest notification</p>
+                    </div>
+                    <div class="col cen w1">
+                        <div style="height: 100px; border-right: 3px solid;">
+                        </div>
+                    </div>
+                    <div class="lidate row cen">
+                        <div class="col cen">
+                            <p class="min bold">Nov 6</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form class="inv row" style="grid-row: 3 / 4;">
+                <div class="col cen w1" style="padding: 0px 18px;">
+                    <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
+                </div>
+                <input type="reset" class="text nor bold" value="Go" style="width: 66px; padding: 0px 12px; text-align: center; margin: 4px;
+                    border-radius: 0 0 10px 0; background-color: var(--acc1);"/>
+            </form>
         </div>
         <div class="sbdesc"> 
             <p class="min bold">
@@ -558,7 +773,8 @@
             </p>
             <hr class="nor">
             <p class="min">
-                screen for viewing waitlists the user is part of
+                screen for viewing waitlists the user is part of.
+                tapping on the entries brings you to a waitlist info popup.
            </p>
         </div>
     </div>
