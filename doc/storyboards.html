@@ -1,0 +1,565 @@
+<!doctype html>
+<head lang="en-US">
+    <meta charset="UTF-8">
+    <title>sboards</title>
+    <style>
+        :root {
+            --white: white;
+            --black: black;
+            --light: white;
+            --dark: Indigo;
+            --acc3: #efc700;
+            --acc2: DeepPink;
+            --acc1: DarkCyan;
+            --scrw: 450px;
+            --scrh: 800px;
+        }
+        body {
+            color: var(--black);
+            font-family: "Helvetica", "Arial", sans-serif;
+            font-size: 20px;
+        }
+        hr {
+            border: 1px solid;
+        }
+        .min {
+            width: fit-content;
+            height: fit-content;
+            margin: 0;
+            padding: 0;
+        }
+        .nor {
+            color: var(--light);
+            background-color: var(--dark);
+            border-color: var(--light);
+        }
+        .inv {
+            color: var(--dark);
+            background-color: var(--light);
+            border-color: var(--dark);
+        }
+        .hov {
+            transition:
+                color 0.1s linear,
+                background-color 0.1s linear,
+                border-color 0.1s linear;
+        }
+        .inv .hov:hover {
+            color: var(--light);
+            background-color: var(--dark);
+            border-color: var(--light);
+        }
+        .nor .hov:hover {
+            color: var(--dark);
+            background-color: var(--light);
+            border-color: var(--dark);
+        }
+        .row {
+            display: flex;
+            flex-direction: row;
+        }
+        .col {
+            display: flex;
+            flex-direction: column;
+        }
+        .w1 { flex: 1 0 auto; }
+        .cen { justify-content: center; }
+        .sboard {
+            background-color: black;
+            color: white;
+            margin: 12px;
+            padding: 6px;
+        }
+        .sbdesc {
+            width: var(--scrw);
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .screen {
+            z-index: 1;
+            width: var(--scrw);
+            height: var(--scrh);
+            padding: 0;
+            margin: 12px;
+            font-size: 24px;
+            overflow: hidden;
+            clip-path: padding-box;
+            color: var(--light);
+            background-color: var(--dark);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: var(--scrw);
+        }
+        .scrw { width: var(--scrw); }
+        .scrh { height: var(--scrh); }
+        .bold { font-weight: bold; }
+        .text {
+            border: none;
+            font-family: "Helvetica", "Arial", sans-serif;
+            font-size: 24px;
+            text-align: left;
+        }
+        .text.nor::placeholder { color: var(--light); }
+        .text.inv::placeholder { color: var(--dark); }
+        .text:focus { outline: none; }
+        button {
+            border: none;
+            font-family: "Helvetica", "Arial", sans-serif;
+            font-size: 24px;
+            text-align: left;
+        }
+        .square {
+            padding: 12px;
+            display: grid;
+            grid-column: 1;
+            border-radius: 24px 0 0 0;
+            border-top: 4px solid transparent;
+            border-left: 4px solid transparent;
+            color: var(--light);
+        }
+        .square:hover {
+            color: var(--dark);
+            background-color: var(--light);
+        }
+        .square1 { background-color: var(--acc1); }
+        .square2 { background-color: var(--acc2); }
+        .square3 { background-color: var(--acc3); }
+        .square4 { background-color: var(--dark); }
+        .uline {
+            padding-bottom: 0px;
+            border-bottom: 2px solid;
+        }
+        .li {
+            margin: 6px 12px;
+            padding: 5px 5px 5px 12px;
+            height: 100px;
+            min-height: 100px;
+            font-size: 16px;
+            color: var(--light);
+            border-radius: 4px 4px 4px 24px;
+            display: flex;
+            flex-direction: row;
+        }
+        .lir {
+        }
+        .litext {
+            display: grid;
+            grid-template-rows: 30px 20px 20px 20px;
+        }
+        .lithumbnail {
+            margin: 5px 12px 6px 0;
+            height: 88px;
+            width: 88px;
+            background-color: var(--white);
+            background-position: center;
+            background-size: 120px;
+            background-image: url("https://upload.wikimedia.org/wikipedia/commons/1/14/Beaver_Creek_Backcountry_Campsite_%284780d386-e88a-4d54-8405-18af92fbca7e%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original");
+            border-radius: 2px 2px 2px 16px;
+            border: 1px solid; 
+        }
+        .li2 .lithumbnail {
+            margin: 5px;
+            border-radius: 2px 2px 16px 2px;
+        }
+        .lih {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: underline 2px;
+        }
+        .li1 { background-color: var(--acc1); }
+        .li2 {
+            background-color: var(--acc2);
+            border-radius: 4px 4px 24px 4px;
+        }
+        .li3 {
+            background-color: var(--acc3);
+            border-radius: 4px 4px 4px 4px;
+        }
+        .modal {
+            padding: 12px;
+            overflow: scroll;
+        }
+        .modalbg { background-color: rgba(0, 0, 0, 0.5); }
+        .modalthumb {
+            margin: 0;
+            object-fit: scale-down;
+            object-position: center;
+            width: 376px;
+        }
+        .modaltext {
+            max-width: 376px;
+            margin: 0;
+            padding: 12px;
+            font-size: 16px;
+            color: var(--black);
+            background-color: var(--white);
+        }
+        .modalhd {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .modaltitle { 
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="row">
+    <!-- LOGIN SCREEN -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 40px 720px 10px 30px;">
+            <div style="z-index: 5; grid-row: 1 / 5; grid-column: 1; transform-origin: bottom right; transform: rotate(-45deg); display: grid;">
+                <div style="grid-column: 1 / 2; grid-row: 1; background-color: var(--dark);"></div>
+                <div style="grid-column: 2 / 3; grid-row: 1; background-color: var(--acc1);"></div>
+                <div style="grid-column: 3 / 4; grid-row: 1; background-color: var(--acc2);"></div>
+                <div style="grid-column: 4 / 5; grid-row: 1; background-color: var(--acc3);"></div>
+            </div>
+            <div class="col cen" style="z-index: 10; grid-row: 2 / 3; grid-column: 1;">
+                <div class="row cen">
+                    <div style="display: grid; grid-template-rows: 77px auto 24px; width: 320px;">
+                        <p class="min bold" style="font-size: 72px; row-height: 0.7em; grid-row: 1 / 2;">STARS</p>
+                        <div class="inv" style="grid-row: 2 / 3; z-index: 10; border-radius: 0 16px 0 0;">
+                            <form style="display: grid; grid-template-rows: 0px repeat(2, 52px) 52px 0px; grid-template-columns: 20px 280px 20px; row-gap: 16px; ">
+                                <input type="text" class="text inv uline" placeholder="Username" style="grid-row: 2 / 3; grid-column: 2 / 3; padding: 0px 12px;"/>
+                                <input type="password" class="text inv uline" placeholder="Password" style="grid-row: 3 / 4; grid-column: 2 / 3; padding: 0px 12px;"/>   
+                                <input type="reset" class="text bold nor" value="Login" style="grid-row: 4 / 5; grid-column: 2 / 3; padding: 0px 12px;"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p style="z-index: 10; grid-row: 4 / 5; grid-column: 1; font-size: 12px; margin: 4px 10px; text-align: left;">
+                <span class="bold">STARS</span> v1.x.y.z
+            </p>
+        </div>
+        <div class="sbdesc">
+            <p class="min bold">
+                Login Screen
+            </p>
+            <hr class="nor">
+            <p class="min">
+                login screen so we can display things per user/profile type.
+                maybe add a register account button or just redirect if login doesnt exist?
+                <br><br>
+                well apparently we dont need this lmao but we can reuse it as a splash screen or something.
+            </p>
+        </div>
+    </div>
+    <!-- HOME SCREEN -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px;">
+            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
+                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                    <span class="bold">WELCOME</span> username
+                </p>
+            </div>
+            <div style="grid-row: 2;">
+                <div style="display: grid; grid-template-columns: repeat(18, 25px); grid-template-rows: 50px repeat(7, 100px);">
+                   <div class="row cen" style="grid-row: 2 / 3; grid-column: 4 / 12;">
+                        <div class="col cen">
+                            <p class="min bold" style="font-size: 48px;">STARS</p>
+                        </div>
+                    </div>
+                    <button class="hov square square3" style="grid-row: 3 / 9; grid-column: 4 / 19;">
+                        <p class="min bold">Campsites</p>
+                    </button>
+                    <button class="hov square square2" style="grid-row: 5 / 9; grid-column: 3 / 19;">
+                        <p class="min bold">Waitlists</p>
+                    </button>
+                    <button class="hov square square1" style="grid-row: 7 / 9; grid-column: 2 / 19;">
+                        <p class="min bold">Reservations</p>
+                    </button>
+                    <button class="hov square square2" style="grid-row: 2 / 9; grid-column: 12 / 19;">
+                        <p class="min bold">Messages</p>
+                    </button>
+                    <button class="hov square square1" style="grid-row: 4 / 9; grid-column: 11 / 19;">
+                        <p class="min bold">Notifications</p>
+                    </button>
+                    <button class="hov square square3" style="grid-row: 6 / 9; grid-column: 10 / 19;">
+                        <p class="min bold">Profile</p>
+                    </button>
+                    <!--<div class="square" style="grid-row: 3 / 9; grid-column: 18 / 19; background-color: var(--light);"></div>-->
+                    <!--<div class="square" style="grid-row: 5 / 9; grid-column: 17 / 19; background-color: var(--light);"></div>-->
+                    <div class="hov square square4" style="grid-row: 8 / 9; grid-column: 9 / 19;">
+                        <p class="min bold">Settings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Home Screen
+            </p>
+            <hr class="nor">
+            <p class="min">
+                top level of the ui tree, you can access all the mostly important screens from here.
+                it will look slightly different depending if youre a user/owner/admin.
+                ive placed all the buttons stacked to the bottom right to hopefully make them easier to reach.
+                (if youre right handed :P)
+                <br><br>
+                for admins, maybe have the <span class="bold">STARS</span> thingy turn into a profile type selector.
+                <br><br>
+                not super happy with the contrast on the yellow tabs so maybe ill find a darker yellow.
+            </p>
+        </div>
+    </div>
+    <!-- CAMPSITE SEARCH -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px 680px 70px;">
+            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
+                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                    <span class="bold">CAMPSITES</span>
+                </p>
+            </div>
+            <div class="col" style="overflow: scroll; padding: 6px 0;">
+                <div class="li li1">
+                    <div class="lithumbnail col cen"></div>
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 1</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li lir li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 2</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                    <div class="w1"></div>
+                    <div class="lithumbnail col cen"></div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 3</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li li1">
+                    <div class="lithumbnail col cen"></div>
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 4</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 5</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                    <div class="w1"></div>
+                    <div class="lithumbnail col cen"></div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 6</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li li1">
+                    <div class="lithumbnail col cen"></div>
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 1</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li lir li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 2</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                    <div class="w1"></div>
+                    <div class="lithumbnail col cen"></div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 3</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+            </div>
+            <form class="inv row" style="grid-row: 3 / 4;">
+                <div class="col cen w1" style="padding: 0px 18px;">
+                    <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
+                </div>
+                <input type="reset" class="text nor bold" value="Go" style="width: 65px; padding: 0px 12px; text-align: center; margin: 5px;
+                    border-radius: 0 0 10px 0;"/>
+            </form>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Campsites Tab
+            </p>
+            <hr class="nor">
+            <p class="min">
+                screen for searching and filtering through a list of campsites.
+                clicking on a list entry will show a summary dialog with a `read more' button to access the campsite details.
+                the search bar should stick to the top of the keyboard when its raised.
+                do we like the left side image or the right side image better?
+                we could also just have an image be the whole list item bg but its hard to tell whether or not the important stuff will show up properly whne cropped.
+            </p>
+        </div>
+    </div>
+    <!-- CAMPSITE DETAILS MODAL -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px 680px 70px;">
+            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
+                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                    <span class="bold">CAMPSITES</span>
+                </p>
+            </div>
+            <div class="row cen modalbg" style="z-index: 20; grid-row: 2 / 4; grid-column: 1;">
+                <div class="col cen">
+                    <div style="display: grid; grid-template-rows: 50px 500px 50px; max-width: 400px; max-height: 600px; border-radius: 0 16px 0 16px; overflow: hidden;">
+                        <div class="col cen" style="grid-row: 1 / 2; background-color: var(--acc1); padding: 0 12px;">
+                            <p class="min modaltitle">
+                                Public Domain Campsite Img
+                            </p>
+                        </div>
+                        <div class="nor modal" style="grid-row: 2 / 3; ">
+                            <div class="modaltext" style="padding: 0; border-radius: 6px 6px 0 0; overflow: hidden;">
+                                <img class="modalthumb" src="https://upload.wikimedia.org/wikipedia/commons/1/14/Beaver_Creek_Backcountry_Campsite_%284780d386-e88a-4d54-8405-18af92fbca7e%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"/>
+                            </div>
+                            <div class="modaltext" style="border-radius: 0 0 6px 6px;">
+                                <p class="min">
+                                    <span class="modalhd">Heres some info:</span>
+                                    <br>
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    <br><br>
+                                    <span class="modalhd">Additional info:</span>
+                                    <br>
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    <br><br>
+                                    <span class="modalhd">Miscellaneous info:</span>
+                                    <br>
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                    blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap blah blah blah yap yap yap 
+                                </p>
+                            </div>
+                        </div>
+                        <div style="grid-row: 3 / 4; display: grid; grid-template-columns: 1fr 1fr;">
+                            <div class="col cen" style="grid-row: 1; grid-column: 1 / 3; background-color: var(--acc2); padding: 0 16px;">
+                                <p class="min bold" style="font-size: 20px;">Availibility</p>
+                            </div>
+                            <div class="col cen" style="grid-row: 1; grid-column: 2 / 3; background-color: var(--acc3); padding: 0 16px; border-radius: 0 0 0 16px;">
+                                <p class="min bold" style="font-size: 20px;">Waitlist</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="z-index: 10; grid-row: 2 / 3; grid-column: 1; overflow: scroll; padding: 6px 0;">
+                <div class="li li1">
+                    <div class="lithumbnail col cen"></div>
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 1</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li lir li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 2</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                    <div class="w1"></div>
+                    <div class="lithumbnail col cen"></div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 3</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li li1">
+                    <div class="lithumbnail col cen"></div>
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 4</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+                <div class="li li2">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 5</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                    <div class="w1"></div>
+                    <div class="lithumbnail col cen"></div>
+                </div>
+                <div class="li li3">
+                    <div class="litext">                    
+                        <p class="min lih" style="grid-row: 1;">Example Campsite 6</p>
+                        <p class="min" style="grid-row: 2;">★★★★☆</p>
+                        <p class="min" style="grid-row: 3;">More campsite info</p>
+                        <p class="min" style="grid-row: 4;">Even more campsite info</p>
+                    </div>
+                </div>
+            </div>
+            <form class="inv row" style="grid-row: 3 / 4; grid-column: 1;">
+                <div class="col cen w1" style="padding: 0px 18px;">
+                    <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
+                </div>
+                <input type="reset" class="text nor bold" value="Go" style="width: 65px; padding: 0px 12px; text-align: center; margin: 5px; border-radius: 0 0 10px 0;"/>
+            </form>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Campsite Details
+            </p>
+            <hr class="nor">
+            <p class="min">
+                when the user clicks on a campsite in the search screen, a dialog with more details appears.
+                from this dialog they can check availibility and sign up for a waitlist.
+                tapping off of the dialog clears it.
+            </p>
+        </div>
+    </div>
+    <!-- WAITLISTS -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px 680px 70px;">
+            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
+                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                    <span class="bold">WAITLISTS</span>
+                </p>
+            </div>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Waitlists dTab
+            </p>
+            <hr class="nor">
+            <p class="min">
+                screen for viewing waitlists the user is part of
+           </p>
+        </div>
+    </div>
+</body>
