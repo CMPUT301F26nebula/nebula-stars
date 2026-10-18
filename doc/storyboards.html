@@ -275,49 +275,45 @@
         .calendar .res2n3 {
             background: linear-gradient(to bottom right, var(--acc2) 50%, var(--acc3) 50%);
         } 
+        .calendar .res2n1 {
+            background: linear-gradient(to bottom right, var(--acc2) 50%, var(--acc1) 50%);
+        } 
+        .notif {
+            margin: 10px 12px;
+            min-height: 94px;
+            padding: 0 12px 0 6px;
+            font-size: 16px;
+            color: var(--dark);
+            background-color: var(--light);
+            border-radius: 4px 4px 4px 24px;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+        .notifread {
+            border-color: var(--light);
+            color: var(--light);
+            background-color: var(--dark);
+            border-radius: 0;
+            border-left: 4px dotted;
+            padding: 0 36px 0 2px;
+        }
+        .notif1 {
+            border-right: 24px solid var(--acc1);
+        } 
+        .notif2 {
+            border-right: 24px solid var(--acc2);
+        }
+       .notif3 {
+            border-right: 24px solid var(--acc3);
+        }
+       .notifdate {
+            font-size: 12px;
+            font-weight: bold;
+       }
     </style>
 </head>
 <body class="row">
-    <!-- LOGIN -->
-    <div class="sboard col">
-        <div class="screen" style="grid-template-rows: 40px 720px 10px 30px;">
-            <div style="z-index: 5; grid-row: 1 / 5; grid-column: 1; transform-origin: bottom right; transform: rotate(-45deg); display: grid;">
-                <div style="grid-column: 1 / 2; grid-row: 1; background-color: var(--dark);"></div>
-                <div style="grid-column: 2 / 3; grid-row: 1; background-color: var(--acc1);"></div>
-                <div style="grid-column: 3 / 4; grid-row: 1; background-color: var(--acc2);"></div>
-                <div style="grid-column: 4 / 5; grid-row: 1; background-color: var(--acc3);"></div>
-            </div>
-            <div class="col cen" style="z-index: 10; grid-row: 2 / 3; grid-column: 1;">
-                <div class="row cen">
-                    <div style="display: grid; grid-template-rows: 77px auto 24px; width: 320px;">
-                        <p class="min bold" style="font-size: 72px; row-height: 0.7em; grid-row: 1 / 2;">STARS</p>
-                        <div class="inv" style="grid-row: 2 / 3; z-index: 10; border-radius: 0 16px 0 0;">
-                            <form style="display: grid; grid-template-rows: 0px repeat(2, 52px) 52px 0px; grid-template-columns: 20px 280px 20px; row-gap: 16px; ">
-                                <input type="text" class="text inv uline" placeholder="Username" style="grid-row: 2 / 3; grid-column: 2 / 3; padding: 0px 12px;"/>
-                                <input type="password" class="text inv uline" placeholder="Password" style="grid-row: 3 / 4; grid-column: 2 / 3; padding: 0px 12px;"/>   
-                                <input type="reset" class="text bold nor" value="Login" style="grid-row: 4 / 5; grid-column: 2 / 3; padding: 0px 12px;"/>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p style="z-index: 10; grid-row: 4 / 5; grid-column: 1; font-size: 12px; margin: 4px 10px; text-align: left;">
-                <span class="bold">STARS</span> v1.x.y.z
-            </p>
-        </div>
-        <div class="sbdesc">
-            <p class="min bold">
-                Login Screen
-            </p>
-            <hr class="nor">
-            <p class="min">
-                login screen so we can display things per user/profile type.
-                maybe add a register account button or just redirect if login doesnt exist?
-                <br><br>
-                well apparently we dont need this lmao but we can reuse it as a splash screen or something.
-            </p>
-        </div>
-    </div>
     <!-- HOME -->
     <div class="sboard col">
         <div class="screen" style="grid-template-rows: 50px;">
@@ -369,10 +365,45 @@
                 it will look slightly different depending if youre a user/owner/admin.
                 ive placed all the buttons stacked to the bottom right to hopefully make them easier to reach.
                 (if youre right handed :P)
-                <br><br>
-                for admins, maybe have the <span class="bold">STARS</span> thingy turn into a profile type selector.
-                <br><br>
-                not super happy with the contrast on the yellow tabs so maybe ill find a darker yellow.
+            </p>
+        </div>
+    </div>
+    <!-- PROFILE EDIT -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 40px 720px 10px 30px;">
+            <div style="z-index: 5; grid-row: 1 / 5; grid-column: 1; transform-origin: bottom right; transform: rotate(-45deg); display: grid;">
+                <div style="grid-column: 1 / 2; grid-row: 1; background-color: var(--dark);"></div>
+                <div style="grid-column: 2 / 3; grid-row: 1; background-color: var(--acc1);"></div>
+                <div style="grid-column: 3 / 4; grid-row: 1; background-color: var(--acc2);"></div>
+                <div style="grid-column: 4 / 5; grid-row: 1; background-color: var(--acc3);"></div>
+            </div>
+            <div class="col cen" style="z-index: 10; grid-row: 2 / 3; grid-column: 1;">
+                <div class="row cen">
+                    <div style="display: grid; grid-template-rows: 77px auto 24px; width: 320px;">
+                        <p class="min bold" style="font-size: 72px; grid-row: 1 / 2;">EDIT</p>
+                        <div class="inv" style="grid-row: 2 / 3; z-index: 10; border-radius: 0 16px 0 0;">
+                            <form style="display: grid; grid-template-rows: repeat(4, 52px); grid-template-columns: 280px; row-gap: 16px; padding: 16px 20px;">
+                                <input type="text" class="text inv uline" placeholder="Username" style="grid-row: 1 / 2; padding: 0px 12px;"/>
+                                <input type="text" class="text inv uline" placeholder="Email" style="grid-row: 2 / 3; padding: 0px 12px;"/>   
+                                <input type="text" class="text inv uline" placeholder="Phone Number" style="grid-row: 3 / 4; padding: 0px 12px;"/>   
+                                <input type="reset" class="text bold nor" value="Update" style="grid-row: 4 / 5; padding: 0px 12px;"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p style="z-index: 10; grid-row: 4 / 5; grid-column: 1; font-size: 12px; margin: 4px 10px; text-align: left;">
+            <!--<span class="bold">STARS</span> v1.x.y.z-->
+            </p>
+        </div>
+        <div class="sbdesc">
+            <p class="min bold">
+                User Profile Update
+            </p>
+            <hr class="nor">
+            <p class="min">
+                user can update username and contact info through this form.
+                they will probably also be shown a similar screen before they are allowed to join a waitlist or make reservations.
             </p>
         </div>
     </div>
@@ -386,7 +417,7 @@
                     </p>
                 </div>
                 <div class="w1"></div>
-                <div class="row cen nor" style="width: 66px; margin: 4px; border-radius: 0 10px 0 0; background-color: var(--acc3);">
+                <div class="row cen nor" style="width: 70px; background-color: var(--dark);">
                     <div class="col cen">
                         <p class="min" style="font-size: 32px;">▼</p>
                     </div>
@@ -479,8 +510,7 @@
                 <div class="col cen w1" style="padding: 0px 18px;">
                     <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
                 </div>
-                <input type="reset" class="text nor bold" value="Go" style="width: 66px; padding: 0px 12px; text-align: center; margin: 4px;
-                    border-radius: 0 0 10px 0; background-color: var(--acc1);"/>
+                <input type="reset" class="text nor bold" value="Go" style="width: 70px; padding: 0px 12px; text-align: center; background-color: var(--acc1);"/>
             </form>
         </div>
         <div class="sbdesc"> 
@@ -493,7 +523,6 @@
                 clicking on a list entry will show a summary dialog with a `read more' button to access the campsite details.
                 the search bar should stick to the top of the keyboard when its raised.
                 do we like the left side image or the right side image better?
-                we could also just have an image be the whole list item bg but its hard to tell whether or not the important stuff will show up properly whne cropped.
             </p>
         </div>
     </div>
@@ -507,7 +536,7 @@
                     </p>
                 </div>
                 <div class="w1"></div>
-                <div class="row cen nor" style="width: 66px; margin: 4px; border-radius: 0 10px 0 0; background-color: var(--acc3);">
+                <div class="row cen nor" style="width: 70px; background-color: var(--dark);">
                     <div class="col cen">
                         <p class="min" style="font-size: 32px;">▼</p>
                     </div>
@@ -616,8 +645,7 @@
                 <div class="col cen w1" style="padding: 0px 18px;">
                     <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
                 </div>
-                <input type="reset" class="text nor bold" value="Go" style="width: 66px; padding: 0px 12px; text-align: center; margin: 4px;
-                    border-radius: 0 0 10px 0; background-color: var(--acc1);"/>
+                <input type="reset" class="text nor bold" value="Go" style="width: 70px; padding: 0px 12px; text-align: center; background-color: var(--acc1);"/>
             </form>
         </div>
         <div class="sbdesc"> 
@@ -642,7 +670,7 @@
                     </p>
                 </div>
                 <div class="w1"></div>
-                <div class="row cen nor" style="width: 66px; margin: 4px; border-radius: 0 10px 0 0; background-color: var(--acc3);">
+                <div class="row cen nor" style="width: 70px; background-color: var(--dark);">
                     <div class="col cen">
                         <p class="min" style="font-size: 32px;">▼</p>
                     </div>
@@ -807,8 +835,7 @@
                 <div class="col cen w1" style="padding: 0px 18px;">
                     <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
                 </div>
-                <input type="reset" class="text nor bold" value="Go" style="width: 66px; padding: 0px 12px; text-align: center; margin: 4px;
-                    border-radius: 0 0 10px 0; background-color: var(--acc1);"/>
+                <input type="reset" class="text nor bold" value="Go" style="width: 70px; padding: 0px 12px; text-align: center; background-color: var(--acc1);"/>
             </form>
         </div>
         <div class="sbdesc"> 
@@ -834,7 +861,7 @@
             <div class="row cen" style="grid-row: 2;">
                 <div class="col cen">
                     <div class="row">
-                        <p class="min" style="font-size: 48px;"><span class="bold">October</span> 2026</p>
+                        <p class="min" style="font-size: 48px;"><span class="bold">October</span> <span style="font-size: 36px;">2026</span></p>
                         <div class="w1"></div>
                         <p class="min" style="font-size: 48px;">&lt;  &gt;</p>
                     </div>
@@ -846,12 +873,12 @@
                         <div class="week"><p class="min">Thu</p></div>
                         <div class="week"><p class="min">Fri</p></div>
                         <div class="week"><p class="min">Sat</p></div>
-                        <li style="counter-set: item 26;"></li><li></li><li></li><li></li>
+                        <li style="counter-set: item 26;"></li><li></li><li></li><li style="color: var(--dark); background-color: var(--light);"></li>
                         <li style="counter-set: item 0;"></li>
                         <li class="res1"></li><li class="res1"></li><li class="res1"></li><li class="res1"></li>
                         <li></li><li></li><li></li><li></li><li></li>
                         <li></li><li></li><li></li>
-                        <li class="res2"></li><li style="color: var(--dark); background-color: var(--light);"></li><li class="res2"></li><li class="res2"></li>
+                        <li class="res2"></li><li class="res2"></li><li class="res2"></li><li class="res2"></li>
                         <li class="res2"></li>
                         <li class="res2n3"></li>
                         <li class="res3"></li>
@@ -878,7 +905,229 @@
                 shows a calander view of the users current reservations.
                 days with reservations will be highlighted and can be tapped to bring up more info/edit.
                 if reservations overlap days, both should be displayed.
+                the user can select between showing current reservations and previous reservations.
             </p>
         </div>
     </div>
+    <!-- RESERVATIONS PREVIOUS -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px 700px 50px;">
+            <div class="inv" style="grid-row: 1 / 2; display: grid; align-items: end;">
+                <p class="min" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                    <span class="bold">RESERVATIONS</span>
+                </p>
+            </div>
+            <div class="row cen" style="grid-row: 2;">
+                <div class="col cen">
+                    <div class="row">
+                        <p class="min" style="font-size: 48px;"><span class="bold">September</span> <span style="font-size: 36px;">2026</span></p>
+                        <div class="w1"></div>
+                        <p class="min" style="font-size: 48px;">&lt;  &gt;</p>
+                    </div>
+                    <div class="calendar" style="">
+                        <div class="week"><p class="min">Sun</p></div>
+                        <div class="week"><p class="min">Mon</p></div>
+                        <div class="week"><p class="min">Tue</p></div>
+                        <div class="week"><p class="min">Wed</p></div>
+                        <div class="week"><p class="min">Thu</p></div>
+                        <div class="week"><p class="min">Fri</p></div>
+                        <div class="week"><p class="min">Sat</p></div>
+                        <li style="counter-set: item 29;"></li><li></li>
+                        <li style="counter-set: item 0;"></li>
+                        <li></li>
+                        <li class="res3"></li>
+                        <li class="res3"></li>
+                        <li class="res3"></li>
+                        <li></li><li></li><li></li><li></li><li></li><li></li>
+                        <li></li><li></li><li></li>
+                        <li class="res2"></li>
+                        <li class="res2"></li>
+                        <li class="res2n1"></li>
+                        <li class="res1"></li>
+                        <li class="res1"></li>
+                        <li class="res1"></li>
+                        <li class="res1"></li>
+                        <li class="res1"></li><li></li><li></li><li></li><li></li><li></li><li></li>
+                        <li></li><li style="color: var(--dark); background-color: var(--light);"></li>
+                        <li style="counter-set: item 0;"></li><li></li><li></li>
+                    </div> 
+                </div>
+            </div>
+            <div style="grid-row: 3; display: grid; grid-template-columns: 1fr 1fr;">
+                <div class="col cen" style="grid-row: 1; grid-column: 1 / 2; background-color: var(--acc2); padding: 0 20px; border-radius: 0 16px 16px 0; z-index: 10;">
+                    <p class="min bold" style="font-size: 24px;">Previous</p>
+                </div>
+                <div class="col cen" style="grid-row: 1; grid-column: 1 / 2; background-color: var(--acc1); padding: 0 20px;"></div>
+                <div class="col cen" style="grid-row: 1; grid-column: 2 / 3; background-color: var(--acc1); padding: 0 20px;">
+                    <p class="min" style="font-size: 24px;">Current</p>
+                </div>
+            </div>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Previous Reservations Screen
+            </p>
+            <hr class="nor">
+            <p class="min">
+                shows a calander view of the users previous reservations.
+                works basically the same as the current reservations tab but for old reservations.
+            </p>
+        </div>
+    </div>
+    <!-- NOTIFICATIONS -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px auto;">
+            <div class="inv row" style="grid-row: 1 / 2;">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                        NOTIFICATIONS
+                    </p>
+                </div>
+            </div>
+            <div class="col waitlist" style="overflow: scroll; padding: 6px 0;">
+                <div class="notif notif2">
+                    <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title A</p>
+                        <p class="min" style="grid-row: 2;">hey you should probably read this</p>
+                        <p class="min" style="grid-row: 3;">this is an important notification!</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">12 seconds ago</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="notif notif3">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title B</p>
+                        <p class="min" style="grid-row: 2;">not as important of a notification</p>
+                        <p class="min" style="grid-row: 3;">this is a medium notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">38 minutes ago</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="notif notif1">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title C</p>
+                        <p class="min" style="grid-row: 2;">just an announcement</p>
+                        <p class="min" style="grid-row: 3;">this is a regular notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">2 hours ago</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="notif notif1">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title D</p>
+                        <p class="min" style="grid-row: 2;">just an announcement</p>
+                        <p class="min" style="grid-row: 3;">this is a regular notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate"> 18 hours ago</p>
+                        </div>
+                    </div>
+                </div> 
+                <div class="notif notifread">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title E</p>
+                        <p class="min" style="grid-row: 2;">heres some old news</p>
+                        <p class="min" style="grid-row: 3;">already read this notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">October 15</p>
+                        </div>
+                    </div>
+                </div>   
+                <div class="notif notifread">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title F</p>
+                        <p class="min" style="grid-row: 2;">heres some old news</p>
+                        <p class="min" style="grid-row: 3;">already read this notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">October 14</p>
+                        </div>
+                    </div>
+                </div> 
+                <div class="notif notifread">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title H</p>
+                        <p class="min" style="grid-row: 2;">heres some old news</p>
+                        <p class="min" style="grid-row: 3;">already read this notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">October 7</p>
+                        </div>
+                    </div>
+                </div> 
+                <div class="notif notifread">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title I</p>
+                        <p class="min" style="grid-row: 2;">heres some old news</p>
+                        <p class="min" style="grid-row: 3;">already read this notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">October 7</p>
+                        </div>
+                    </div>
+                </div>   
+                <div class="notif notifread">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title J</p>
+                        <p class="min" style="grid-row: 2;">heres some old news</p>
+                        <p class="min" style="grid-row: 3;">already read this notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">October 7</p>
+                        </div>
+                    </div>
+                </div> 
+                <div class="notif notifread">
+                     <div class="litext">               
+                        <p class="min lih" style="grid-row: 1;">Notification Title K</p>
+                        <p class="min" style="grid-row: 2;">heres some old news</p>
+                        <p class="min" style="grid-row: 3;">already read this notification</p>
+                    </div>
+                    <div class="col cen w1"></div>
+                    <div class="row cen">
+                        <div class="col cen">
+                            <p class="min notifdate">October 7</p>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Notifications Screen
+            </p>
+            <hr class="nor">
+            <p class="min">
+                shows a list of the latest notifications.
+                notifications are annotated by priority and sorted by announcement time.
+                if a notification has already been read, it wil be made less prominent.
+           </p>
+        </div>
+    </div>
+
 </body>
