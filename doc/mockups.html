@@ -348,6 +348,117 @@
             align-self: end;
             justify-self: end;
         }
+        .dmtab {
+            min-height: 160px;
+            margin: 10px 12px;
+            padding: 0 0 6px 0;
+            font-size: 16px;
+            color: var(--dark);
+            background-color: var(--light);
+            border-radius: 4px 4px 4px 24px;
+            display: grid;
+            grid-template-rows: 42px repeat(4, auto);
+            row-gap: 4px;
+            overflow: hidden;
+        }
+        .dmmsgl {
+            padding: 0 12px;
+            display: grid;
+            grid-column: 1 / 4;
+            justify-self: left;
+        }
+        .dmmsgr {
+            padding: 0 12px;
+            display: grid;
+            grid-column: 1 / 4;
+            justify-self: right;
+        }
+        .dmtxt {
+            grid-row: 1;
+            align-self: center;
+        }
+        .dmmsgl .dmtxt {
+            grid-column: 2;
+        }
+        .dmmsgr .dmtxt {
+            grid-column: 1;
+        }
+        .dmtag {
+            grid-row: 1;
+            grid-column: 1;
+            padding: 2px 8px;
+            color: var(--light);
+            border-radius: 12px;
+            align-self: center;
+        }
+        .dmmsgl .dmtag {
+            grid-column: 1;
+            margin: 0 12px 0 0; 
+        }
+        .dmmsgr .dmtag {
+            grid-column: 2;
+            margin: 0 0 0 12px; 
+        }
+        .dmtitle {
+            padding: 3px 12px;
+            margin: 0 0 6px 0;
+            grid-row: 1 / 2;
+            grid-column: 1 / 4;
+            color: var(--light);
+            display: grid;
+            overflow: hidden;
+        }
+        .dmheader {
+            grid-row: 1;
+            grid-column: 1;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .dmdate {
+            grid-row: 1;
+            grid-column: 2;
+            font-size: 12px;
+            font-weight: bold;
+            align-self: center;
+            justify-self: end;
+        }
+        .dmfullmsg {
+            margin: 6px 12px;
+            font-size: 20px;
+            color: var(--light);
+            display: grid;
+        }
+        .dmfullmsg .dmmsgl {
+            padding: 6px 12px;
+            border-radius: 16px 16px 16px 0;
+            display: grid;
+            overflow: hidden;
+            justify-self: left;
+        }
+        .dmfullmsg .dmmsgr {
+            padding: 6px 12px;
+            border-radius: 16px 16px 0 16px;
+            display: grid;
+            overflow: hidden;
+            justify-self: right;
+        }
+        .dmstart {
+            margin: 0;
+            grid-row: 1;
+            grid-column: 1 / 2;
+            width: 95%;
+            border-top: 2px solid var(--light);
+            align-self: center;
+            justify-self: center;
+        }
+        .dmstartmsg {
+            font-size: 16px;
+            grid-row: 1; 
+            grid-column: 1 / 2;
+            padding: 0 6px;
+            align-self: center;
+            justify-self: center;
+        }
     </style>
 </head>
 <body class="row">
@@ -1123,8 +1234,180 @@
             <p class="min">
                 shows a list of the latest notifications.
                 notifications are annotated by priority and sorted by announcement time.
+                tapping on a notification brings up a popup with more details and marks the notification as read.
                 if a notification has already been read, it wil be made less prominent.
            </p>
         </div>
     </div>
+    <!-- MESSSAGES -->
+    <div class="sboard">
+        <div class="screen" style="grid-template-rows: 50px auto;">
+            <div class="inv row" style="grid-row: 1 / 2;">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                       MESSAGES 
+                    </p>
+                </div>
+            </div>
+            <div class="col" style="overflow: scroll; padding: 6px 0;">
+                <div class="dmtab">
+                    <div class="dmtitle square2">
+                        <p class="min dmheader">DM With Owner A</p>
+                        <p class="min dmdate">12 seconds ago</p>
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square1">UserQ</p>
+                        <p class="min dmtxt">things to say to camp owners</p>
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square1">UserQ</p>
+                        <p class="min dmtxt">name 3 logs</p>
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square1">UserQ</p>
+                        <p class="min dmtxt">sell me this tree</p>                        
+                    </div>
+                    <div class="dmmsgl">
+                        <p class="min dmtag square2">OwnerA</p>
+                        <p class="min dmtxt">dude can u SHUT UP</p>                        
+                    </div>
+                </div>
+                <div class="dmtab">
+                    <div class="dmtitle square3">
+                        <p class="min dmheader">DM With Owner B</p>
+                        <p class="min dmdate">27 minutes ago</p>
+                    </div>
+                    <div class="dmmsgl">
+                        <p class="min dmtag square3">OwnerB</p>
+                        <p class="min dmtxt">hi i showed u my camp</p>
+                    </div>
+                    <div class="dmmsgl">
+                        <p class="min dmtag square3">OwnerB</p>
+                        <p class="min dmtxt">plz respond</p>
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square2">UserQ</p>
+                        <p class="min dmtxt">???</p>                   
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square2">UserQ</p>
+                        <p class="min dmtxt">?????</p>                        
+                    </div>
+                </div>
+                <div class="dmtab">
+                    <div class="dmtitle square1">
+                        <p class="min dmheader">DM With Owner C</p>
+                        <p class="min dmdate">October 2nd</p>
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square2">UserQ</p>
+                        <p class="min dmtxt">yo am i at the right place</p>
+                    </div>
+                    <div class="dmmsgl">
+                        <p class="min dmtag square1">OwnerC</p>
+                        <p class="min dmtxt">prob</p>
+                    </div>
+                    <div class="dmmsgr">
+                        <p class="min dmtag square2">UserQ</p>
+                        <p class="min dmtxt">do you even own any of this land</p>                        
+                    </div>
+                    <div class="dmmsgl">
+                        <p class="min dmtag square1">OwnerC</p>
+                        <p class="min dmtxt">:P</p>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Messages Screen
+            </p>
+            <hr class="nor">
+            <p class="min">
+                list of direct messages the user is part of.
+                each summary shows a few of the last messages and when they were sent.
+                you can click on a summary to go to the chat itself.
+           </p>
+        </div>
+    </div>
+    <!-- DIRECT MESSAGE -->
+    <div class="sboard">
+        <div class="screen" style="grid-template-rows: 50px auto 70px;">
+            <div class="inv row" style="grid-row: 1 / 2;">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                       OwnerA 
+                    </p>
+                </div>
+            </div>
+            <div class="col" style="overflow: scroll; justify-content: end; padding: 12px 0;">
+                <div class="dmfullmsg" style="margin-bottom: 12px;">
+                    <hr class="dmstart">
+                    <p class="min nor dmstartmsg">Start of messages with OwnerA</p>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">heyyy</p>
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">hey</p>
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">hey</p>
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">things to say to camp owners</p>
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">name 3 logs</p>
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">sell me this tree</p>                        
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgl square2">
+                        <p class="min dmtxt">dude can u SHUT UP</p>                        
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgr square1">
+                        <p class="min dmtxt">i brought my own lake</p>                        
+                    </div>
+                </div>
+                <div class="dmfullmsg">
+                    <div class="dmmsgl square2">
+                        <p class="min dmtxt">DUDE</p>                        
+                    </div>
+                </div>
+            </div>
+            <form class="inv row" style="grid-row: 3 / 4;">
+                <div class="col cen w1" style="padding: 0px 18px;">
+                    <input type="text" class="text inv uline" placeholder="Message" style="padding: 0px 6px;"/>
+                </div>
+                <input type="reset" class="text nor bold" value="Send" style="width: 84px; text-align: center; background-color: var(--acc1);"/>
+            </form>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                Direct Message Screen
+            </p>
+            <hr class="nor">
+            <p class="min">
+                full view of the messages between the user and another user.
+                new messages should appear at the bottom next to the text input.
+           </p>
+        </div>
+    </div>
+    <div class="sboard col"></div>
 </body>
