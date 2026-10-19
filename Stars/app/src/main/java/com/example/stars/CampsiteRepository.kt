@@ -3,6 +3,8 @@ package com.example.stars
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 /**
  * A container of campsites stored in Firestore
@@ -41,16 +43,16 @@ class CampsiteRepository {
 
     /**
      * Adds or updates a [campsite] in the campsite list
-     * If campsite.id matches an existing campsite, updates it, otherwise creates a new entry
+     * If campsite Id matches an existing campsite, updates it, otherwise creates a new entry
      */
-    fun addOrUpdateCampsite(campsite: Campsite) {
-        campsitesRef.document(campsite.id).set(campsite)
+    fun addOrUpdateCampsite(campsite: Campsite) = runBlocking {
+        campsitesRef.document(campsite.id).set(campsite).await()
     }
 
     /**
      * Deletes the campsite with ID [campsiteId] from the list of campsites
      */
-    fun deleteCampsite(campsiteId: String) {
-        campsitesRef.document(campsiteId).delete()
+    fun deleteCampsite(campsiteId: String) = runBlocking {
+        campsitesRef.document(campsiteId).delete().await()
     }
 }

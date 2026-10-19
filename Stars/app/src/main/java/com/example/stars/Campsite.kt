@@ -15,13 +15,13 @@ package com.example.stars
  */
 data class Campsite (
     // TODO: add fields geolocation, waiting list, qr codes, reservations, cancellation policy
-    val id: String,
-    val title: String,
-    val price: Double,
-    val capacity: Int,
-    val rules: String,
-    val ownerId: String,
-    val imageIds: List<String>,
-    val reservations: List<Reservation>,
-    val availabilitySchedule: List<EpochRange>
+    val id: String = "",
+    val title: String = "",
+    val price: Double = 0.0,
+    val capacity: Int = 0,
+    val rules: String = "",
+    val ownerId: String = "",
+    val imageIds: List<String> = emptyList(),
+    val reservations: List<Reservation> = emptyList(),
+    val availabilitySchedule: List<EpochRange> = emptyList()
 )

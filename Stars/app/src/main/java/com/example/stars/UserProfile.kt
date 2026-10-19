@@ -19,8 +19,8 @@ enum class UserPermission {
  * @param permission the app permission level for the user
  */
 data class UserProfile(
-    val id: String,
-    val name: String,
-    val email: String,
+    val id: String = "",
+    val name: String = "",
+    val email: String = "",
     val permission: UserPermission = UserPermission.ENTRANT
 )

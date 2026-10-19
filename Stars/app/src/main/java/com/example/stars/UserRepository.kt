@@ -3,6 +3,8 @@ package com.example.stars
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 /**
  * A container of UserProfiles stored in Firestore
@@ -43,15 +45,15 @@ class UserRepository {
      * Adds or updates a [user] in the users list
      * If user.id matches an existing user, updates it, otherwise creates a new entry
      */
-    fun addOrUpdateUser(user: UserProfile) {
-        usersRef.document(user.id).set(user)
+    fun addOrUpdateUser(user: UserProfile) = runBlocking {
+        usersRef.document(user.id).set(user).await()
     }
 
     /**
      * Deletes the user with ID [userId] from the list of users
      * Also removes any campsites, reservations, and waiting list positions held by that user
      */
-    fun deleteUser(userId: String) {
+    fun deleteUser(userId: String) = runBlocking {
         // TODO: delete all reservations, campsites, and waiting list positions associated with the user
         val campsiteRepository = CampsiteRepository()
         for (campsite in campsiteRepository.campsites) {
@@ -79,6 +81,6 @@ class UserRepository {
             )
         }
 
-        usersRef.document(userId).delete()
+        usersRef.document(userId).delete().await()
     }
 }

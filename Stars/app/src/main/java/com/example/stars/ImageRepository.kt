@@ -60,11 +60,11 @@ class ImageRepository {
         // Await the upload and get the download URL
         // We want exceptions to propagate up, so we'll wait for it to complete instead of using a listener
         imageRef.putFile(imageUri).await()
-        val downloadUrl = imageRef.downloadUrl.await()
+        val downloadUrl = imageRef.downloadUrl.await().toString()
 
         // At this point we know the upload succeeded so we can create our Firestore reference
         // This will implicitly update the local _images once it succeeds
-        imageListRef.document(imageId).set(ImageUpload(imageId, downloadUrl))
+        imageListRef.document(imageId).set(ImageUpload(imageId, downloadUrl)).await()
 
         // Implicit return from runBlocking
         imageId
@@ -73,15 +73,16 @@ class ImageRepository {
     /**
      * Deletes the image [imageId] from the list of images
      */
-    fun deleteImage(imageId: String) {
-        imageListRef.document(imageId).delete()
+    fun deleteImage(imageId: String) = runBlocking {
+        storageRef.child("images/$imageId.jpg").delete().await()
+        imageListRef.document(imageId).delete().await()
     }
 
     /**
      * Gets the embeddable download URI for the image [imageId]
      * @return the download URI if the image ID is valid, or null otherwise
      */
-    fun getImageUri(imageId: String): Uri? {
+    fun getImageUri(imageId: String): String? {
         val match: ImageUpload? = _images.find {it.id == imageId}
         if (match != null)
             return match.downloadUrl
