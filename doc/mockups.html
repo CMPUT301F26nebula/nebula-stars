@@ -246,6 +246,23 @@
             font-size: 24px;
             font-weight: bold;
         }
+        .qrbutton {
+            width: 50px;
+            height: 50px;
+            color: var(--black);
+            background-color: var(--white);
+            border-radius: 4px;
+            margin: 6px;
+            object-fit: scale-down;
+            object-position: center;
+            content: url("https://upload.wikimedia.org/wikipedia/commons/2/27/CommTech%2C_Sharing_QR_Codes.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original");
+            opacity: 60%;
+        }
+        .qrcode {
+            object-fit: scale-down;
+            object-position: center;
+            content: url("https://upload.wikimedia.org/wikipedia/commons/2/27/CommTech%2C_Sharing_QR_Codes.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original");
+        }
         .waitlist .li {
             border-radius: 4px 24px 24px 4px;
         }
@@ -1255,7 +1272,10 @@
                             </p>
                         </div>
                         <div class="nor modal" style="grid-row: 2 / 3; ">
-                            <img class="modalthumb"/>
+                            <div style="display: grid;">
+                                <img class="modalthumb" style="grid-row: 1; grid-column: 1;"/>
+                                <img class="qrbutton" style="grid-row: 1; grid-column: 1; align-self: end; justify-self: end;"/>
+                            </div>
                             <div class="modaltext">
                                 <p class="min">
                                     <span class="modalhd">Heres some info:</span>
@@ -1354,6 +1374,8 @@
                 when the user clicks on a campsite in the search screen, a dialog with more details appears.
                 from this dialog they can check availibility and sign up for a waitlist.
                 tapping off of the dialog clears it.
+                you can find the qrcode that links to this particular campsite from the button in the corner of the image.
+                the button becomes translucent if it isnt tapped on.
             </p>
         </div>
     </div>
@@ -1463,6 +1485,115 @@
                 popup where the user can add location, guest count, and date filters to their search results.
                 the <span class="bold">Date</span> button opens up a calendar dialog.
                 also the filter button in the top right changes appearance.
+            </p>
+        </div>
+    </div>
+    <!-- CAMPSITE QR CODE MODAL -->
+    <div class="sboard col">
+        <div class="screen" style="grid-template-rows: 50px 680px 70px;">
+            <div class="inv row" style="grid-row: 1 / 2; grid-column: 1">
+                <div style="display: grid; align-items: end;">
+                    <p class="min bold" style="font-size: 42px; padding: 0 6px; line-height: 0.75em; text-wrap: nowrap;">
+                        CAMPSITES
+                    </p>
+                </div>
+                <div class="w1"></div>
+                <div class="row cen nor" style="width: 70px; background-color: var(--dark);">
+                    <div class="col cen">
+                        <p class="min" style="font-size: 32px;">▼</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row cen modalbg" style="z-index: 20; grid-row: 1 / 4; grid-column: 1;">
+                <div class="col cen">
+                    <div style="display: grid; grid-template-rows: 50px auto 50px; max-width: 400px; max-height: 600px;
+                        border-radius: 0 16px 0 16px; overflow: hidden;">
+                        <div class="col cen" style="grid-row: 1 / 2; background-color: var(--dark); padding: 0 12px;">
+                            <p class="min modaltitle">
+                                Public Domain QR Code Img
+                            </p>
+                        </div>
+                        <div class="nor modal" style="grid-row: 2 / 3; ">
+                            <div style="display: grid;">
+                                <img class="modalthumb qrcode" style="grid-row: 1; grid-column: 1;"/>
+                            </div>
+                        </div>
+                        <div style="grid-row: 3 / 4; display: grid; grid-template-columns: 1fr 1fr;">
+                            <div class="col cen" style="grid-row: 1; grid-column: 1 / 3; background-color: var(--acc3); padding: 0 16px;">
+                                <p class="min bold" style="font-size: 20px;">Download</p>
+                            </div>
+                            <div class="col cen" style="grid-row: 1; grid-column: 2 / 3; background-color: var(--acc1); padding: 0 16px; border-radius: 0 0 0 16px;">
+                                <p class="min bold" style="font-size: 20px;">Done</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="padding: 5px 0; overflow: scroll; z-index: 10; grid-row: 2 / 4; grid-column: 1;">
+                <div class="campbox square1">
+                    <img class="campthumb"/>
+                    <div class="campdesc">
+                        <p class="min campname">Example Campsite 1</p>
+                        <p class="min camprating">★★★★☆</p>
+                        <p class="min" style="grid-column: 1 / 3;">a real four out of five campsite at campsite dot com</p>
+                    </div>
+                </div>
+                <div class="campbox square2">
+                    <img class="campthumb"/>
+                    <div class="campdesc">
+                        <p class="min campname">Example Campsite 2</p>
+                        <p class="min camprating">★★★★☆</p>
+                        <p class="min" style="grid-column: 1 / 3;">a real four out of five campsite at campsite dot com</p>
+                    </div>
+                </div>
+                <div class="campbox square3">
+                    <img class="campthumb"/>
+                    <div class="campdesc">
+                        <p class="min campname">Example Campsite 3</p>
+                        <p class="min camprating">★★★★☆</p>
+                        <p class="min" style="grid-column: 1 / 3;">a real four out of five campsite at campsite dot com</p>
+                    </div>
+                </div>
+                <div class="campbox square1">
+                    <img class="campthumb"/>
+                    <div class="campdesc">
+                        <p class="min campname">Example Campsite 4</p>
+                        <p class="min camprating">★★★★☆</p>
+                        <p class="min" style="grid-column: 1 / 3;">a real four out of five campsite at campsite dot com</p>
+                    </div>
+                </div>
+                <div class="campbox square2">
+                    <img class="campthumb"/>
+                    <div class="campdesc">
+                        <p class="min campname">Example Campsite 5</p>
+                        <p class="min camprating">★★★★☆</p>
+                        <p class="min" style="grid-column: 1 / 3;">a real four out of five campsite at campsite dot com</p>
+                    </div>
+                </div>
+                <div class="campbox square3">
+                    <img class="campthumb"/>
+                    <div class="campdesc">
+                        <p class="min campname">Example Campsite 6</p>
+                        <p class="min camprating">★★★★☆</p>
+                        <p class="min" style="grid-column: 1 / 3;">a real four out of five campsite at campsite dot com</p>
+                    </div>
+                </div>
+            </div>
+            <form class="inv row" style="grid-row: 3 / 4; grid-column: 1; z-index: 15;">
+                <div class="col cen w1" style="padding: 0px 18px;">
+                    <input type="text" class="text inv uline" placeholder="Search" style="padding: 0px 6px;"/>
+                </div>
+                <input type="reset" class="text nor bold" value="Go" style="width: 70px; padding: 0px 12px; text-align: center; background-color: var(--acc1);"/>
+            </form>
+        </div>
+        <div class="sbdesc"> 
+            <p class="min bold">
+                QR Code Popup
+            </p>
+            <hr class="nor">
+            <p class="min">
+                generic popup for showing a qr code.
+                the qr code can be saved as an image for sharing and printing.
             </p>
         </div>
     </div>
