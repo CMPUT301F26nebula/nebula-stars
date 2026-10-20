@@ -1,0 +1,46 @@
+overall ui structure is like a tree but stuff like dialogues for info and 
+confirmation will be used everywhere, some of these probably dont need to be 
+their own screen and can just be part of another
+
+im thinking purple/yellow/black for the colour scheme with white text and 
+blue/orange/black if we want a colourblind/high contrast mode
+
+SCREENS
+login/register - screen may be skipped if the device is remembered
+homepage - specifics of each tab will change for user/owner/admin
+    campsite list
+        search/filter
+        campsite info summary
+        campsite info detailed
+            availability - calendar widget
+            waitlists for campsite
+            geolocation map? - could just open in an external map app
+    current waitlists
+    reservations - could prob put both on one calendar widget
+        current
+        previous
+    notifs
+    dms
+    profile
+    settings
+
+owner - owner only stuff
+    campsites
+        register
+        edit
+    lottery
+        create
+        edit
+    send notifs - can filter for users on specific waitlists/reservations
+    
+admin - admin only stuff
+    notif log - can sort by campsite/waitlist/owner/user
+    dms log - organized by owner then user
+    profile/campsite search? - easier way to get to thing to delete
+
+DIALOGUES
+qr code view/create - each campsite should have a unique qr code    
+    campsites might need a unique id for this
+campsite details/confirm
+reservation accept/decline
+admin actions - exists as a button only admin can see at thing to remove
