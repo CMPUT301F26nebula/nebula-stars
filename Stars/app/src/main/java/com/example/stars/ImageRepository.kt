@@ -1,3 +1,6 @@
+/*
+Contains repository helper class to get and store ImageUpload objects from firestore
+ */
 package com.example.stars
 import android.net.Uri
 import com.google.firebase.Firebase

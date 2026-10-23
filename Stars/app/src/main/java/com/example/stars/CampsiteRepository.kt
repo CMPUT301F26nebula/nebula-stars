@@ -1,3 +1,6 @@
+/*
+Contains repository helper class to get and store Campsite objects from firestore
+ */
 package com.example.stars
 
 import androidx.compose.runtime.mutableStateListOf

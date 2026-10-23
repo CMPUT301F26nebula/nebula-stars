@@ -1,3 +1,6 @@
+/*
+Contains helper classes relating to handling of time in epoch ms for schedules
+ */
 package com.example.stars
 
 /**
@@ -9,6 +12,6 @@ package com.example.stars
  * @param end epoch timestamp of the end of the range, inclusive
  */
 data class EpochRange (
-    val start: Long,
-    val end: Long
+    val start: Long = 0.0.toLong(),
+    val end: Long = 0.0.toLong()
 )

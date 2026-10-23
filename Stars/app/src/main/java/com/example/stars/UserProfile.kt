@@ -1,3 +1,8 @@
+/*
+Contains classes underpinning the user profile, including their permissions and account settings
+
+TODO: Add and implement data class for account settings
+ */
 package com.example.stars
 
 /**
@@ -9,7 +14,6 @@ package com.example.stars
 enum class UserPermission {
     ENTRANT, OWNER, ADMIN
 }
-// TODO: implement account settings data class
 /**
  * A profile for a user registered to the app
  *
@@ -20,7 +24,7 @@ enum class UserPermission {
  */
 data class UserProfile(
     val id: String = "",
-    val name: String = "",
-    val email: String = "",
-    val permission: UserPermission = UserPermission.ENTRANT
+    var name: String = "",
+    var email: String = "",
+    var permission: UserPermission = UserPermission.ENTRANT
 )
