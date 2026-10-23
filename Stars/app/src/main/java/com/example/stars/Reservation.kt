@@ -16,8 +16,8 @@ enum class ReservationStatus {
  * @param entrantId the unique ID of the user who made the reservation
  */
 data class Reservation (
-    val id: String,
-    val timeRange: EpochRange,
-    val status: ReservationStatus,
-    val entrantId: String
+    val id: String = "",
+    val timeRange: EpochRange = EpochRange(),
+    val status: ReservationStatus = ReservationStatus.INVITED,
+    val entrantId: String = ""
 )

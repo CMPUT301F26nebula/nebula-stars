@@ -1,3 +1,9 @@
+/*
+Contains repository helper class to get and store UserProfile objects from firestore
+
+TODO: Delete waiting list positions for user when deleting user
+TODO: Recalculate availability schedule for campsite after deleting user info (if necessary dependent on schedule implementation)
+ */
 package com.example.stars
 
 import androidx.compose.runtime.mutableStateListOf
@@ -58,12 +64,11 @@ class UserRepository {
         val campsiteRepository = CampsiteRepository()
         for (campsite in campsiteRepository.campsites) {
             // Delete any campsites belonging to this user
-            if (campsite.ownerId == userId)
+            if (campsite.ownerId == userId) {
                 campsiteRepository.deleteCampsite(campsite.id)
+            }
 
             // Remove entries in reservations list for the deleted user
-            // TODO: recalculate availability schedule after this change
-            // TODO: if userId in campsite waiting list, delete that entry in the waiting list
             val newReservations = campsite.reservations.toMutableList()
             newReservations.removeAll {it.entrantId == userId}
             campsiteRepository.addOrUpdateCampsite(
@@ -72,6 +77,7 @@ class UserRepository {
                     campsite.title,
                     campsite.price,
                     campsite.capacity,
+                    campsite.description,
                     campsite.rules,
                     campsite.ownerId,
                     campsite.imageIds,
