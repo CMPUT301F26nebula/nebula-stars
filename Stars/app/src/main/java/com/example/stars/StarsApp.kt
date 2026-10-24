@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 // This should be where the current User, and other data shared between screens is stored
 
 /**
- * Contains the NavController
+ * Contains the NavHost
  */
 @Composable
 fun StarsApp() {

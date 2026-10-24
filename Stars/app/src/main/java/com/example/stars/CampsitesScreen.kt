@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
+/**
+ * Screen to browse all the campsites
+ */
 @Composable
 fun CampsitesScreen(navController: NavController) {
     var search by remember {

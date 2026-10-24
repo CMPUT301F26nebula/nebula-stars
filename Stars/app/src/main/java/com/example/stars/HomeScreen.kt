@@ -17,7 +17,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
-
+/**
+ * Home screen to navigate to everything else
+ */
 @Composable
 fun HomeScreen(navController: NavController) {
     Column(
