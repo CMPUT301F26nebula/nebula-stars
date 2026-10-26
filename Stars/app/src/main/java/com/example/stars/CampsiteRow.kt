@@ -57,13 +57,19 @@ fun CampsiteRow(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                // Rating (TODO: Implement)
+                // Price
                 Text(
-                    text = "(star rating)",
+                    text = "$${campsite.price}",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
             }
+            // Rating (TODO: Implement)
+            Text(
+                text = "(star rating)",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
             // Description
             Text(
                 text = campsite.description,

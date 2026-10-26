@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,13 +37,13 @@ fun CampsitesScreen(
     campsiteRepository: CampsiteRepository
 ) {
     var search by remember { mutableStateOf("") }
-    var query by remember { mutableStateOf("") }
-    val results = searchCampsites(campsiteRepository.campsites, query)
+    val results = searchCampsites(campsiteRepository.campsites, search)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding(),
+            .systemBarsPadding()
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -81,7 +82,7 @@ fun CampsitesScreen(
         // Content
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (results.isEmpty()) {
@@ -116,35 +117,35 @@ fun CampsitesScreen(
                     .weight(1f)
             )
 
-            // Search button
-            Button(
-                onClick = {
-                    query = search
-                },
-                modifier = Modifier.testTag("searchButton") // for testing
-            ) {
-                Text("Go")
-            }
+            // Search button -- Commented because of live-update searching
+//            Button(
+//                onClick = {
+//
+//                },
+//                modifier = Modifier.testTag("searchButton") // for testing
+//            ) {
+//                Text("Go")
+//            }
         }
     }
 }
 
 /**
- * Search function that returns a list of campsites that match the query
+ * Search function that returns a list of campsites that match the search
  * Title matches are displayed first, then description matches
  */
-fun searchCampsites(campsites: List<Campsite>, query: String): List<Campsite> {
-    val q = query.trim()
-    // if no query, return all campsites (i.e. when the user first opens the campsite page)
-    if (q.isEmpty()) return campsites
+fun searchCampsites(campsites: List<Campsite>, search: String): List<Campsite> {
+    val s = search.trim()
+    // if no search, return all campsites (i.e. when the user first opens the campsite page)
+    if (s.isEmpty()) return campsites
 
-    // Splits query into matches and non matches
+    // Splits search into matches and non matches
     val (titleMatches, others) = campsites.partition {
-        it.title.contains(q, ignoreCase = true)
+        it.title.contains(s, ignoreCase = true)
     }
     // Checks if the "non matches" match with descriptions
     val descriptionMatches = others.filter {
-        it.description.contains(q, ignoreCase = true)
+        it.description.contains(s, ignoreCase = true)
     }
     // Concats and returns list
     return titleMatches + descriptionMatches
