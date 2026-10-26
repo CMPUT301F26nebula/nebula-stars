@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -30,13 +31,18 @@ import androidx.navigation.compose.rememberNavController
  * Screen to browse all the campsites
  */
 @Composable
-fun CampsitesScreen(navController: NavController) {
+fun CampsitesScreen(
+    navController: NavController,
+    campsiteRepository: CampsiteRepository
+) {
     var search by remember {
         mutableStateOf("")
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -68,25 +74,22 @@ fun CampsitesScreen(navController: NavController) {
                 },
                 modifier = Modifier.testTag("filterButton") // for testing
             ) {
-                Text("V")
+                Text("☰")
             }
         }
 
         // Content
         Column(
-            //modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            LazyColumn() {
-                /*
-                items(campsites) { campsite ->
+            // List of campsites
+            LazyColumn {
+                items(campsiteRepository.campsites) { campsite ->
                     CampsiteRow(campsite)
-
                     Spacer(modifier = Modifier.height(12.dp))
                 }
-                 */
             }
         }
 
@@ -121,8 +124,12 @@ fun CampsitesScreen(navController: NavController) {
     }
 }
 
+
+
+/**
 @Preview
 @Composable
 fun CampsitesScreenPreview() {
     CampsitesScreen(rememberNavController())
 }
+*/
