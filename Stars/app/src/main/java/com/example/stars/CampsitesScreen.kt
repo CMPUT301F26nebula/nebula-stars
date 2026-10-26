@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -30,13 +32,18 @@ import androidx.navigation.compose.rememberNavController
  * Screen to browse all the campsites
  */
 @Composable
-fun CampsitesScreen(navController: NavController) {
-    var search by remember {
-        mutableStateOf("")
-    }
+fun CampsitesScreen(
+    navController: NavController,
+    campsiteRepository: CampsiteRepository
+) {
+    var search by remember { mutableStateOf("") }
+    val results = searchCampsites(campsiteRepository.campsites, search)
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -68,27 +75,29 @@ fun CampsitesScreen(navController: NavController) {
                 },
                 modifier = Modifier.testTag("filterButton") // for testing
             ) {
-                Text("V")
+                Text("☰")
             }
         }
 
         // Content
         Column(
-            //modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            LazyColumn() {
-                /*
-                items(campsites) { campsite ->
-                    CampsiteRow(campsite)
-
-                    Spacer(modifier = Modifier.height(12.dp))
+            if (results.isEmpty()) {
+                Text("No campsites found")
+            } else {
+                // List of campsites
+                LazyColumn {
+                    items(results) { campsite ->
+                        CampsiteRow(campsite)
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
                 }
-                 */
             }
         }
+
 
         // Search bar
         Row(
@@ -108,21 +117,44 @@ fun CampsitesScreen(navController: NavController) {
                     .weight(1f)
             )
 
-            // Search button
-            Button(
-                onClick = {
-
-                },
-                modifier = Modifier.testTag("searchButton") // for testing
-            ) {
-                Text("Go")
-            }
+            // Search button -- Commented because of live-update searching
+//            Button(
+//                onClick = {
+//
+//                },
+//                modifier = Modifier.testTag("searchButton") // for testing
+//            ) {
+//                Text("Go")
+//            }
         }
     }
 }
 
+/**
+ * Search function that returns a list of campsites that match the search
+ * Title matches are displayed first, then description matches
+ */
+fun searchCampsites(campsites: List<Campsite>, search: String): List<Campsite> {
+    val s = search.trim()
+    // if no search, return all campsites (i.e. when the user first opens the campsite page)
+    if (s.isEmpty()) return campsites
+
+    // Splits search into matches and non matches
+    val (titleMatches, others) = campsites.partition {
+        it.title.contains(s, ignoreCase = true)
+    }
+    // Checks if the "non matches" match with descriptions
+    val descriptionMatches = others.filter {
+        it.description.contains(s, ignoreCase = true)
+    }
+    // Concats and returns list
+    return titleMatches + descriptionMatches
+}
+
+/**
 @Preview
 @Composable
 fun CampsitesScreenPreview() {
     CampsitesScreen(rememberNavController())
 }
+*/

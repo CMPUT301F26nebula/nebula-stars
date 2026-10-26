@@ -3,6 +3,7 @@ Contains repository helper class to get and store Campsite objects from firestor
  */
 package com.example.stars
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -25,9 +26,11 @@ class CampsiteRepository {
 
     // On initialization, start listening for changes in Firestore
     init {
+        Log.d("CampsiteRepo", "Repository created") // Logcat to verify
         campsitesRef.addSnapshotListener { snapshot, error ->
             // Propagate any errors through
             if (error != null) {
+                Log.e("CampsiteRepo", "Listen failed", error)
                 return@addSnapshotListener
             }
 
