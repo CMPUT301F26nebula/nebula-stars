@@ -1,6 +1,5 @@
 package com.example.stars
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
@@ -17,11 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
- * A single campsite entry in the campsite list
+ * Campsite card displayed in the campsite list
  */
 @Composable
 fun CampsiteRow(
@@ -48,21 +46,25 @@ fun CampsiteRow(
                     text = "No image",
                 )
             }
+            // Campsite text
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                // Title
                 Text(
                     text = campsite.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
+                // Rating (TODO: Implement)
                 Text(
                     text = "(star rating)",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
             }
+            // Description
             Text(
                 text = campsite.description,
                 style = MaterialTheme.typography.bodyMedium,

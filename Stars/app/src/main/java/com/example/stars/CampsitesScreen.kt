@@ -35,9 +35,9 @@ fun CampsitesScreen(
     navController: NavController,
     campsiteRepository: CampsiteRepository
 ) {
-    var search by remember {
-        mutableStateOf("")
-    }
+    var search by remember { mutableStateOf("") }
+    var query by remember { mutableStateOf("") }
+    val results = searchCampsites(campsiteRepository.campsites, query)
 
     Column(
         modifier = Modifier
@@ -84,14 +84,19 @@ fun CampsitesScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // List of campsites
-            LazyColumn {
-                items(campsiteRepository.campsites) { campsite ->
-                    CampsiteRow(campsite)
-                    Spacer(modifier = Modifier.height(12.dp))
+            if (results.isEmpty()) {
+                Text("No campsites found")
+            } else {
+                // List of campsites
+                LazyColumn {
+                    items(results) { campsite ->
+                        CampsiteRow(campsite)
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
                 }
             }
         }
+
 
         // Search bar
         Row(
@@ -114,7 +119,7 @@ fun CampsitesScreen(
             // Search button
             Button(
                 onClick = {
-
+                    query = search
                 },
                 modifier = Modifier.testTag("searchButton") // for testing
             ) {
@@ -124,7 +129,26 @@ fun CampsitesScreen(
     }
 }
 
+/**
+ * Search function that returns a list of campsites that match the query
+ * Title matches are displayed first, then description matches
+ */
+fun searchCampsites(campsites: List<Campsite>, query: String): List<Campsite> {
+    val q = query.trim()
+    // if no query, return all campsites (i.e. when the user first opens the campsite page)
+    if (q.isEmpty()) return campsites
 
+    // Splits query into matches and non matches
+    val (titleMatches, others) = campsites.partition {
+        it.title.contains(q, ignoreCase = true)
+    }
+    // Checks if the "non matches" match with descriptions
+    val descriptionMatches = others.filter {
+        it.description.contains(q, ignoreCase = true)
+    }
+    // Concats and returns list
+    return titleMatches + descriptionMatches
+}
 
 /**
 @Preview
