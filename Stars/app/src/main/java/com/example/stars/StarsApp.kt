@@ -1,15 +1,11 @@
 package com.example.stars
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
-import com.google.firebase.installations.FirebaseInstallations
+import androidx.navigation.compose.rememberNavController
 
 // This should be where the current User, and other data shared between screens is stored
 
@@ -21,7 +17,7 @@ fun StarsApp() {
     val navController = rememberNavController()
     val campsiteRepository = remember { CampsiteRepository() }
     val userRepository = remember { UserRepository() }
-    val currentUser = remember {getIDOnStart(userRepository)}
+    val currentUser =  getUserID(navController, userRepository, LocalContext.current)
 
 
     NavHost(navController = navController, startDestination = "home") {
@@ -33,6 +29,6 @@ fun StarsApp() {
         composable("notifications") {  }
         composable("profile") {  }
         composable("settings") { SettingsScreen(navController, currentUser, userRepository) }
-        composable("edit profile" ) {EditProfile(navController, currentUser, userRepository)}
+        composable("edit profile") {EditProfile(navController, currentUser, userRepository)}
     }
 }
