@@ -50,6 +50,16 @@ fun HomeScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            Button(
+                onClick = {
+                    navController.navigate("settings")
+                },
+                modifier = Modifier.testTag("settingsButton") // for testing
+            ) {
+                Text("Settings")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
             // ... more tabs here
         }
 
