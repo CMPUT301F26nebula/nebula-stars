@@ -11,6 +11,7 @@ import androidx.test.core.app.ApplicationProvider
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
@@ -24,6 +25,7 @@ class FirebaseCRUDInstrumented {
     private lateinit var userRepo: UserRepository
     private lateinit var campsiteRepo: CampsiteRepository
     private lateinit var imageRepo: ImageRepository
+    private lateinit var lotteryRepo: LotteryRepository
 
     /**
      * Configures firebase repositories with their items
@@ -40,8 +42,8 @@ class FirebaseCRUDInstrumented {
      */
     @Test
     fun addAndDeleteUser() {
-        userRepo.addOrUpdateUser(UserProfile("test1", "John Doe", "email@email.com", UserPermission.OWNER))
-        var user = userRepo.users.find {it.id == "test1"}
+        runBlocking { userRepo.addOrUpdateUser(UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER))}
+        var user = runBlocking { userRepo.getUser("test1") }
         assertNotNull(user)
         // Match all attributes
         assertEquals("test1", user?.id)
@@ -49,8 +51,8 @@ class FirebaseCRUDInstrumented {
         assertEquals("email@email.com", user?.email)
         assertEquals(UserPermission.OWNER, user?.permission)
         // Delete, search again, and check that it's gone
-        userRepo.deleteUser("test1")
-        user = userRepo.users.find {it.id == "test1"}
+        runBlocking { userRepo.deleteUser("test1") }
+        user = runBlocking { userRepo.getUser("test1") }
         assertNull(user)
     }
 
@@ -68,14 +70,14 @@ class FirebaseCRUDInstrumented {
 
         // Upload the dummy image to storage
         // Note that uploadImage returns the UUID of the new image
-        val imageId = imageRepo.uploadImage(Uri.fromFile(file))
+        val imageId = runBlocking { imageRepo.uploadImage(Uri.fromFile(file)) }
         // Use the returned UUID to check that the image exists and is downloadable
-        var image = imageRepo.images.find {it.id == imageId}
+        var image = runBlocking { imageRepo.getImage(imageId) }
         assertNotNull(image)
         assertNotEquals(0, image?.downloadUrl?.length)
         // Delete and confirm it's gone
-        imageRepo.deleteImage(imageId)
-        image = imageRepo.images.find {it.id == imageId}
+        runBlocking { imageRepo.deleteImage(imageId) }
+        image = runBlocking { imageRepo.getImage(imageId) }
         assertNull(image)
     }
 
@@ -86,11 +88,11 @@ class FirebaseCRUDInstrumented {
     fun addAndRemoveCampsite() {
         // Create a user to own the campsite
         // There is no check whether the user that owns the campsite is actually valid at this time, but do it anyway for realism
-        userRepo.addOrUpdateUser(UserProfile("test1", "John Doe", "email@email.com", UserPermission.OWNER))
+        runBlocking { userRepo.addOrUpdateUser(UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER)) }
 
         // Add a partial campsite and give it a reservation
-        campsiteRepo.addOrUpdateCampsite(Campsite(id = "test2", ownerId = "test1", reservations = listOf(Reservation(id = "test3", timeRange = EpochRange(1, 2)))))
-        var campsite = campsiteRepo.campsites.find {it.id == "test2"}
+        runBlocking { campsiteRepo.addOrUpdateCampsite(Campsite(id = "test2", ownerId = "test1", reservations = listOf(Reservation(id = "test3", timeRange = EpochRange(1, 2))))) }
+        var campsite = runBlocking { campsiteRepo.getCampsite("test2") }
         // Campsite should exist and have matching attributes
         assertNotNull(campsite)
         assertEquals("test1", campsite?.ownerId)
@@ -100,10 +102,10 @@ class FirebaseCRUDInstrumented {
         val reservation = campsite?.reservations?.find {it.id == "test3" && it.timeRange == EpochRange(1, 2)}
         assertNotNull(reservation)
         // Delete everything, including the test user
-        campsiteRepo.deleteCampsite("test2")
-        campsite = campsiteRepo.campsites.find {it.id == "test2"}
+        runBlocking { campsiteRepo.deleteCampsite("test2") }
+        campsite = runBlocking { campsiteRepo.getCampsite("test2") }
         assertNull(campsite)
 
-        userRepo.deleteUser("test1")
+        runBlocking { userRepo.deleteUser("test1") }
     }
 }

@@ -15,7 +15,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.async
 
 /**
  * Screen to browse all the campsites
@@ -37,7 +40,11 @@ fun CampsitesScreen(
     campsiteRepository: CampsiteRepository
 ) {
     var search by remember { mutableStateOf("") }
-    val results = searchCampsites(campsiteRepository.campsites, search)
+    var campsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
+    LaunchedEffect(Unit) {
+        campsites = campsiteRepository.getFilteredCampsites()
+    }
+    val results = searchCampsites(campsites, search)
 
     Column(
         modifier = Modifier
