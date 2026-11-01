@@ -10,9 +10,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +24,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 /*
 navigate to the edit profile page
@@ -51,6 +54,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
     var newName by remember { mutableStateOf(currentUser.name) }
     var newEmail by remember { mutableStateOf(currentUser.email) }
     var newPhone by remember { mutableStateOf(currentUser.phone) }
+
+    // Used to launch updater function
+    val scope = rememberCoroutineScope()
 
 
     Box(contentAlignment = Alignment.Center) {
@@ -109,7 +115,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
 
                             // if a change actually happened then update the firebase UserProfile
                             if (changeOccurred){
-                                userRepository.addOrUpdateUser(currentUser)
+                                scope.launch {
+                                    userRepository.addOrUpdateUser(currentUser)
+                                }
                             }
 
                             // go back to the settings page

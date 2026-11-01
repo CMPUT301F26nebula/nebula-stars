@@ -1,7 +1,11 @@
 package com.example.stars
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,18 +21,24 @@ fun StarsApp() {
     val navController = rememberNavController()
     val campsiteRepository = remember { CampsiteRepository() }
     val userRepository = remember { UserRepository() }
-    val currentUser =  getUserID(navController, userRepository, LocalContext.current)
+    var currentUser by remember { mutableStateOf(UserProfile()) }
 
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        currentUser = getUserID(navController, context)
+    }
 
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") { HomeScreen(navController) }
-        composable("campsites") {  CampsitesScreen(navController, campsiteRepository) }
-        composable("waitlists") {  }
-        composable("reservations") {  }
-        composable("messages") {  }
-        composable("notifications") {  }
-        composable("profile") {  }
-        composable("settings") { SettingsScreen(navController, currentUser, userRepository) }
-        composable("edit profile") {EditProfile(navController, currentUser, userRepository)}
+    if (currentUser.id.isNotBlank()) {
+        NavHost(navController = navController, startDestination = "home") {
+            composable("home") { HomeScreen(navController) }
+            composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
+            composable("waitlists") { }
+            composable("reservations") { }
+            composable("messages") { }
+            composable("notifications") { }
+            composable("profile") { }
+            composable("settings") { SettingsScreen(navController, currentUser, userRepository) }
+            composable("edit profile") { EditProfile(navController, currentUser, userRepository) }
+        }
     }
 }

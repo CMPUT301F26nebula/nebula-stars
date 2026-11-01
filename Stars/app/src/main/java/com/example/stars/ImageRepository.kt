@@ -8,43 +8,23 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import java.util.UUID
 import androidx.compose.runtime.mutableStateListOf
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 /**
  * A container of ImageUploads stored in Firestore and Firebase Cloud Storage
- *
- * @property images a list of all images uploaded to the app. Updates on any changes in Firestore->images.
- * @constructor initializes images from the current state of the Firestore images collection
  */
 class ImageRepository {
     private val storageRef = Firebase.storage.reference
     private val db = Firebase.firestore
     private val imageListRef = db.collection("images")
 
-    private val _images: MutableList<ImageUpload> = mutableStateListOf()
-    val images: List<ImageUpload>
-        get() = _images
-
-    // On initialization, start listening for changes in Firestore
-    init {
-        imageListRef.addSnapshotListener { snapshot, error ->
-            // Propagate any errors through
-            if (error != null) {
-                return@addSnapshotListener
-            }
-
-            // Reset the image list
-            _images.clear()
-
-            // Loop over all image entries in db and convert them to objects if applicable
-            snapshot?.documents?.forEach { document ->
-                val image = document.toObject(ImageUpload::class.java)
-                if (image != null) {
-                    _images.add(image)
-                }
-            }
-        }
+    /**
+     * Gets the ImageUpload from Firestore associate with the given ID
+     */
+    suspend fun getImage(imageId: String): ImageUpload? {
+        return imageListRef.document(imageId).get().await().toObject(ImageUpload::class.java)
     }
 
     /**
@@ -53,7 +33,7 @@ class ImageRepository {
      * @param imageUri the local image URI provided by an image picker
      * @return the unique ID of the uploaded image
      */
-    fun uploadImage(imageUri: Uri): String = runBlocking {
+    suspend fun uploadImage(imageUri: Uri): String {
         // Every image has its own ID which we generate
         val imageId = UUID.randomUUID().toString()
         // Name it and decide where to put it
@@ -66,17 +46,15 @@ class ImageRepository {
         val downloadUrl = imageRef.downloadUrl.await().toString()
 
         // At this point we know the upload succeeded so we can create our Firestore reference
-        // This will implicitly update the local _images once it succeeds
         imageListRef.document(imageId).set(ImageUpload(imageId, downloadUrl)).await()
 
-        // Implicit return from runBlocking
-        imageId
+        return imageId
     }
 
     /**
      * Deletes the image [imageId] from the list of images
      */
-    fun deleteImage(imageId: String) = runBlocking {
+    suspend fun deleteImage(imageId: String) {
         storageRef.child("images/$imageId.jpg").delete().await()
         imageListRef.document(imageId).delete().await()
     }
@@ -85,8 +63,8 @@ class ImageRepository {
      * Gets the embeddable download URI for the image [imageId]
      * @return the download URI if the image ID is valid, or null otherwise
      */
-    fun getImageUri(imageId: String): String? {
-        val match: ImageUpload? = _images.find {it.id == imageId}
+    suspend fun getImageUri(imageId: String): String? {
+        val match: ImageUpload? = getImage(imageId)
         if (match != null)
             return match.downloadUrl
         return null
