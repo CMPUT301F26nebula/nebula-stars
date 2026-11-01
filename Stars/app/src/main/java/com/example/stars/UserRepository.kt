@@ -9,6 +9,7 @@ package com.example.stars
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
@@ -19,6 +20,7 @@ import kotlinx.coroutines.tasks.await
  * @constructor initializes users from the current state of the Firestore users collection
  */
 class UserRepository {
+
     private val db = Firebase.firestore
     private val usersRef = db.collection("users")
 
@@ -52,7 +54,7 @@ class UserRepository {
      * If user.id matches an existing user, updates it, otherwise creates a new entry
      */
     fun addOrUpdateUser(user: UserProfile) = runBlocking {
-        usersRef.document(user.id).set(user).await()
+            usersRef.document(user.id).set(user).await()
     }
 
     /**

@@ -20,11 +20,14 @@ enum class UserPermission {
  * @param id the unique ID of the user
  * @param name the user's human-readable name
  * @param email the user's email address
+ * @param phone the user's phone number currently stored as a string
  * @param permission the app permission level for the user
  */
 data class UserProfile(
     val id: String = "",
     var name: String = "",
     var email: String = "",
+    var phone: String = "",
     var permission: UserPermission = UserPermission.ENTRANT
+
 )
