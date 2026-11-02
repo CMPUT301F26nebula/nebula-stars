@@ -59,4 +59,8 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("androidx.navigation:navigation-compose:2.10.2")
     implementation("com.google.firebase:firebase-installations:20.0.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.6.1")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.1")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+    implementation(libs.compose.material.icons)
 }

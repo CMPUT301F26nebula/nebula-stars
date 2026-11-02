@@ -7,9 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 // This should be where the current User, and other data shared between screens is stored
 
@@ -21,6 +23,7 @@ fun StarsApp() {
     val navController = rememberNavController()
     val campsiteRepository = remember { CampsiteRepository() }
     val userRepository = remember { UserRepository() }
+    val imageRepository = remember { ImageRepository() }
     var currentUser by remember { mutableStateOf(UserProfile()) }
 
     val context = LocalContext.current
@@ -30,7 +33,7 @@ fun StarsApp() {
 
     if (currentUser.id.isNotBlank()) {
         NavHost(navController = navController, startDestination = "home") {
-            composable("home") { HomeScreen(navController) }
+            composable("home") { HomeScreen(navController, currentUser) }
             composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
             composable("waitlists") { }
             composable("reservations") { }
@@ -39,6 +42,15 @@ fun StarsApp() {
             composable("profile") { }
             composable("settings") { SettingsScreen(navController, currentUser, userRepository) }
             composable("edit profile") { EditProfile(navController, currentUser, userRepository) }
+            composable("upload campsite") { UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository) }
+            composable(
+                route = "edit campsite {campsiteId}",
+                arguments = listOf(
+                    navArgument("campsiteId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry -> UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository,backStackEntry.arguments?.getString("userId").orEmpty()) }
         }
     }
 }

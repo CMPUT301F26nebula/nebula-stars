@@ -21,14 +21,14 @@ import androidx.navigation.compose.rememberNavController
  * Home screen to navigate to everything else
  */
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Title
         Text(
-            text = "Welcome [username]",
+            text = "Welcome ${currentUser.name}",
             fontSize = 32.sp
             )
 
@@ -52,6 +52,18 @@ fun HomeScreen(navController: NavController) {
 
             Button(
                 onClick = {
+                    navController.navigate("upload campsite")
+                },
+                modifier = Modifier.testTag("upload campsite") // for testing
+            ) {
+                Text("Add a Campsite")
+            }
+
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
                     navController.navigate("settings")
                 },
                 modifier = Modifier.testTag("settingsButton") // for testing
@@ -70,5 +82,5 @@ fun HomeScreen(navController: NavController) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(rememberNavController())
+    HomeScreen(rememberNavController(), UserProfile(id="4", name="John Doe"))
 }
