@@ -1,8 +1,7 @@
 /*
 Contains classes underpinning the representation of a Campsite
 
-TODO: Add fields geolocation, waiting list, qr codes object-based description, and cancellation policy
-TODO: Decide how to implement scheduling
+TODO: Add fields qr codes and cancellation policy
  */
 package com.example.stars
 
@@ -19,6 +18,7 @@ package com.example.stars
  * @param imageIds list of promotional images uploaded to this campsite's page
  * @param reservations list of current reservations
  * @param availabilitySchedule list of times the campsite is available
+ * @param location geographic location of the campsite
  */
 data class Campsite (
     val id: String = "",
@@ -30,5 +30,6 @@ data class Campsite (
     val ownerId: String = "",
     val imageIds: List<String> = emptyList(),
     val reservations: List<Reservation> = emptyList(),
-    val availabilitySchedule: List<EpochRange> = emptyList()
+    val availabilitySchedule: List<EpochRange> = emptyList(),
+    val location: LocationCoordinates = LocationCoordinates(0.0, 0.0)
 )
