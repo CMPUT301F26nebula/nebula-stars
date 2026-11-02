@@ -129,7 +129,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     focusedContainerColor =  Color(0xFF4B0082),
                     unfocusedTextColor = Color(0xFFFFFFFF),
                     focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF)
+                    unfocusedLabelColor = Color(0xFFFFFFFF),
+                    disabledTextColor = Color(0xFFFFFFFF),
+                    disabledContainerColor = Color(0xFF4B0082)
                 ),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
@@ -137,7 +139,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomStart = 10.dp,
                     bottomEnd = 30.dp
                 ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
+                modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused}),
+                enabled = !readonlyDetails
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
@@ -170,7 +173,11 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     focusedContainerColor =  Color(0xFF4B0082),
                     unfocusedTextColor = Color(0xFFFFFFFF),
                     focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF)
+                    unfocusedLabelColor = Color(0xFFFFFFFF),
+                    errorContainerColor = Color(0xFF4B0082),
+                    errorTextColor = Color(0xFFFFFFFF),
+                    disabledTextColor = Color(0xFFFFFFFF),
+                    disabledContainerColor = Color(0xFF4B0082)
                 ),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
@@ -178,7 +185,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomStart = 10.dp,
                     bottomEnd = 30.dp
                 ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
+                modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused}),
+                enabled = !readonlyDetails
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
@@ -212,7 +220,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     focusedContainerColor =  Color(0xFF4B0082),
                     unfocusedTextColor = Color(0xFFFFFFFF),
                     focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF)
+                    unfocusedLabelColor = Color(0xFFFFFFFF),
+                    disabledTextColor = Color(0xFFFFFFFF),
+                    disabledContainerColor = Color(0xFF4B0082)
                 ),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
@@ -220,7 +230,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomStart = 10.dp,
                     bottomEnd = 30.dp
                 ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
+                modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused}),
+                enabled = !readonlyDetails
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
@@ -486,7 +497,9 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         focusedContainerColor =  Color(0xFF4B0082),
                         unfocusedTextColor = Color(0xFFFFFFFF),
                         focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF)
+                        unfocusedLabelColor = Color(0xFFFFFFFF),
+                        errorContainerColor = Color(0xFF4B0082),
+                        errorTextColor = Color(0xFFFFFFFF),
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
