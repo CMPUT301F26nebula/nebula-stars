@@ -64,11 +64,11 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
             Button(
                 onClick = {
-                    navController.navigate("settings")
+                    navController.navigate("profile")
                 },
-                modifier = Modifier.testTag("settingsButton") // for testing
+                modifier = Modifier.testTag("ProfileButton") // for testing
             ) {
-                Text("Settings")
+                Text("Profile")
             }
 
             Spacer(modifier = Modifier.height(4.dp))
