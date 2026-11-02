@@ -5,7 +5,8 @@ this entire page was written by claude with the input of the doc/muckups.html
 and the promts: "is the background of user profile update and image?",
 "can you create the image of the background so I can set my app background as that?",
 and "please write the code for the background"
- Claude sonnet 5.5, 2026-11-1
+Claude sonnet 5.5, 2026-11-1
+https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
  */
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
