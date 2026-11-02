@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                 onClick = {
                     navController.navigate("upload campsite")
                 },
-                modifier = Modifier.testTag("upload campsite") // for testing
+                modifier = Modifier.testTag("uploadCampsiteButton") // for testing
             ) {
                 Text("Add a Campsite")
             }

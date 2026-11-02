@@ -49,8 +49,8 @@ import org.osmdroid.views.overlay.CopyrightOverlay
  * @param longitude the longitude coordinate
  */
 data class LocationCoordinates(
-    val latitude: Double,
-    val longitude: Double
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )
 
 /**

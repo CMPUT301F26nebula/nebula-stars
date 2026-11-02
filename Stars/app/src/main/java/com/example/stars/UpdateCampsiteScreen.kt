@@ -4,6 +4,7 @@ Screen to add a new campsite, or update the details for an existing one
 package com.example.stars
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,7 +33,6 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -54,6 +55,7 @@ import java.util.UUID
  * @param currentUser The ID of the currently logged in user
  * @param campsiteRepo The global campsite repository
  * @param imageRepo The global image repository
+ * @param externalScope The scope needed to run the uploader asynchronously
  * @param campsiteId The ID of the campsite to update, or leave empty to make a new one
  */
 
@@ -64,11 +66,10 @@ fun UpdateCampsiteScreen(
     currentUser: UserProfile,
     campsiteRepo: CampsiteRepository,
     imageRepo: ImageRepository,
+    externalScope: CoroutineScope,
     campsiteId: String = UUID.randomUUID().toString()
 ) {
     // Set up
-    val scope = rememberCoroutineScope()
-
     // Variables to store working copy of the campsite
     var title by remember { mutableStateOf("") }
     var price by remember { androidx.compose.runtime.mutableDoubleStateOf(0.0) }
@@ -133,23 +134,23 @@ fun UpdateCampsiteScreen(
             value = title,
             onValueChange = { newValue: String -> title = newValue },
             label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().testTag("titleInput")
         )
         OutlinedTextField(
             value = description,
             onValueChange = { newValue: String -> description = newValue },
             label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().testTag("descriptionInput")
         )
         OutlinedTextField(
             value = price.toString(),
             onValueChange = { newValue: String ->
-                if (newValue.matches(Regex("^\\d+(\\.\\d{1,2})?$")) || newValue.toDoubleOrNull() != null) {
+                if (newValue.toDoubleOrNull() != null) {
                     price = newValue.toDouble()
                 }
             },
             label = { Text("Price ($)") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("priceInput"),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         OutlinedTextField(
@@ -160,14 +161,14 @@ fun UpdateCampsiteScreen(
                 }
             },
             label = { Text("Capacity") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("capacityInput"),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         OutlinedTextField(
             value = rules,
             onValueChange = { newValue: String -> rules = newValue },
             label = { Text("Rules") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().testTag("rulesInput")
         )
         // Images
         Row() {
@@ -176,7 +177,7 @@ fun UpdateCampsiteScreen(
                 val photoPickerLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia()
                 ) { uri: Uri? ->
-                    scope.launch {
+                    externalScope.launch {
                         if (uri != null) {
                             val imageId = imageRepo.uploadImage(uri)
                             imageIds.add(imageId)
@@ -193,7 +194,7 @@ fun UpdateCampsiteScreen(
                     editor = true,
                     onDelete = { id ->
                         imageIds.remove(id)
-                        scope.launch {
+                        externalScope.launch {
                             imageRepo.deleteImage(id)
                         }
                     }
@@ -298,7 +299,8 @@ fun UpdateCampsiteScreen(
         // Submission
         Button(
             onClick = {
-                scope.launch {
+                Log.d("Campsite Update Submission", "Received click")
+                externalScope.launch {
                     campsiteRepo.addOrUpdateCampsite(
                         Campsite(
                             id = campsiteId,
@@ -314,10 +316,12 @@ fun UpdateCampsiteScreen(
                             location = location
                         )
                     )
+                    Log.d("Campsite Update Submission", "Campsite Uploaded")
                 }
                 navController.popBackStack()
             },
-            content = { Text("Submit") }
+            content = { Text("Submit") },
+            modifier = Modifier.testTag("submitCampsite")
         )
     }
 }
