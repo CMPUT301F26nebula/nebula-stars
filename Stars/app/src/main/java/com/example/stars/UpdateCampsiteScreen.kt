@@ -299,7 +299,6 @@ fun UpdateCampsiteScreen(
         // Submission
         Button(
             onClick = {
-                Log.d("Campsite Update Submission", "Received click")
                 externalScope.launch {
                     campsiteRepo.addOrUpdateCampsite(
                         Campsite(
