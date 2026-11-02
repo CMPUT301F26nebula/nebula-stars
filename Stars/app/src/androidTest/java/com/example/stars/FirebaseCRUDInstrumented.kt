@@ -42,7 +42,8 @@ class FirebaseCRUDInstrumented {
      */
     @Test
     fun addAndDeleteUser() {
-        runBlocking { userRepo.addOrUpdateUser(UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER))}
+        val userProfile = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER)
+        runBlocking { userRepo.addOrUpdateUser(userProfile)}
         var user = runBlocking { userRepo.getUser("test1") }
         assertNotNull(user)
         // Match all attributes
@@ -51,7 +52,7 @@ class FirebaseCRUDInstrumented {
         assertEquals("email@email.com", user?.email)
         assertEquals(UserPermission.OWNER, user?.permission)
         // Delete, search again, and check that it's gone
-        runBlocking { userRepo.deleteUser("test1") }
+        runBlocking { userRepo.deleteUser(userProfile) }
         user = runBlocking { userRepo.getUser("test1") }
         assertNull(user)
     }
@@ -88,7 +89,8 @@ class FirebaseCRUDInstrumented {
     fun addAndRemoveCampsite() {
         // Create a user to own the campsite
         // There is no check whether the user that owns the campsite is actually valid at this time, but do it anyway for realism
-        runBlocking { userRepo.addOrUpdateUser(UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER)) }
+        val user = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER)
+        runBlocking { userRepo.addOrUpdateUser(user) }
 
         // Add a partial campsite and give it a reservation
         runBlocking { campsiteRepo.addOrUpdateCampsite(Campsite(id = "test2", ownerId = "test1", reservations = listOf(Reservation(id = "test3", timeRange = EpochRange(1, 2))))) }
@@ -106,6 +108,7 @@ class FirebaseCRUDInstrumented {
         campsite = runBlocking { campsiteRepo.getCampsite("test2") }
         assertNull(campsite)
 
-        runBlocking { userRepo.deleteUser("test1") }
+        runBlocking { userRepo.deleteUser(user) }
     }
+
 }
