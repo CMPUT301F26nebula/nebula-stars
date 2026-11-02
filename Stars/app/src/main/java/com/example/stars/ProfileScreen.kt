@@ -127,7 +127,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomStart = 10.dp,
                     bottomEnd = 30.dp
                 ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused}),
+                modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
+                    .testTag("Name Field"),
                 enabled = !readonlyDetails
             )
 
@@ -173,7 +174,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomStart = 10.dp,
                     bottomEnd = 30.dp
                 ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused}),
+                modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
+                    .testTag("Email Field"),
                 enabled = !readonlyDetails
             )
 
@@ -218,7 +220,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomStart = 10.dp,
                     bottomEnd = 30.dp
                 ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused}),
+                modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
+                    .testTag("Phone Button"),
                 enabled = !readonlyDetails
             )
 
@@ -229,7 +232,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                 Row() {
                     Button(
                         onClick = { readonlyDetails = false },
-                        modifier = Modifier.testTag("editProfile").size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Edit Button"),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
@@ -249,7 +252,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Button"),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
                     ) { Text("Delete", fontSize = 20.sp) }
                 }
@@ -276,7 +279,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 0.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Confirm"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
                     )
                     { Text("Confirm", fontSize = 20.sp) }
@@ -290,7 +293,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Cancel"),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
                     ) {
                         Text("Cancel", fontSize = 20.sp)
@@ -341,7 +344,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 0.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Save Edits"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
 
                     ) {
@@ -358,7 +361,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Cancel Edits"),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
                     ) {
                         Text("Cancel", fontSize = 20.sp)
@@ -382,6 +385,8 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
     var newName by remember { mutableStateOf("") }
     var newEmail by remember { mutableStateOf("") }
     var newPhone by remember { mutableStateOf("") }
+
+    // used to hide the label
     var showNewNameLabel by remember { mutableStateOf(true) }
     var showNewEmailLabel by remember { mutableStateOf(true) }
     var showNewPhoneLabel by remember { mutableStateOf(true) }
@@ -453,6 +458,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomEnd = 30.dp
                     ),
                     modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
+                        .testTag("Name Field")
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -496,6 +502,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomEnd = 30.dp
                     ),
                     modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
+                        .testTag("Email Field")
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -538,6 +545,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomEnd = 30.dp
                     ),
                     modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
+                        .testTag("Phone Field")
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -591,7 +599,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 0.dp
                         ),
-                        modifier = Modifier.size(width =300.dp, height = 50.dp),
+                        modifier = Modifier.size(width =300.dp, height = 50.dp).testTag("Confirm Profile"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
                     ) {
                         Text("Confirm", fontSize = 30.sp)
