@@ -51,8 +51,7 @@ fun StarsApp() {
         composable("messages") { }
         composable("notifications") { }
         composable("settings") { }
-        composable("profile") { ProfileScreen(navController, currentUser, userRepository)}
-        composable("edit profile") { StarsBackground(Modifier,{ EditProfile(navController, currentUser, userRepository) }) }
+        composable("profile") { StarsBackground(Modifier,{ EditProfile(navController, currentUser, userRepository) })}
         composable("new profile") { StarsBackground(Modifier,{ MakeNewProfile(navController, currentUser, userRepository) }) }
     }
         }

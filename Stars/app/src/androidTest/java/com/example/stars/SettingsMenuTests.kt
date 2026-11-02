@@ -29,6 +29,5 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("settingsButton").performClick()
         composeTestRule.onNodeWithTag("editProfile").performClick()
 
-
     }
 }

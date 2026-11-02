@@ -35,7 +35,6 @@ suspend fun getUserID(navController: NavController, context: Context): UserProfi
     // show in log that this is a new device
     Log.d("User ID Check", "New Device")
 
-
     // create a new UserProfile and add it to the firebase repo
     val currentUser = UserProfile(id = deviceId)
     userRepository.addOrUpdateUser(currentUser)
