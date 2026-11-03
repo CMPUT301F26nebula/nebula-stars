@@ -76,6 +76,7 @@ fun UpdateLotteryScreen(
     var deadline by remember { mutableLongStateOf((-1.0).toLong()) }
     var numWinners by remember { mutableIntStateOf(0) }
     val entrantIDs = remember { mutableStateListOf<String>() }
+    var waitlistCapacity by remember { mutableIntStateOf(0) }
     val pendingWinnerIDs = remember { mutableStateListOf<String>() }
     val confirmedIDs = remember { mutableStateListOf<String>() }
 
@@ -90,6 +91,7 @@ fun UpdateLotteryScreen(
             deadline = oldLottery.deadline
             numWinners = oldLottery.numWinners
             entrantIDs.addAll(oldLottery.entrantIDs)
+            waitlistCapacity = oldLottery.waitlistCapacity
             pendingWinnerIDs.addAll(oldLottery.pendingWinnerIDs)
             confirmedIDs.addAll(oldLottery.confirmedIDs)
         }
@@ -147,6 +149,24 @@ fun UpdateLotteryScreen(
                 modifier = Modifier.fillMaxWidth().testTag("numWinnersInput"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
+            // Waitlist capacity (max number of entrants)
+            OutlinedTextField(
+                value = waitlistCapacity.toString(),
+                onValueChange = { newValue: String ->
+                    // Don't allow updating the capacity to fewer people than are currently entered
+                    if (newValue.toIntOrNull() != null) {
+                        if (newValue.toInt() < entrantIDs.size) {
+                            waitlistCapacity = entrantIDs.size
+                        }
+                        else {
+                            waitlistCapacity = newValue.toInt()
+                        }
+                    }
+                },
+                label = { Text("Max Number of Entrants") },
+                modifier = Modifier.fillMaxWidth().testTag("waitlistCapacityInput"),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
             // Deadline date
             // We use this date formatter for both deadline and availability period
             val formatter = SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
@@ -169,12 +189,6 @@ fun UpdateLotteryScreen(
                     Text(
                         text = "Select deadline date",
                         modifier = Modifier.padding(24.dp)
-                    )
-                },
-                headline = {
-                    Text(
-                        text = "Select lottery entry deadline date",
-                        modifier = Modifier.padding(12.dp)
                     )
                 },
                 showModeToggle = true, // Allows switching between calendar and text input
@@ -261,12 +275,6 @@ fun UpdateLotteryScreen(
                         modifier = Modifier.padding(24.dp)
                     )
                 },
-                headline = {
-                    Text(
-                        text = "Select start and end dates for reservations",
-                        modifier = Modifier.padding(12.dp)
-                    )
-                },
                 showModeToggle = true, // Allows switching between calendar and text input
                 modifier = Modifier
                     .fillMaxWidth()
@@ -296,6 +304,7 @@ fun UpdateLotteryScreen(
                                 deadline = deadline,
                                 numWinners = numWinners,
                                 entrantIDs = entrantIDs,
+                                waitlistCapacity = waitlistCapacity,
                                 pendingWinnerIDs = pendingWinnerIDs,
                                 confirmedIDs = confirmedIDs
                             )

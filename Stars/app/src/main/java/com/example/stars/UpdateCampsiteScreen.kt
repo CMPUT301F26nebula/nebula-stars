@@ -251,14 +251,8 @@ fun UpdateCampsiteScreen(
                     state = dateRangePickerState,
                     title = {
                         Text(
-                            text = "Select a date",
+                            text = "Select availability dates",
                             modifier = Modifier.padding(24.dp)
-                        )
-                    },
-                    headline = {
-                        Text(
-                            text = "Select start and end dates for availability",
-                            modifier = Modifier.padding(12.dp)
                         )
                     },
                     showModeToggle = true, // Allows switching between calendar and text input
