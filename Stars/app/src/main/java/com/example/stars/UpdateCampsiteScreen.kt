@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SelectableDates
@@ -58,7 +59,6 @@ import java.util.UUID
  * @param externalScope The scope needed to run the uploader asynchronously
  * @param campsiteId The ID of the campsite to update, or leave empty to make a new one
  */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateCampsiteScreen(
@@ -229,6 +229,7 @@ fun UpdateCampsiteScreen(
                 var newStart by remember { mutableLongStateOf(0.0.toLong()) }
                 var newEnd by remember { mutableLongStateOf(0.0.toLong()) }
                 val dateRangePickerState = rememberDateRangePickerState(
+                    initialDisplayMode = DisplayMode.Input,
                     selectableDates = object : SelectableDates {
                         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                             var selectable = true
