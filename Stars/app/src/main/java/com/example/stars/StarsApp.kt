@@ -27,6 +27,7 @@ fun StarsApp() {
     val campsiteRepository = remember { CampsiteRepository() }
     val userRepository = remember { UserRepository() }
     val imageRepository = remember { ImageRepository() }
+    val reservationRepository = remember { ReservationRepository() }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
@@ -47,7 +48,7 @@ fun StarsApp() {
             composable("home") { HomeScreen(navController, currentUser) }
             composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
             composable("waitlists") { }
-            composable("reservations") { }
+            composable("reservations") { ReservationCalendarScreen(navController, currentUser, reservationRepository) }
             composable("messages") { }
             composable("notifications") { }
             composable("settings") { }

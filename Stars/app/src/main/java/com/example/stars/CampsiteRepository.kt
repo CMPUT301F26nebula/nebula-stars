@@ -6,6 +6,7 @@ package com.example.stars
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.pipeline.Expression.Companion.field
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -56,14 +57,5 @@ class CampsiteRepository {
      */
     suspend fun deleteCampsite(campsiteId: String) {
         campsitesRef.document(campsiteId).delete().await()
-    }
-
-    /**
-     * Queries the list of campsites that have reservations by [userId]
-     *
-     * @return list of campsites the user has reservations with
-     */
-    suspend fun getUserReservations(userId: String): List<Campsite> {
-        return campsitesRef.whereArrayContains("reservations", userId).get().await().toObjects(Campsite::class.java)
     }
 }

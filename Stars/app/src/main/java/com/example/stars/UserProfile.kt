@@ -28,6 +28,6 @@ data class UserProfile(
     var name: String = "",
     var email: String = "",
     var phone: String = "",
-    var permission: UserPermission = UserPermission.ENTRANT
-
+    var permission: UserPermission = UserPermission.ENTRANT,
+    val reservationIds: List<String> = emptyList()
 )

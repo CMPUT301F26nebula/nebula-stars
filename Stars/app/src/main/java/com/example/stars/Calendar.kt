@@ -3,8 +3,6 @@ package com.example.stars
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
 
-// TODO i have no idea if any of this works yet lol, ill test it tomorrow
-
 /**
  * Represents a single day in the calendar as well as any reservations that are on that day
  *
@@ -18,7 +16,11 @@ class CalendarDay(
     val events: List<Reservation>,
     val isCurrent: Boolean = false,
     val isFiller: Boolean = false
-)
+) {
+    fun dayNumber(): Int {
+        return date.get(Calendar.DAY_OF_MONTH)
+    }
+}
 
 /**
  * Reservation dates range stored as Calendar objects instead of milliseconds
@@ -42,6 +44,7 @@ class CalendarReservation(val reservation: Reservation) {
     }
 }
 
+// TODO maybe make this return a month manager object or something to force recompose
 /**
  * Manages the current month data for a calendar widget
  *
@@ -50,7 +53,7 @@ class CalendarReservation(val reservation: Reservation) {
 class CalendarManager(val reservations: List<Reservation>) {
     constructor(): this(listOf())
     // this should probably query the reservation list by month instead of all at once
-    private val reservedDates: List<CalendarReservation> = buildList {
+    private var reservedDates: List<CalendarReservation> = buildList {
         for (reservation in reservations) {
             add(CalendarReservation(reservation))
         }
@@ -61,14 +64,49 @@ class CalendarManager(val reservations: List<Reservation>) {
      * Changes the current display month to the next month, wrapping the year if needed
      */
     fun nextMonth() {
-        current.roll(Calendar.MONTH, 1)
+        current.add(Calendar.MONTH, 1)
     }
 
     /**
      * Changes the current display month to the previous month, wrapping the year if needed
      */
     fun lastMonth() {
-        current.roll(Calendar.MONTH, -1)
+        current.add(Calendar.MONTH, -1)
+    }
+
+    /**
+     * Returns the name of the currently selected month
+     */
+    fun currentMonthName(): String {
+        // if theres a builtin calendar method for this then i cannot find it
+        return when (current.get(Calendar.MONTH)) {
+            0 -> "January"
+            1 -> "February"
+            2 -> "March"
+            3 -> "April"
+            4 -> "May"
+            5 -> "June"
+            6 -> "July"
+            7 -> "August"
+            8 -> "September"
+            9 -> "October"
+            10 -> "November"
+            11 -> "December"
+            else -> ""
+        }
+    }
+
+    /**
+     * Updates the list of user reservations with a new list
+     *
+     * @param reservations new list of user reservations
+     */
+    fun updateReservations(reservations: List<Reservation>) {
+        reservedDates = buildList {
+            for (reservation in reservations) {
+                add(CalendarReservation(reservation))
+            }
+        }
     }
 
     /**
@@ -91,7 +129,7 @@ class CalendarManager(val reservations: List<Reservation>) {
         // days from the last month to make it all rectangular
         val paddingDays = displayDay.get(Calendar.DAY_OF_WEEK) - 1
         if (paddingDays > 0) {
-            displayDay.roll(Calendar.DATE, -paddingDays)
+            displayDay.add(Calendar.DATE, -paddingDays)
         }
         return buildList {
             for (i in 1..35) {
@@ -111,7 +149,7 @@ class CalendarManager(val reservations: List<Reservation>) {
                     )
                 )
                 // go to the next day
-                displayDay.roll(Calendar.DATE, 1)
+                displayDay.add(Calendar.DATE, 1)
             }
         }
     }
