@@ -25,7 +25,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    ){
         // Title
         Text(
             text = "Welcome ${currentUser.name}",
