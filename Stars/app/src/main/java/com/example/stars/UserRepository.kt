@@ -33,21 +33,21 @@ class UserRepository {
     }
 
     /**
-     * Deletes the user [currentUser] with ID [currentUser.id] from the list of users
+     * Deletes the user [user] with ID [user.id] from the list of users
      * Also removes any campsites, reservations, and waiting list positions held by that user
-     * Also edit [currentUser] to be effectively deleted
+     * Also edit [user] to be effectively deleted
      */
-    suspend fun deleteUser(currentUser: UserProfile) {
+    suspend fun deleteUser(user: UserProfile) {
         // TODO: delete all reservations and waiting list positions associated with the user
         val campsiteRepository = CampsiteRepository()
-        for (campsite in campsiteRepository.getUserCampsites(currentUser.id)) {
+        for (campsite in campsiteRepository.getUserCampsites(user.id)) {
             campsiteRepository.deleteCampsite(campsite.id)
         }
 
-        usersRef.document(currentUser.id).delete().await()
-        currentUser.name = ""
-        currentUser.email = ""
-        currentUser.phone = ""
-        currentUser.permission = UserPermission.ENTRANT
+        usersRef.document(user.id).delete().await()
+        user.name = ""
+        user.email = ""
+        user.phone = ""
+        user.permission = UserPermission.ENTRANT
     }
 }

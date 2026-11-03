@@ -64,5 +64,8 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.6.1")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.1")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.10.2")
     implementation(libs.compose.material.icons)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.0")
 }

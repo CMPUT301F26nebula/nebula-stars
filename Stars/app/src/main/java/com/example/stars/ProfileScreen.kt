@@ -1,27 +1,20 @@
 package com.example.stars
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,20 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph
 import androidx.navigation.navOptions
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 /*
@@ -129,7 +117,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     focusedContainerColor =  Color(0xFF4B0082),
                     unfocusedTextColor = Color(0xFFFFFFFF),
                     focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF)
+                    unfocusedLabelColor = Color(0xFFFFFFFF),
+                    disabledTextColor = Color(0xFFFFFFFF),
+                    disabledContainerColor = Color(0xFF4B0082)
                 ),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
@@ -138,6 +128,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomEnd = 30.dp
                 ),
                 modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
+                    .testTag("Name Field"),
+                enabled = !readonlyDetails
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
@@ -170,7 +162,11 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     focusedContainerColor =  Color(0xFF4B0082),
                     unfocusedTextColor = Color(0xFFFFFFFF),
                     focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF)
+                    unfocusedLabelColor = Color(0xFFFFFFFF),
+                    errorContainerColor = Color(0xFF4B0082),
+                    errorTextColor = Color(0xFFFFFFFF),
+                    disabledTextColor = Color(0xFFFFFFFF),
+                    disabledContainerColor = Color(0xFF4B0082)
                 ),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
@@ -179,6 +175,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomEnd = 30.dp
                 ),
                 modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
+                    .testTag("Email Field"),
+                enabled = !readonlyDetails
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
@@ -212,7 +210,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     focusedContainerColor =  Color(0xFF4B0082),
                     unfocusedTextColor = Color(0xFFFFFFFF),
                     focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF)
+                    unfocusedLabelColor = Color(0xFFFFFFFF),
+                    disabledTextColor = Color(0xFFFFFFFF),
+                    disabledContainerColor = Color(0xFF4B0082)
                 ),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
@@ -221,6 +221,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomEnd = 30.dp
                 ),
                 modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
+                    .testTag("Phone Field"),
+                enabled = !readonlyDetails
             )
 
             Spacer(modifier = Modifier.padding(10.dp))
@@ -230,7 +232,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                 Row() {
                     Button(
                         onClick = { readonlyDetails = false },
-                        modifier = Modifier.testTag("editProfile").size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Edit Button"),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
@@ -250,7 +252,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Button"),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
                     ) { Text("Delete", fontSize = 20.sp) }
                 }
@@ -277,7 +279,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 0.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Confirm"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
                     )
                     { Text("Confirm", fontSize = 20.sp) }
@@ -291,7 +293,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Cancel"),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
                     ) {
                         Text("Cancel", fontSize = 20.sp)
@@ -342,7 +344,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 0.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Save Edits"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
 
                     ) {
@@ -359,7 +361,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Cancel Edits"),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
                     ) {
                         Text("Cancel", fontSize = 20.sp)
@@ -383,6 +385,8 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
     var newName by remember { mutableStateOf("") }
     var newEmail by remember { mutableStateOf("") }
     var newPhone by remember { mutableStateOf("") }
+
+    // used to hide the label
     var showNewNameLabel by remember { mutableStateOf(true) }
     var showNewEmailLabel by remember { mutableStateOf(true) }
     var showNewPhoneLabel by remember { mutableStateOf(true) }
@@ -454,6 +458,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomEnd = 30.dp
                     ),
                     modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
+                        .testTag("Name Field")
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -486,7 +491,9 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         focusedContainerColor =  Color(0xFF4B0082),
                         unfocusedTextColor = Color(0xFFFFFFFF),
                         focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF)
+                        unfocusedLabelColor = Color(0xFFFFFFFF),
+                        errorContainerColor = Color(0xFF4B0082),
+                        errorTextColor = Color(0xFFFFFFFF),
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -495,6 +502,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomEnd = 30.dp
                     ),
                     modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
+                        .testTag("Email Field")
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -537,6 +545,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomEnd = 30.dp
                     ),
                     modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
+                        .testTag("Phone Field")
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -590,7 +599,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 0.dp
                         ),
-                        modifier = Modifier.size(width =300.dp, height = 50.dp),
+                        modifier = Modifier.size(width =300.dp, height = 50.dp).testTag("Confirm Profile"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
                     ) {
                         Text("Confirm", fontSize = 30.sp)
