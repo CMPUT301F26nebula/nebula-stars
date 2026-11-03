@@ -221,7 +221,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     bottomEnd = 30.dp
                 ),
                 modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
-                    .testTag("Phone Button"),
+                    .testTag("Phone Field"),
                 enabled = !readonlyDetails
             )
 
