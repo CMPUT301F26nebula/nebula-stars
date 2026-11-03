@@ -186,7 +186,12 @@ class SettingsMenuTests {
         assertEquals("t@t.ca", fireUser?.email)
         assertEquals("9999999999", fireUser?.phone)
 
+        val deleted = runBlocking {
+            userRepo.deleteUser(user)
+            userRepo.getUser("Unit Test")
+        }
 
+        assertNull(deleted)
     }
 
     /*
