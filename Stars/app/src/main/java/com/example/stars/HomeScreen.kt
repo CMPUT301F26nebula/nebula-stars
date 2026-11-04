@@ -59,6 +59,16 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                 Text("Add a Campsite")
             }
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate("upload lottery")
+                },
+                modifier = Modifier.testTag("uploadLotteryButton") // for testing
+            ) {
+                Text("Create a Lottery")
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 

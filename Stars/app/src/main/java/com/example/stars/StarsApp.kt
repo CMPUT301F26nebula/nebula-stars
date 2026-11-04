@@ -28,6 +28,7 @@ fun StarsApp() {
     val campsiteRepository = remember { CampsiteRepository() }
     val userRepository = remember { UserRepository() }
     val imageRepository = remember { ImageRepository() }
+    val lotteryRepository = remember { LotteryRepository() }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
@@ -63,7 +64,16 @@ fun StarsApp() {
                         type = NavType.StringType
                     }
                 )
-            ) { backStackEntry -> UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository,scope,backStackEntry.arguments?.getString("userId").orEmpty()) }
+            ) { backStackEntry -> UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository,scope,backStackEntry.arguments?.getString("campsiteId").orEmpty()) }
+            composable("upload lottery") { UpdateLotteryScreen(navController, currentUser, campsiteRepository, lotteryRepository, scope) }
+            composable(
+                route = "edit lottery {lotteryId}",
+                arguments = listOf(
+                    navArgument("lotteryId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry -> UpdateLotteryScreen(navController, currentUser, campsiteRepository, lotteryRepository,scope,backStackEntry.arguments?.getString("lotteryId").orEmpty()) }
         }
     }
 }
