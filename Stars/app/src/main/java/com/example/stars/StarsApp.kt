@@ -56,7 +56,7 @@ fun StarsApp() {
             composable("profile") { StarsBackground(Modifier,{ EditProfile(navController, currentUser, userRepository) })}
             composable("new profile") { StarsBackground(Modifier,{ MakeNewProfile(navController, currentUser, userRepository) } ) }
             composable("upload campsite") { UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository, scope) }
-            composable ( "Users List" ){ AdminViewUserProfiles(navController, userRepository) }
+            composable ( "Users List" ){ AdminViewUserProfiles(navController, userRepository, campsiteRepository) }
             composable(
                 route = "edit campsite {campsiteId}",
                 arguments = listOf(

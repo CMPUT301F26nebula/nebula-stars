@@ -30,17 +30,28 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
+/**
+ * Screen you can get to from the home page, shows all your settings options as well as register as
+ * owner and become admin.
+ * TODO: have a notification on/off checkbox when notifications are implemented.
+ * TODO: make it so that admins are notified on admin request to approve new admins
+ * TODO: any other settings we need
+ */
 @Composable
 fun SettingsScreen(navController: NavController, currentUser: UserProfile, userRepository: UserRepository){
 
     val scope = rememberCoroutineScope()
 
+    // expose sign up buttons
     var showOwnerSignUp by remember { mutableStateOf(false) }
     var showAdminSignUp by remember { mutableStateOf(false) }
+
+    // expose removal buttons
     var showAdminRemove by remember { mutableStateOf(false) }
     var showOwnerRemove by remember { mutableStateOf(false) }
 
 
+    // back button
     Button(onClick = { navController.popBackStack() },
         modifier = Modifier.systemBarsPadding(),
         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
@@ -53,11 +64,12 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
         Text("<-")
     }
 
-
+    // used for centering
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
 
+        // white box in middle which holds all buttons
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.background(
@@ -72,9 +84,10 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
         )
         {
 
-
+            // button holding column
             Column() {
 
+                // if has not clicked anything, show first become admin button
                 if (currentUser.permission != UserPermission.ADMIN && !showAdminSignUp) {
                     Button(
                         onClick = {
@@ -95,6 +108,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     ) { Text("Request Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
                 }
 
+                // confirm become and admin
                 // very much a stop gap measures for now. Probably will notify admins the request later
                 if (showAdminSignUp) {
                     Button(
@@ -119,6 +133,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     }
                 }
 
+                // if you are an admin, show the remove admin status button
                 if (currentUser.permission == UserPermission.ADMIN && !showAdminRemove) {
                     Button(
                         onClick = { showAdminRemove = true },
@@ -138,6 +153,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     }
                 }
 
+                // confirm remove admin status
                 if (showAdminRemove) {
                     ConfirmCancelButtons(
                         {
@@ -151,6 +167,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     )
                 }
 
+                // if you are not an owner or admin, sign up to be an owner
                 if (currentUser.permission < UserPermission.OWNER && !showOwnerSignUp) {
                     Spacer(modifier = Modifier.size(10.dp))
                     Button(
@@ -173,6 +190,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     }
                 }
 
+                // confirm becoming owner
                 if (showOwnerSignUp) {
                     Spacer(modifier = Modifier.size(10.dp))
                     Button(
@@ -185,7 +203,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
 
                         },
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
-                            .testTag("Become Owner"),
+                            .testTag("Confirm Become Owner"),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
@@ -198,6 +216,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     }
                 }
 
+                // if you are an owner, remove owner status
                 if (currentUser.permission == UserPermission.OWNER && !showOwnerRemove) {
                     Spacer(modifier = Modifier.size(10.dp))
                     Button(
@@ -212,7 +231,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomEnd = 15.dp
                         ),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
-                        modifier = Modifier.size(width = 300.dp, height = 50.dp)
+                        modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Remove Owner")
                     ) {
                         Text(
                             "Remove Owner Status",
@@ -223,7 +242,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
 
                 }
 
-
+                // confirm remove owner status
                 if (showOwnerRemove) {
                     Spacer(modifier = Modifier.size(10.dp))
                     ConfirmCancelButtons(
@@ -243,10 +262,15 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
 
 }
 
+/**
+ * buttons for confirming status changes
+ */
 @Composable
 fun ConfirmCancelButtons(onConfirm: () -> Unit, onCancel: () -> Unit){
 
     Row (verticalAlignment = Alignment.Bottom) {
+
+        // confirm something button
         Button(onConfirm,
 
             modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Confirm").align(alignment = Alignment.CenterVertically),
@@ -262,6 +286,7 @@ fun ConfirmCancelButtons(onConfirm: () -> Unit, onCancel: () -> Unit){
         }
 
 
+        // cancel something button
         Button(onCancel,
             modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Cancel").align(alignment = Alignment.CenterVertically),
             shape = RoundedCornerShape(
