@@ -17,6 +17,15 @@ class LotteryRepository {
     }
 
     /**
+     * Gets a list of all lotteries run by [userId]
+     *
+     * @return list of all lotteries run by the user, which will be empty if not applicable
+     */
+    suspend fun getUserLotteries(userId: String): List<Lottery> {
+        return lotteriesRef.whereEqualTo("ownerID", userId).get().await().toObjects(Lottery::class.java)
+    }
+
+    /**
      * Adds or updates a [lottery] in the lotteries list
      * If lottery.id matches an existing lottery, updates it, otherwise creates a new entry
      */
