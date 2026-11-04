@@ -22,4 +22,10 @@ data class Reservation (
     val status: ReservationStatus = ReservationStatus.INVITED,
     val entrantId: String = "",
     val campsiteId: String = ""
-)
+) {
+    companion object UniqueId {
+        fun uniqueIdFrom(entrantId: String, campsiteId: String, timeRange: EpochRange): String {
+            return "${entrantId}_${campsiteId}_${timeRange.start}_${timeRange.end}"
+        }
+    }
+}

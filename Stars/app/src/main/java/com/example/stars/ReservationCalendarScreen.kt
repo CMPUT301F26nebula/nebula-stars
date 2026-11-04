@@ -1,5 +1,7 @@
 package com.example.stars
 
+import android.R
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +43,8 @@ import androidx.compose.ui.unit.TextUnitType.Companion.Sp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 // TODO add tap/swipe behavior
 @Composable
@@ -48,7 +52,10 @@ fun ReservationCalendarDay(day: CalendarDay, onClick: () -> Unit = {}) {
     val defaults = ButtonDefaults.buttonColors()
     var fg = defaults.containerColor
     var bg = Color.Transparent
-    if (day.isCurrent) {
+    if (day.events.isNotEmpty()) {
+        fg = defaults.contentColor
+        bg = Color.Magenta
+    } else if (day.isCurrent) {
         fg = defaults.contentColor
         bg = defaults.containerColor
     } else if (day.isFiller) {
@@ -75,6 +82,7 @@ fun ReservationCalendarDay(day: CalendarDay, onClick: () -> Unit = {}) {
 @Composable
 fun ReservationCalendar(reservations: List<Reservation>) {
     val calendarManager by remember { mutableStateOf(CalendarManager(reservations)) }
+    calendarManager.updateReservations(reservations)
     var calendarDays by remember { mutableStateOf(calendarManager.getMonthDisplayDays().iterator()) }
     var currentMonth by remember { mutableStateOf(calendarManager.currentMonthName()) }
     var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
@@ -181,6 +189,25 @@ fun ReservationCalendarScreen(
         userReservations = reservationRepository.getUserReservations(currentUser.id)
     }
 
+    // TODO remove at some point
+    /*
+    var debugDialogState by remember { mutableStateOf(false) }
+    if (debugDialogState) {
+        DebugReservationCreator(
+            onClose = {
+                debugDialogState = false
+            },
+            onConfirm = { epochRange ->
+                reservationRepository.addUserReservation(
+                    entrantId = currentUser.id,
+                    campsiteId = "test1",
+                    epochRange = epochRange
+                )
+            }
+        )
+    }
+     */
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -210,11 +237,23 @@ fun ReservationCalendarScreen(
                 fontSize = 32.sp
             )
 
+            /*
+            Button(
+                onClick = {
+                    debugDialogState = true
+                }
+            ) {
+                Text("debug")
+            }
+             */
+
             Spacer(Modifier.width(12.dp))
         }
         Spacer(Modifier.weight(1.0f))
 
-        ReservationCalendar(userReservations)
+        if (userReservations.isNotEmpty()) {
+            ReservationCalendar(userReservations)
+        }
 
         Spacer(Modifier.weight(1.0f))
     }

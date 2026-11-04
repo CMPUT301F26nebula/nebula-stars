@@ -2,9 +2,11 @@ package com.example.stars
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class ReservationRepository {
+class ReservationRepository(private val externalScope: CoroutineScope) {
     private val db = Firebase.firestore
     private val reservationsRef = db.collection("reservations")
 
@@ -18,5 +20,36 @@ class ReservationRepository {
             .whereEqualTo("entrantId", userId)
             .get().await()
             .toObjects(Reservation::class.java)
+    }
+
+    /**
+     * Generates a (hopefully) unique ID for a new reservation and adds it to the database
+     *
+     * @param entrantId unique ID of the entrant making this reservation
+     * @param campsiteId unique ID of the campsite being reserved
+     * @epochRange start and end of the reservation as an EpochRange
+     * @status current status of the reservation
+     */
+    fun addUserReservation(
+        entrantId: String,
+        campsiteId: String,
+        epochRange: EpochRange,
+        status: ReservationStatus = ReservationStatus.INVITED
+    ) {
+        val id = Reservation.uniqueIdFrom(entrantId, campsiteId, epochRange)
+        externalScope.launch {
+            reservationsRef
+                .document(id)
+                .set(
+                    Reservation(
+                        id = id,
+                        timeRange = epochRange,
+                        status = status,
+                        entrantId = entrantId,
+                        campsiteId = campsiteId
+                    )
+                )
+                .await()
+        }
     }
 }

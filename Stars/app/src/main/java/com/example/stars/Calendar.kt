@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
+import android.util.Log
 
 /**
  * Represents a single day in the calendar as well as any reservations that are on that day
@@ -40,7 +41,11 @@ class CalendarReservation(val reservation: Reservation) {
      * Returns true if the given day is in the reservation range
      */
     fun isDayInRange(day: GregorianCalendar): Boolean {
-        return day in start..end
+        // want this to be comparing by day not be millisecond
+        return start.get(Calendar.DAY_OF_YEAR) <= day.get(Calendar.DAY_OF_YEAR) &&
+                day.get(Calendar.DAY_OF_YEAR) <= end.get(Calendar.DAY_OF_YEAR) &&
+                start.get(Calendar.YEAR) <= day.get(Calendar.YEAR) &&
+                day.get(Calendar.YEAR) <= end.get(Calendar.YEAR)
     }
 }
 
@@ -51,13 +56,14 @@ class CalendarReservation(val reservation: Reservation) {
  * @param reservations list of user reservations
  */
 class CalendarManager(val reservations: List<Reservation>) {
-    constructor(): this(listOf())
+    constructor(): this(emptyList())
     // this should probably query the reservation list by month instead of all at once
     private var reservedDates: List<CalendarReservation> = buildList {
         for (reservation in reservations) {
             add(CalendarReservation(reservation))
         }
     }
+
     private val current: Calendar = Calendar.getInstance()
 
     /**
@@ -142,13 +148,14 @@ class CalendarManager(val reservations: List<Reservation>) {
         }
         return buildList {
             for (i in 1..35) {
+                val dateCopy = displayDay.clone() as GregorianCalendar
                 add(
                     CalendarDay(
                         // dont want this to change when we rollover for the next day so copy it
-                        date = displayDay.clone() as GregorianCalendar,
+                        date = dateCopy,
                         events = buildList {
                             for (r in reservedDates) {
-                                if (r.isDayInRange(displayDay)) {
+                                if (r.isDayInRange(dateCopy)) {
                                     add(r.reservation)
                                 }
                             }

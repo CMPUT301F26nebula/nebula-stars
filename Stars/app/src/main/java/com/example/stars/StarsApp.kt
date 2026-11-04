@@ -27,7 +27,7 @@ fun StarsApp() {
     val campsiteRepository = remember { CampsiteRepository() }
     val userRepository = remember { UserRepository() }
     val imageRepository = remember { ImageRepository() }
-    val reservationRepository = remember { ReservationRepository() }
+    val reservationRepository = remember { ReservationRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
