@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -51,10 +52,11 @@ fun StarsApp() {
             composable("reservations") { }
             composable("messages") { }
             composable("notifications") { }
-            composable("settings") { }
+            composable("settings") { StarsBackground(Modifier, {SettingsScreen(navController, currentUser, userRepository)})}
             composable("profile") { StarsBackground(Modifier,{ EditProfile(navController, currentUser, userRepository) })}
             composable("new profile") { StarsBackground(Modifier,{ MakeNewProfile(navController, currentUser, userRepository) } ) }
             composable("upload campsite") { UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository, scope) }
+            composable ( "Users List" ){ AdminViewUserProfiles(navController, userRepository, campsiteRepository) }
             composable(
                 route = "edit campsite {campsiteId}",
                 arguments = listOf(

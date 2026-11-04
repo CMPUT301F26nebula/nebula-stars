@@ -53,6 +53,7 @@ class CampsiteRepository {
 
     /**
      * Deletes the campsite with ID [campsiteId] from the list of campsites
+     * TODO: Notify all people affected (reservations, entrants and the owner) that the campsite has been removed
      */
     suspend fun deleteCampsite(campsiteId: String) {
         campsitesRef.document(campsiteId).delete().await()

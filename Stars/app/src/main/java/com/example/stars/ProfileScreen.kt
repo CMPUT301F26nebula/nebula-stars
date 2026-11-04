@@ -1,12 +1,15 @@
 package com.example.stars
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -34,11 +37,11 @@ import androidx.navigation.navOptions
 import kotlinx.coroutines.launch
 
 
-/*
-first shows edit and delete buttons, then if edit press allows users to change name, email, phone
-and if delete press confirmation before sending you to make new profile
-BUG: if you are offline and try to update something it will crash
-    probably because addOrUpdateUser is runBlocking
+/**
+ * first shows edit and delete buttons, then if edit press allows users to change name, email, phone
+ * and if delete press confirmation before sending you to make new profile
+ * BUG: if you are offline and try to update something it will crash
+ * probably because addOrUpdateUser is runBlocking
  */
 @Composable
 fun EditProfile(navController: NavController, currentUser: UserProfile, userRepository: UserRepository){
@@ -88,183 +91,231 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
         showNewPhoneLabel = true
     }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.background(Color(0xFFFFFFFF),
-            shape = RoundedCornerShape(
-                topStart = 10.dp,
-                topEnd = 30.dp,
-                bottomStart = 10.dp,
-                bottomEnd = 10.dp)).padding(10.dp)
+    Button(onClick = { navController.popBackStack() },
+        modifier = Modifier.systemBarsPadding(),
+        colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+        shape = RoundedCornerShape(
+            topStart = 5.dp,
+            topEnd = 5.dp,
+            bottomStart = 5.dp,
+            bottomEnd = 5.dp
+        ),) {
+        Text("<-")
+    }
 
 
-    ) {
-
-        Column(modifier = Modifier) {
-
-
-            // text field to change name
-            Text("NAME", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4B0082))
-            OutlinedTextField(
-                value = newName,
-                onValueChange = { newName = it },
-                label = { if (showNewNameLabel){
-                    Text("(Required)")
-                }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = Color(0xFF4B0082),
-                    focusedContainerColor =  Color(0xFF4B0082),
-                    unfocusedTextColor = Color(0xFFFFFFFF),
-                    focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF),
-                    disabledTextColor = Color(0xFFFFFFFF),
-                    disabledContainerColor = Color(0xFF4B0082)
-                ),
+    Column(modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.background(
+                Color(0xFFFFFFFF),
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
-                    topEnd = 10.dp,
+                    topEnd = 30.dp,
                     bottomStart = 10.dp,
-                    bottomEnd = 30.dp
-                ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
-                    .testTag("Name Field"),
-                enabled = !readonlyDetails
-            )
-
-            Spacer(modifier = Modifier.padding(10.dp))
+                    bottomEnd = 10.dp
+                )
+            ).padding(10.dp)
 
 
-            /*
-    taken from https://developer.android.com/develop/ui/compose/quick-guides/content/validate-input
-    Author N/A, Last updated 2026-10-28 UTC
-     */
-            // Text field to change email
-            Text("EMAIL", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4B0082))
-            OutlinedTextField(
-                value = newEmail,
-                onValueChange = { newEmail = it },
-                label = { if (showNewEmailLabel){
-                    Text("(Required)")
-                }
-                },
-                isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail)
-                    .matches() && newEmail.isNotEmpty(),
-                supportingText = {
-                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail)
-                            .matches() && newEmail.isNotEmpty()
-                    ) {
-                        Text("Incorrect email format.")
-                    }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = Color(0xFF4B0082),
-                    focusedContainerColor =  Color(0xFF4B0082),
-                    unfocusedTextColor = Color(0xFFFFFFFF),
-                    focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF),
-                    errorContainerColor = Color(0xFF4B0082),
-                    errorTextColor = Color(0xFFFFFFFF),
-                    disabledTextColor = Color(0xFFFFFFFF),
-                    disabledContainerColor = Color(0xFF4B0082)
-                ),
-                shape = RoundedCornerShape(
-                    topStart = 10.dp,
-                    topEnd = 10.dp,
-                    bottomStart = 10.dp,
-                    bottomEnd = 30.dp
-                ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
-                    .testTag("Email Field"),
-                enabled = !readonlyDetails
-            )
+        ) {
 
-            Spacer(modifier = Modifier.padding(10.dp))
+            Column(modifier = Modifier) {
 
-            /*
+
+                // text field to change name
+                Text(
+                    "NAME",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B0082)
+                )
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    label = {
+                        if (showNewNameLabel) {
+                            Text("(Required)")
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(0xFF4B0082),
+                        focusedContainerColor = Color(0xFF4B0082),
+                        unfocusedTextColor = Color(0xFFFFFFFF),
+                        focusedTextColor = Color(0xFFFFFFFF),
+                        unfocusedLabelColor = Color(0xFFFFFFFF),
+                        disabledTextColor = Color(0xFFFFFFFF),
+                        disabledContainerColor = Color(0xFF4B0082)
+                    ),
+                    shape = RoundedCornerShape(
+                        topStart = 10.dp,
+                        topEnd = 10.dp,
+                        bottomStart = 10.dp,
+                        bottomEnd = 30.dp
+                    ),
+                    modifier = Modifier.onFocusChanged(onFocusChanged = {
+                        NewNameLabelFocused = !NewNameLabelFocused
+                    })
+                        .testTag("Name Field"),
+                    enabled = !readonlyDetails
+                )
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+
+                /*
+                taken from https://developer.android.com/develop/ui/compose/quick-guides/content/validate-input
+                Author N/A, Last updated 2026-10-28 UTC
+                 */
+                // Text field to change email
+                Text(
+                    "EMAIL",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B0082)
+                )
+                OutlinedTextField(
+                    value = newEmail,
+                    onValueChange = { newEmail = it },
+                    label = {
+                        if (showNewEmailLabel) {
+                            Text("(Required)")
+                        }
+                    },
+                    isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail)
+                        .matches() && newEmail.isNotEmpty(),
+                    supportingText = {
+                        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail)
+                                .matches() && newEmail.isNotEmpty()
+                        ) {
+                            Text("Incorrect email format.")
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(0xFF4B0082),
+                        focusedContainerColor = Color(0xFF4B0082),
+                        unfocusedTextColor = Color(0xFFFFFFFF),
+                        focusedTextColor = Color(0xFFFFFFFF),
+                        unfocusedLabelColor = Color(0xFFFFFFFF),
+                        errorContainerColor = Color(0xFF4B0082),
+                        errorTextColor = Color(0xFFFFFFFF),
+                        disabledTextColor = Color(0xFFFFFFFF),
+                        disabledContainerColor = Color(0xFF4B0082)
+                    ),
+                    shape = RoundedCornerShape(
+                        topStart = 10.dp,
+                        topEnd = 10.dp,
+                        bottomStart = 10.dp,
+                        bottomEnd = 30.dp
+                    ),
+                    modifier = Modifier.onFocusChanged(onFocusChanged = {
+                        NewEmailLabelFocused = !NewEmailLabelFocused
+                    })
+                        .testTag("Email Field"),
+                    enabled = !readonlyDetails
+                )
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+                /*
     taken from https://developer.android.com/develop/ui/compose/quick-guides/content/auto-format-phone-number
     Author N/A, Last updated 2026-10-28 UTC
      */
-            // Text field to change phone number
-            Text("PHONE", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4B0082))
-            val numericRegex = Regex("[^0-9]")
-            OutlinedTextField(
-                value = newPhone,
-                onValueChange = {
-                    // Remove non-numeric characters.
-                    val stripped = numericRegex.replace(it, "")
-                    newPhone = if (stripped.length >= 10) {
-                        stripped.substring(0..9)
-                    } else {
-                        stripped
+                // Text field to change phone number
+                Text(
+                    "PHONE",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B0082)
+                )
+                val numericRegex = Regex("[^0-9]")
+                OutlinedTextField(
+                    value = newPhone,
+                    onValueChange = {
+                        // Remove non-numeric characters.
+                        val stripped = numericRegex.replace(it, "")
+                        newPhone = if (stripped.length >= 10) {
+                            stripped.substring(0..9)
+                        } else {
+                            stripped
+                        }
+                    },
+                    visualTransformation = NanpVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = {
+                        if (showNewPhoneLabel) {
+                            Text("(Optional)")
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(0xFF4B0082),
+                        focusedContainerColor = Color(0xFF4B0082),
+                        unfocusedTextColor = Color(0xFFFFFFFF),
+                        focusedTextColor = Color(0xFFFFFFFF),
+                        unfocusedLabelColor = Color(0xFFFFFFFF),
+                        disabledTextColor = Color(0xFFFFFFFF),
+                        disabledContainerColor = Color(0xFF4B0082),
+                        disabledLabelColor = Color(0xFFFFFFFF)
+
+                    ),
+                    shape = RoundedCornerShape(
+                        topStart = 10.dp,
+                        topEnd = 10.dp,
+                        bottomStart = 10.dp,
+                        bottomEnd = 30.dp
+                    ),
+                    modifier = Modifier.onFocusChanged(onFocusChanged = {
+                        NewPhoneLabelFocused = !NewPhoneLabelFocused
+                    })
+                        .testTag("Phone Field"),
+                    enabled = !readonlyDetails
+                )
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
+
+                if (readonlyDetails && !confirm) {
+                    Row() {
+                        Button(
+                            onClick = { readonlyDetails = false },
+                            modifier = Modifier.size(width = 150.dp, height = 50.dp)
+                                .testTag("Edit Button"),
+                            shape = RoundedCornerShape(
+                                topStart = 5.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 5.dp,
+                                bottomEnd = 0.dp
+                            ),
+                            colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+                        ) {
+                            Text("Edit", fontSize = 20.sp)
+                        }
+
+                        Button(
+                            onClick = { confirm = true },
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 5.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 15.dp
+                            ),
+                            modifier = Modifier.size(width = 150.dp, height = 50.dp)
+                                .testTag("Delete Button"),
+                            colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
+                        ) { Text("Delete", fontSize = 20.sp) }
                     }
-                },
-                visualTransformation = NanpVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                label = { if (showNewPhoneLabel){
-                    Text("(Optional)")
                 }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = Color(0xFF4B0082),
-                    focusedContainerColor =  Color(0xFF4B0082),
-                    unfocusedTextColor = Color(0xFFFFFFFF),
-                    focusedTextColor = Color(0xFFFFFFFF),
-                    unfocusedLabelColor = Color(0xFFFFFFFF),
-                    disabledTextColor = Color(0xFFFFFFFF),
-                    disabledContainerColor = Color(0xFF4B0082)
-                ),
-                shape = RoundedCornerShape(
-                    topStart = 10.dp,
-                    topEnd = 10.dp,
-                    bottomStart = 10.dp,
-                    bottomEnd = 30.dp
-                ),
-                modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
-                    .testTag("Phone Field"),
-                enabled = !readonlyDetails
-            )
 
-            Spacer(modifier = Modifier.padding(10.dp))
+                if (readonlyDetails && confirm) {
 
-
-            if (readonlyDetails && !confirm) {
-                Row() {
-                    Button(
-                        onClick = { readonlyDetails = false },
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Edit Button"),
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
-                        ),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
-                    ) {
-                        Text("Edit", fontSize = 20.sp)
-                    }
-
-                    Button(
-                        onClick = { confirm = true },
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 15.dp
-                        ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Button"),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
-                    ) { Text("Delete", fontSize = 20.sp) }
-                }
-            }
-
-            if (readonlyDetails && confirm){
-                Row() {
-                    Button(
-                        onClick = {
+                    ConfirmCancelButtons(
+                        onConfirm = {
                             scope.launch {
                                 userRepository.deleteUser(currentUser)
-                                navController.navigate("new profile",
+                                navController.navigate(
+                                    "new profile",
                                     // deletes all the past history of the back stack so that you can't back out of make account
                                     navOptions = navOptions {
                                         popUpTo(navController.graph.id) { inclusive = true }
@@ -273,98 +324,78 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                                 )
                             }
                         },
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
-                        ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Confirm"),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+                        onCancel = { confirm = false }
                     )
-                    { Text("Confirm", fontSize = 20.sp) }
-
-
-                    Button(
-                        onClick = { confirm = false },
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 15.dp
-                        ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Delete Cancel"),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
-                    ) {
-                        Text("Cancel", fontSize = 20.sp)
-                    }
                 }
-            }
 
-            if (!readonlyDetails) {
-                Row() {
+                if (!readonlyDetails) {
+                    Row() {
 
-                    // save new stuff button
-                    Button(
-                        onClick = {
-                            // flag for if any changes actually happened
-                            var changeOccurred = false
+                        // save new stuff button
+                        Button(
+                            onClick = {
+                                // flag for if any changes actually happened
+                                var changeOccurred = false
 
-                            if (newName != currentUser.name) {
-                                currentUser.name = newName
-                                changeOccurred = true
-                            }
-
-                            if (newEmail != currentUser.email) {
-                                currentUser.email = newEmail
-                                changeOccurred = true
-                            }
-
-                            if (newPhone != currentUser.phone) {
-                                currentUser.phone = newPhone
-                                changeOccurred = true
-                            }
-
-                            // if a change actually happened then update the firebase UserProfile
-                            if (changeOccurred) {
-                                scope.launch {
-                                    userRepository.addOrUpdateUser(currentUser)
+                                if (newName != currentUser.name) {
+                                    currentUser.name = newName
+                                    changeOccurred = true
                                 }
-                            }
 
-                            // go back to the settings page
-                            navController.popBackStack()
-                        },
-                        enabled = android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()
-                                && (newPhone.length == 10 || newPhone.isEmpty()) && newName.isNotEmpty(),
+                                if (newEmail != currentUser.email) {
+                                    currentUser.email = newEmail
+                                    changeOccurred = true
+                                }
 
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
-                        ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Save Edits"),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
+                                if (newPhone != currentUser.phone) {
+                                    currentUser.phone = newPhone
+                                    changeOccurred = true
+                                }
 
-                    ) {
-                        Text("Save", fontSize = 20.sp)
-                    }
+                                // if a change actually happened then update the firebase UserProfile
+                                if (changeOccurred) {
+                                    scope.launch {
+                                        userRepository.addOrUpdateUser(currentUser)
+                                    }
+                                }
 
-                    // button to go back
-                    Button(
-                        onClick = { readonlyDetails = true },
+                                // go back to the settings page
+                                navController.popBackStack()
+                            },
+                            enabled = android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail)
+                                .matches()
+                                    && (newPhone.length == 10 || newPhone.isEmpty()) && newName.isNotEmpty(),
 
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 15.dp
-                        ),
-                        modifier = Modifier.size(width = 150.dp, height = 50.dp).testTag("Cancel Edits"),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
-                    ) {
-                        Text("Cancel", fontSize = 20.sp)
+                            shape = RoundedCornerShape(
+                                topStart = 5.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 5.dp,
+                                bottomEnd = 0.dp
+                            ),
+                            modifier = Modifier.size(width = 150.dp, height = 50.dp)
+                                .testTag("Save Edits"),
+                            colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
+
+                        ) {
+                            Text("Save", fontSize = 20.sp)
+                        }
+
+                        // button to go back
+                        Button(
+                            onClick = { readonlyDetails = true },
+
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 5.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 15.dp
+                            ),
+                            modifier = Modifier.size(width = 150.dp, height = 50.dp)
+                                .testTag("Cancel Edits"),
+                            colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
+                        ) {
+                            Text("Cancel", fontSize = 20.sp)
+                        }
                     }
                 }
             }
@@ -373,9 +404,9 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
 }
 
 
-/*
-on start or on delete, this screen pop's up so that you enter your name and email
-this screen blocks you from going anywhere until you make your new account
+/**
+ * on start or on delete, this screen pop's up so that you enter your name and email
+ * this screen blocks you from going anywhere until you make your new account
  */
 @Composable
 fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userRepository: UserRepository){
@@ -419,15 +450,21 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
         showNewPhoneLabel = true
     }
 
+    Column(modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center) {
 
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.background(Color(0xFFFFFFFF),
+            modifier = Modifier.background(
+                Color(0xFFFFFFFF),
                 shape = RoundedCornerShape(
-                topStart = 10.dp,
-                topEnd = 30.dp,
-                bottomStart = 10.dp,
-                bottomEnd = 10.dp)).padding(10.dp)
+                    topStart = 10.dp,
+                    topEnd = 30.dp,
+                    bottomStart = 10.dp,
+                    bottomEnd = 10.dp
+                )
+            ).padding(10.dp)
 
 
         ) {
@@ -436,28 +473,36 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
 
 
                 // text field to change name
-                Text("NAME", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4B0082))
+                Text(
+                    "NAME",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B0082)
+                )
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    label = { if (showNewNameLabel){
-                                Text("(Required)")
-                            }
+                    label = {
+                        if (showNewNameLabel) {
+                            Text("(Required)")
+                        }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor =  Color(0xFF4B0082),
+                        focusedContainerColor = Color(0xFF4B0082),
                         unfocusedTextColor = Color(0xFFFFFFFF),
                         focusedTextColor = Color(0xFFFFFFFF),
                         unfocusedLabelColor = Color(0xFFFFFFFF)
-                        ),
+                    ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 10.dp,
                         bottomStart = 10.dp,
                         bottomEnd = 30.dp
                     ),
-                    modifier = Modifier.onFocusChanged(onFocusChanged = {NewNameLabelFocused = !NewNameLabelFocused})
+                    modifier = Modifier.onFocusChanged(onFocusChanged = {
+                        NewNameLabelFocused = !NewNameLabelFocused
+                    })
                         .testTag("Name Field")
                 )
 
@@ -469,13 +514,19 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
         Author N/A, Last updated 2026-10-28 UTC
          */
                 // Text field to change email
-                Text("EMAIL", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4B0082))
+                Text(
+                    "EMAIL",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B0082)
+                )
                 OutlinedTextField(
                     value = newEmail,
                     onValueChange = { newEmail = it },
-                    label = { if (showNewEmailLabel){
+                    label = {
+                        if (showNewEmailLabel) {
                             Text("(Required)")
-                            }
+                        }
                     },
                     isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail)
                         .matches() && newEmail.isNotEmpty(),
@@ -488,7 +539,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor =  Color(0xFF4B0082),
+                        focusedContainerColor = Color(0xFF4B0082),
                         unfocusedTextColor = Color(0xFFFFFFFF),
                         focusedTextColor = Color(0xFFFFFFFF),
                         unfocusedLabelColor = Color(0xFFFFFFFF),
@@ -501,7 +552,9 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         bottomStart = 10.dp,
                         bottomEnd = 30.dp
                     ),
-                    modifier = Modifier.onFocusChanged(onFocusChanged = {NewEmailLabelFocused = !NewEmailLabelFocused})
+                    modifier = Modifier.onFocusChanged(onFocusChanged = {
+                        NewEmailLabelFocused = !NewEmailLabelFocused
+                    })
                         .testTag("Email Field")
                 )
 
@@ -512,7 +565,12 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
         Author N/A, Last updated 2026-10-28 UTC
          */
                 // Text field to change phone number
-                Text("PHONE", fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Color(0xFF4B0082))
+                Text(
+                    "PHONE",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B0082)
+                )
                 val numericRegex = Regex("[^0-9]")
                 OutlinedTextField(
                     value = newPhone,
@@ -527,24 +585,27 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     },
                     visualTransformation = NanpVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    label = { if (showNewPhoneLabel){
-                                Text("(Optional)")
-                                }
+                    label = {
+                        if (showNewPhoneLabel) {
+                            Text("(Optional)")
+                        }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor =  Color(0xFF4B0082),
+                        focusedContainerColor = Color(0xFF4B0082),
                         unfocusedTextColor = Color(0xFFFFFFFF),
                         focusedTextColor = Color(0xFFFFFFFF),
                         unfocusedLabelColor = Color(0xFFFFFFFF)
-                        ),
+                    ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 10.dp,
                         bottomStart = 10.dp,
                         bottomEnd = 30.dp
                     ),
-                    modifier = Modifier.onFocusChanged(onFocusChanged = {NewPhoneLabelFocused = !NewPhoneLabelFocused})
+                    modifier = Modifier.onFocusChanged(onFocusChanged = {
+                        NewPhoneLabelFocused = !NewPhoneLabelFocused
+                    })
                         .testTag("Phone Field")
                 )
 
@@ -594,12 +655,12 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                                 && (newPhone.length == 10 || newPhone.isEmpty()) && newName.isNotEmpty(),
 
                         shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
+                            topStart = 5.dp,
+                            topEnd = 5.dp,
+                            bottomStart = 5.dp,
+                            bottomEnd = 5.dp
                         ),
-                        modifier = Modifier.size(width =300.dp, height = 50.dp).testTag("Confirm Profile"),
+                        modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Confirm"),
                         colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
                     ) {
                         Text("Confirm", fontSize = 30.sp)
@@ -608,3 +669,4 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
             }
         }
     }
+}
