@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Grid
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -28,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,9 +47,10 @@ import androidx.navigation.NavController
 fun ReservationCalendarDay(day: CalendarDay, onClick: () -> Unit = {}) {
     val defaults = ButtonDefaults.buttonColors()
     var fg = defaults.containerColor
-    var bg = defaults.contentColor
+    var bg = Color.Transparent
     if (day.isCurrent) {
-        bg = fg.also { fg = bg }
+        fg = defaults.contentColor
+        bg = defaults.containerColor
     } else if (day.isFiller) {
         bg = Color.LightGray
     }
@@ -70,13 +73,58 @@ fun ReservationCalendarDay(day: CalendarDay, onClick: () -> Unit = {}) {
 
 @OptIn(ExperimentalGridApi::class)
 @Composable
-fun ReservationCalendar(calendarManager: CalendarManager) {
-    val calendarDays = calendarManager.getMonthDisplayDays().iterator()
+fun ReservationCalendar(reservations: List<Reservation>) {
+    val calendarManager by remember { mutableStateOf(CalendarManager(reservations)) }
+    var calendarDays by remember { mutableStateOf(calendarManager.getMonthDisplayDays().iterator()) }
+    var currentMonth by remember { mutableStateOf(calendarManager.currentMonthName()) }
+    var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
+
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = currentYear.toString(),
+                fontSize = 32.sp
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = currentMonth,
+                fontSize = 32.sp
+            )
+            Spacer(Modifier.weight(1.0f))
+            Button(
+                onClick = {
+                    calendarManager.lastMonth()
+                    calendarDays = calendarManager.getMonthDisplayDays().iterator()
+                    currentMonth = calendarManager.currentMonthName()
+                    currentYear = calendarManager.currentYear()
+                }
+            ) {
+                Text("<")
+            }
+            Spacer(Modifier.width(12.dp))
+            Button(
+                onClick = {
+                    calendarManager.nextMonth()
+                    calendarDays = calendarManager.getMonthDisplayDays().iterator()
+                    currentMonth = calendarManager.currentMonthName()
+                    currentYear = calendarManager.currentYear()
+                }
+            ) {
+                Text(">")
+            }
+        }
         LazyVerticalGrid(
             columns = GridCells.Fixed(7)
         ) {
@@ -127,11 +175,10 @@ fun ReservationCalendarScreen(
     currentUser: UserProfile,
     reservationRepository: ReservationRepository
 ) {
-    var calendarManager by remember { mutableStateOf(CalendarManager()) }
+    var userReservations by remember { mutableStateOf<List<Reservation>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        val userReservations = reservationRepository.getUserReservations(currentUser.id)
-        calendarManager.updateReservations(userReservations)
+        userReservations = reservationRepository.getUserReservations(currentUser.id)
     }
 
     Column(
@@ -167,32 +214,7 @@ fun ReservationCalendarScreen(
         }
         Spacer(Modifier.weight(1.0f))
 
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = calendarManager.currentMonthName(),
-                fontSize = 32.sp
-            )
-            Spacer(Modifier.weight(1.0f))
-            Button(
-                onClick = {
-                    calendarManager.lastMonth()
-                }
-            ) {
-                Text("<")
-            }
-            Spacer(Modifier.width(12.dp))
-            Button(
-                onClick = {
-                    calendarManager.nextMonth()
-                }
-            ) {
-                Text(">")
-            }
-        }
-
-        ReservationCalendar(calendarManager)
+        ReservationCalendar(userReservations)
 
         Spacer(Modifier.weight(1.0f))
     }

@@ -97,6 +97,13 @@ class CalendarManager(val reservations: List<Reservation>) {
     }
 
     /**
+     * Returns the currently selected year
+     */
+    fun currentYear(): Int {
+        return current.get(Calendar.YEAR)
+    }
+
+    /**
      * Updates the list of user reservations with a new list
      *
      * @param reservations new list of user reservations
@@ -125,6 +132,8 @@ class CalendarManager(val reservations: List<Reservation>) {
     ): List<CalendarDay> {
         // find start of the current month
         val displayDay = GregorianCalendar(year, month, 1)
+        val actualDate = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        val actualYear = Calendar.getInstance().get(Calendar.YEAR)
         // if the first day of the month isnt the first sunday on the calendar then we show some
         // days from the last month to make it all rectangular
         val paddingDays = displayDay.get(Calendar.DAY_OF_WEEK) - 1
@@ -144,7 +153,9 @@ class CalendarManager(val reservations: List<Reservation>) {
                                 }
                             }
                         },
-                        isCurrent = displayDay.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR),
+                        isCurrent =
+                            displayDay.get(Calendar.DAY_OF_YEAR) == actualDate &&
+                            displayDay.get(Calendar.YEAR) == actualYear,
                         isFiller = displayDay.get(Calendar.MONTH) != current.get(Calendar.MONTH)
                     )
                 )
