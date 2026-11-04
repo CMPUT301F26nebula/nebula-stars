@@ -11,7 +11,7 @@ to be the user in firebase. If not, then it creates a new user in firebase and s
 that instead.
 TODO: make it so that if you do not have an account you goto the edit profile page to make one
  */
-suspend fun getUserID(navController: NavController, context: Context): UserProfile {
+suspend fun getUserID(navController: NavController, context: Context, userRepository: UserRepository): UserProfile {
 
     // android ID that I don't really understand but it's fixed for the life of the device
     val deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -19,7 +19,6 @@ suspend fun getUserID(navController: NavController, context: Context): UserProfi
     // state in logs the deviceID
     Log.d("User ID Check", "Device ID: " + deviceId)
 
-    val userRepository = UserRepository()
     // find the user in the repo
     // if the local device ID is the same as the ID of the current repo user profile
     // then set the local user profile to be the repo user profile

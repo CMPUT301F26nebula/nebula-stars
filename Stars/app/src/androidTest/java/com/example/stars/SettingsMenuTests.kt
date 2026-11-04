@@ -1,14 +1,10 @@
 package com.example.stars
 
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
@@ -19,7 +15,7 @@ import androidx.navigation.testing.TestNavHostController
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,26 +25,17 @@ import org.junit.Test
  */
 class SettingsMenuTests {
 
-    private lateinit var userRepo: UserRepository
-
     @get:Rule
     val composeTestRule = createComposeRule() // access MainActivity
     lateinit var navController: TestNavHostController
-
-    /**
-     * Configures firebase repositories with their items
-     */
-    @Before
-    fun setUp() {
-        userRepo = UserRepository()
-    }
 
 
     /*
     create a good new profile without a phone number
      */
     @Test
-    fun createNewProfileWithoutPhoneNumber(){
+    fun createNewProfileWithoutPhoneNumber() = runTest {
+        val userRepo = UserRepository(this)
 
         // create ID
         val user = UserProfile("Unit Test")
@@ -78,12 +65,12 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure creation
-        val fireUser = runBlocking { userRepo.getUser(user.id) }
+        val fireUser = userRepo.getUser(user.id)
         assertEquals(user, fireUser)
 
         // delete user
-        runBlocking { userRepo.deleteUser(user) }
-        val deleted = runBlocking { userRepo.getUser(user.id) }
+        userRepo.deleteUser(user)
+        val deleted = userRepo.getUser(user.id)
         assertNull(deleted)
     }
 
@@ -92,7 +79,8 @@ class SettingsMenuTests {
     change to correct info, confirm creation, delete profile
      */
     @Test
-    fun createNewProfileWithBadPhoneAndEmail(){
+    fun createNewProfileWithBadPhoneAndEmail() = runTest {
+        val userRepo = UserRepository(this)
         val user = UserProfile("Unit Test")
 
         /*
@@ -136,13 +124,13 @@ class SettingsMenuTests {
 
 
         // confirm creation
-        val fireUser = runBlocking { userRepo.getUser(user.id) }
+        val fireUser = userRepo.getUser(user.id)
         assertEquals("1419029828", fireUser?.phone)
         assertEquals("Unit@test.test", fireUser?.email)
 
         // delete
-        runBlocking { userRepo.deleteUser(user) }
-        val deleted = runBlocking { userRepo.getUser(user.id) }
+        userRepo.deleteUser(user)
+        val deleted = userRepo.getUser(user.id)
         assertNull(deleted)
     }
 
@@ -150,10 +138,11 @@ class SettingsMenuTests {
     have user, try edits, assert correct changes
      */
     @Test
-    fun editProfileCorrectlyAndDelete(){
+    fun editProfileCorrectlyAndDelete() = runTest {
+        val userRepo = UserRepository(this)
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test")
 
-        runBlocking {userRepo.addOrUpdateUser(user)}
+        userRepo.addOrUpdateUser(user)
         /*
        created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
        "it is required in the code for MakeNewProfile. how do I fix this in the test?", and "write the recomended code"
@@ -180,12 +169,12 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Phone Field").performTextInput("9999999999")
         composeTestRule.onNodeWithTag("Save Edits").performClick()
 
-        var fireUser = runBlocking { userRepo.getUser(user.id) }
+        val fireUser = userRepo.getUser(user.id)
         assertEquals("Addition Unit Test", fireUser?.name)
         assertEquals("t@t.ca", fireUser?.email)
         assertEquals("9999999999", fireUser?.phone)
 
-        val deleted = runBlocking {
+        val deleted = run {
             userRepo.deleteUser(user)
             userRepo.getUser("Unit Test")
         }
@@ -197,14 +186,14 @@ class SettingsMenuTests {
     have user, try impossible edits, fail, cancel edits, delete user
      */
     @Test
-    fun failEditAndDeleteProfile(){
-
+    fun failEditAndDeleteProfile() = runTest {
+        val userRepo = UserRepository(this)
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
             false,UserPermission.ADMIN)
 
         // add the user to the repo
-        runBlocking {userRepo.addOrUpdateUser(user)}
+        userRepo.addOrUpdateUser(user)
 
         /*
        created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
@@ -234,7 +223,7 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Cancel Edits").performClick()
 
         // check that the current user, FireBaseUser and original user are still the same
-        var fireUser = runBlocking { userRepo.getUser(user.id) }
+        val fireUser = userRepo.getUser(user.id)
         assertEquals(fireUser, user)
         assertEquals("Unit Test",user.name)
         assertEquals("Unit@test.test",user.email)
@@ -259,14 +248,15 @@ class SettingsMenuTests {
     testing to see if you can get and remove owner status
      */
     @Test
-    fun getOwnerStatusRemoveOwnerStatus(){
+    fun getOwnerStatusRemoveOwnerStatus() = runTest {
+        val userRepo = UserRepository(this)
 
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
             false,UserPermission.ENTRANT)
 
         // add the user to the repo
-        runBlocking {userRepo.addOrUpdateUser(user)}
+        userRepo.addOrUpdateUser(user)
 
         /*
        created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
@@ -293,7 +283,7 @@ class SettingsMenuTests {
 
         // ensure local and remote owner status
         assertEquals(UserPermission.OWNER, user.permission)
-        val fireOwner = runBlocking { userRepo.getUser(user.id) }
+        val fireOwner = userRepo.getUser(user.id)
         assertEquals(UserPermission.OWNER, fireOwner?.permission)
 
         // hit the remove owner status buttons
@@ -302,11 +292,11 @@ class SettingsMenuTests {
 
         // ensure local and remote entrant status
         assertEquals(UserPermission.ENTRANT, user.permission)
-        val fireUser = runBlocking { userRepo.getUser(user.id) }
+        val fireUser = userRepo.getUser(user.id)
         assertEquals(UserPermission.ENTRANT, fireUser?.permission)
 
         // delete
-        runBlocking { userRepo.deleteUser(user) }
+        userRepo.deleteUser(user)
         composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} == null } // wait for firebase
 
 

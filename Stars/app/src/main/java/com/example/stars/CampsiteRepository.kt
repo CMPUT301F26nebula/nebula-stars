@@ -6,12 +6,16 @@ package com.example.stars
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /**
  * A container of campsites stored in Firestore
+ *
+ * @param scope the global coroutine scope used to run basic database operations
  */
-class CampsiteRepository {
+class CampsiteRepository(private val scope: CoroutineScope){
     private val db = Firebase.firestore
     private val campsitesRef = db.collection("campsites")
 
@@ -47,8 +51,10 @@ class CampsiteRepository {
      * Adds or updates a [campsite] in the campsite list
      * If campsite Id matches an existing campsite, updates it, otherwise creates a new entry
      */
-    suspend fun addOrUpdateCampsite(campsite: Campsite) {
-        campsitesRef.document(campsite.id).set(campsite).await()
+    fun addOrUpdateCampsite(campsite: Campsite) {
+        scope.launch {
+            campsitesRef.document(campsite.id).set(campsite).await()
+        }
     }
 
     /**
@@ -56,6 +62,8 @@ class CampsiteRepository {
      * TODO: Notify all people affected (reservations, entrants and the owner) that the campsite has been removed
      */
     suspend fun deleteCampsite(campsiteId: String) {
-        campsitesRef.document(campsiteId).delete().await()
+        scope.launch {
+            campsitesRef.document(campsiteId).delete().await()
+        }
     }
 }

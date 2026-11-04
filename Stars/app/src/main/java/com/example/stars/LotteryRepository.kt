@@ -1,10 +1,20 @@
+/*
+Contains repository helper class to get and store Lottery objects from firestore
+ */
 package com.example.stars
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class LotteryRepository {
+/**
+ * A container of lotteries stored in Firestore
+ *
+ * @param scope the global coroutine scope used to run basic database operations
+ */
+class LotteryRepository(private val scope: CoroutineScope) {
 
     private val db = Firebase.firestore
     private val lotteriesRef = db.collection("lotteries")
@@ -29,14 +39,18 @@ class LotteryRepository {
      * Adds or updates a [lottery] in the lotteries list
      * If lottery.id matches an existing lottery, updates it, otherwise creates a new entry
      */
-    suspend fun addOrUpdateLottery(lottery: Lottery) {
-        lotteriesRef.document(lottery.id).set(lottery).await()
+    fun addOrUpdateLottery(lottery: Lottery) {
+        scope.launch {
+            lotteriesRef.document(lottery.id).set(lottery).await()
+        }
     }
 
     /**
      * Deletes the lottery with ID [lotteryId] from the list of users
      */
-    suspend fun deleteLottery(lotteryId: String) {
-        lotteriesRef.document(lotteryId).delete().await()
+    fun deleteLottery(lotteryId: String) {
+        scope.launch {
+            lotteriesRef.document(lotteryId).delete().await()
+        }
     }
 }
