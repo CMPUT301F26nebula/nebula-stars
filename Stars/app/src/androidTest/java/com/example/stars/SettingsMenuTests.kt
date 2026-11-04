@@ -76,7 +76,7 @@ class SettingsMenuTests {
         // input good info
         composeTestRule.onNodeWithTag("Name Field").performTextInput("Unit Test")
         composeTestRule.onNodeWithTag("Email Field").performTextInput("Unit@test.test")
-        composeTestRule.onNodeWithTag("Confirm Profile").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure creation
         val fireUser = runBlocking { userRepo.getUser(user.id) }
@@ -116,24 +116,24 @@ class SettingsMenuTests {
         }
 
         // ensure you can't make an incomplete profile
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("Name Field").performTextInput("Unit Test")
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("Name Field").performTextClearance()
         composeTestRule.onNodeWithTag("Email Field").performTextInput("Unit@test.test")
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("Email Field").performTextClearance()
 
         //enter wrong stuff
         composeTestRule.onNodeWithTag("Name Field").performTextInput("Unit Test")
         composeTestRule.onNodeWithTag("Email Field").performTextInput("ad!qr14F>,1902<.{} %{}@9828320.com")
         composeTestRule.onNodeWithTag("Phone Field").performTextInput("ad!qr14F>,1902<.{} %{} 9828320")
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
 
         // clear and enter good email
         composeTestRule.onNodeWithTag("Email Field").performTextClearance()
         composeTestRule.onNodeWithTag("Email Field").performTextInput("Unit@test.test")
-        composeTestRule.onNodeWithTag("Confirm Profile").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
 
 
         // confirm creation
@@ -202,7 +202,7 @@ class SettingsMenuTests {
 
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
-            UserPermission.ADMIN)
+            false,UserPermission.ADMIN)
 
         // add the user to the repo
         runBlocking {userRepo.addOrUpdateUser(user)}
@@ -243,9 +243,9 @@ class SettingsMenuTests {
 
         // cancel deletion and then actually delete
         composeTestRule.onNodeWithTag("Delete Button").performClick()
-        composeTestRule.onNodeWithTag("Delete Cancel").performClick()
+        composeTestRule.onNodeWithTag("Cancel").performClick()
         composeTestRule.onNodeWithTag("Delete Button").performClick()
-        composeTestRule.onNodeWithTag("Delete Confirm").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure that the user was deleted
         composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} == null } // wait for firebase

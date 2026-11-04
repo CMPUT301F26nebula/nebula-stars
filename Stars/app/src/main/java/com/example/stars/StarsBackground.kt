@@ -11,6 +11,8 @@ https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +21,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.navigation.NavController
 
 private val Indigo = Color(0xFF4B0082)
 private val DarkCyan = Color(0xFF008B8B)
@@ -28,7 +31,8 @@ private val Yellow = Color(0xFFEFC700)
 @Composable
 fun StarsBackground(
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
+
 ) {
     Box(
         modifier = modifier
@@ -56,6 +60,6 @@ fun StarsBackground(
                 }
             },
         content = content,
-        contentAlignment = Alignment.Center
+
     )
 }

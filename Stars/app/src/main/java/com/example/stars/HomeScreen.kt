@@ -72,6 +72,31 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             }
 
             Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate("settings")
+                },
+                modifier = Modifier.testTag("SettingsButton") // for testing
+            ) {
+                Text("Settings")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            if (currentUser.permission == UserPermission.ADMIN){
+                Button(
+                    onClick = {
+                        navController.navigate("Users List")
+                    },
+                    modifier = Modifier.testTag("UsersButton") // for testing
+                ) {
+                    Text("Users List")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             // ... more tabs here
         }
 

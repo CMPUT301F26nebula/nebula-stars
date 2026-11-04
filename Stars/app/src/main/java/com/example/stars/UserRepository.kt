@@ -50,4 +50,8 @@ class UserRepository {
         user.phone = ""
         user.permission = UserPermission.ENTRANT
     }
+
+    suspend fun getUsersList(): MutableList<UserProfile> {
+        return usersRef.get().await().toObjects(UserProfile::class.java)
+    }
 }
