@@ -2,6 +2,7 @@ package com.example.stars
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -45,9 +46,13 @@ class AdminAbilityTests {
 
         runBlocking { userRepo.banOwner(owner) }
 
-        val deleted = runBlocking { campsiteRepo.getCampsite(campsite.id) }
-        assertEquals(null, deleted)
+        val deletedCampsite = runBlocking { campsiteRepo.getCampsite(campsite.id) }
+        assertEquals(null, deletedCampsite)
         assertEquals(true, owner.banned)
+
+        runBlocking { userRepo.deleteUser(owner) }
+        val deletedOwner = runBlocking { userRepo.getUser(owner.id) }
+        assertNull(deletedOwner)
     }
 
     /**
@@ -65,8 +70,12 @@ class AdminAbilityTests {
         runBlocking { userRepo.addOrUpdateUser(owner) }
         runBlocking { campsiteRepo.addOrUpdateCampsite(campsite) }
         runBlocking { userRepo.deleteUser(owner) }
-        val deleted = runBlocking { campsiteRepo.getCampsite(campsite.id) }
-        assertEquals(null, deleted)
+        val deletedCampsite = runBlocking { campsiteRepo.getCampsite(campsite.id) }
+        assertEquals(null, deletedCampsite)
         assertEquals("", owner.name)
+
+        runBlocking { userRepo.deleteUser(owner) }
+        val deletedOwner = runBlocking { userRepo.getUser(owner.id) }
+        assertNull(deletedOwner)
     }
 }
