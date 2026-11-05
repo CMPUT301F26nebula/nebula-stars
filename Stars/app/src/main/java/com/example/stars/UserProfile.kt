@@ -29,7 +29,7 @@ data class UserProfile(
     var name: String = "",
     var email: String = "",
     var phone: String = "",
-    val reservationIds: List<String> = emptyList()
+    val reservationIds: List<String> = emptyList(),
     var banned: Boolean = false,
     var permission: UserPermission = UserPermission.ENTRANT
 

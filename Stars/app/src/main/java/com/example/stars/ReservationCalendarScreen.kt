@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -85,7 +86,7 @@ fun ReservationCalendarDay(
             }
         )
         if (day.isCurrent) {
-            modifier = modifier.border(2.dp, defaults.containerColor)
+            modifier = modifier.border(3.dp, defaults.containerColor)
         }
     }
 
@@ -96,7 +97,7 @@ fun ReservationCalendarDay(
         Text(
             text = "${day.dayNumber()}",
             fontSize = 18.sp,
-            //fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Bold,
             color = fg
         )
     }
@@ -111,8 +112,10 @@ fun ReservationCalendarDay(
 @OptIn(ExperimentalGridApi::class)
 @Composable
 fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reservation>) -> Unit = {}) {
-    // TODO vvv these colours are VERY VERY placeholder
-    val colors = listOf(Color.Cyan, Color.Magenta, Color.Yellow, Color.Red, Color.Green, Color.Blue)
+    // TODO vvv these colours are VERY placeholder
+    val colors = listOf(
+        Color(0xFF20B2AA), Color(0xFFFF69B4), Color(0xFFFFD700),
+        Color(0xFFDC143C), Color(0xFF3CB371), Color(0xFF6495ED))
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
     // make sure reservation colour if consistent for all days

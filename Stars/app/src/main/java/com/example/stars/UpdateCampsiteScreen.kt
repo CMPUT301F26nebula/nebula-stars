@@ -301,7 +301,7 @@ fun UpdateCampsiteScreen(
                         rules = rules,
                         ownerId = currentUser.id,
                         imageIds = imageIds.toList(),
-                        reservations = reservations.toList(),
+                        reservationIds = reservations.toList(),
                         availabilitySchedule = availabilitySchedule.toList(),
                         location = location
                     )
