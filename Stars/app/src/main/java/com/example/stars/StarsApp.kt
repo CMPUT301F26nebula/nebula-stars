@@ -48,6 +48,29 @@ fun StarsApp() {
         NavHost(navController = navController, startDestination = startAt) {
             composable("home") { HomeScreen(navController, currentUser) }
             composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
+
+            // QR code displayscreen
+            composable(
+                route = "qr code/{campsiteId}",
+                arguments = listOf(
+                    navArgument("campsiteId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+                val campsiteId = backStackEntry.arguments
+                    ?.getString("campsiteId")
+                    .orEmpty()
+
+                QRCodeScreen(
+                    navController = navController,
+                    campsiteId = campsiteId
+                )
+            }
+
+
+
+
             composable("waitlists") { }
             composable("reservations") { }
             composable("messages") { }

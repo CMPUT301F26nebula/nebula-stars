@@ -291,6 +291,32 @@ fun UpdateCampsiteScreen(
             }
         }
 
+
+        // display QR code only for an existing, saved campsite
+        var campsiteExists by remember(campsiteId) {
+            mutableStateOf(false)
+        }
+
+        LaunchedEffect(campsiteId) {
+            val savedCampsite = campsiteRepo.getCampsite(campsiteId)
+            campsiteExists = savedCampsite != null &&
+                    savedCampsite.ownerId == currentUser.id
+
+            // changed this because this now ensures the button is only displayed to the campsites owner
+        }
+
+        if (campsiteExists) {
+            Button(
+                onClick = {
+                    navController.navigate("qr code/$campsiteId")
+                },
+                modifier = Modifier.testTag("viewQRCodeButton")
+            ) {
+                Text("View QR Code")
+            }
+        }
+
+
         // Submission
         Button(
             onClick = {

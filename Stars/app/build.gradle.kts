@@ -68,4 +68,7 @@ dependencies {
     implementation(libs.compose.material.icons)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.0")
+
+    // QR code generation
+    implementation("com.google.zxing:core:3.5.3")
 }
