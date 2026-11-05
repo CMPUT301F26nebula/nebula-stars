@@ -36,13 +36,31 @@ fun ReservationDetails(
     campsite: Campsite,
     campOwner: UserProfile
 ) {
+    var confirmLeaveDialogState by remember { mutableStateOf(false) }
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
+    
+    if (confirmLeaveDialogState) {
+        ConfirmOrDenyModal(
+            onConfirm = {},
+            onCancel = {},
+            title = {},
+        ) { }
+    }
+    
     Column(
         modifier = modifier
             .padding(12.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center
     ) {
+        FilledTonalButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                confirmLeaveDialogState = true
+            }
+        ) { 
+            Text("Leave Reservation")
+        }
         // TODO these should bring u to their respective details pages
         Row(
             verticalAlignment = Alignment.CenterVertically

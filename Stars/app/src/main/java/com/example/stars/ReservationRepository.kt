@@ -23,6 +23,15 @@ class ReservationRepository(private val externalScope: CoroutineScope) {
     }
 
     /**
+     * Deletes the user reservation with unique id [reservationId]
+     */
+    fun removeUserReservation(reservationId: String) {
+        externalScope.launch {
+            reservationsRef.document(reservationId).delete()
+        }
+    }
+
+    /**
      * Generates a (hopefully) unique ID for a new reservation and adds it to the database
      *
      * @param entrantId unique ID of the entrant making this reservation
