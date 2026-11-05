@@ -3,6 +3,7 @@ package com.example.stars
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -214,6 +215,7 @@ fun ReservationCalendarScreen(
     var userReservations by remember { mutableStateOf<List<Reservation>>(emptyList()) }
     var calendarReady by remember { mutableStateOf(false) }
     var selectedReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
+    var selectedReservation: Reservation? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
         userReservations = reservationRepository.getUserReservations(currentUser.id)
@@ -221,30 +223,43 @@ fun ReservationCalendarScreen(
     }
 
     // TODO remove at some point
-    /*
     var debugDialogState by remember { mutableStateOf(false) }
     if (debugDialogState) {
         DebugReservationCreator(
             onClose = {
                 debugDialogState = false
             },
-            onConfirm = { epochRange ->
+            onConfirm = {
                 reservationRepository.addUserReservation(
                     entrantId = currentUser.id,
                     campsiteId = "test3",
-                    epochRange = epochRange
+                    epochRange = it
                 )
             }
         )
     }
-    */
 
-    if (selectedReservations.isNotEmpty()) {
-        ReservationDetailsModal(
-            // TODO bring up selector
-            selectedReservations[0],
+    if (selectedReservations.size > 1) {
+        ReservationListModal(
+            selectedReservations,
             onClose = {
                 selectedReservations = emptyList()
+            },
+            onClick = {
+                selectedReservation = it
+                selectedReservations = emptyList()
+            }
+        )
+    } else if (selectedReservations.size == 1) {
+        selectedReservation = selectedReservations.first()
+        selectedReservations = emptyList()
+    }
+
+    if (selectedReservation != null) {
+        ReservationDetailsModal(
+            selectedReservation!!,
+            onClose = {
+                selectedReservation = null
             }
         )
     }
@@ -275,19 +290,14 @@ fun ReservationCalendarScreen(
             // Title
             Text(
                 text = "Reservations",
-                fontSize = 32.sp
+                fontSize = 32.sp,
+                modifier = Modifier.combinedClickable(
+                    onClick = {},
+                    onLongClick = {
+                        debugDialogState = true
+                    }
+                )
             )
-
-            // TODO another debug thing
-            /*
-            Button(
-                onClick = {
-                    debugDialogState = true
-                }
-            ) {
-                Text("debug")
-            }
-            */
 
             Spacer(Modifier.width(12.dp))
         }
@@ -299,10 +309,16 @@ fun ReservationCalendarScreen(
                 selectedReservations = it
             }
         } else {
-            Text(
-                text = "Loading...",
-                fontSize = 48.sp
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Loading...",
+                    fontSize = 32.sp
+                )
+            }
         }
 
         Spacer(Modifier.weight(1.0f))

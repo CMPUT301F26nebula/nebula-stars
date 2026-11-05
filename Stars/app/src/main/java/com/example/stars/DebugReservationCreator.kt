@@ -43,6 +43,16 @@ fun DebugReservationCreator(
                 ) {
                     TextButton(
                         onClick = {
+                            newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
+                            newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
+                            if (newStart > 0L && newEnd > 0L) {
+                                Log.d(
+                                    "debug date picker",
+                                    "canceled: (${sdf.format(Date(newStart))}) - (${sdf.format(Date(newEnd))})"
+                                )
+                                newStart = 0L
+                                newEnd = 0L
+                            }
                             onClose()
                         }
                     ) {
@@ -53,15 +63,15 @@ fun DebugReservationCreator(
                             newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
                             newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
                             if (newStart > 0L && newEnd > 0L) {
-                                //onConfirm(EpochRange(newStart, newEnd))
+                                onConfirm(EpochRange(newStart, newEnd))
                                 Log.d(
-                                    "datepicker",
-                                    "(${sdf.format(Date(newStart))}) - (${sdf.format(Date(newEnd))})"
+                                    "debug date picker",
+                                    "added: (${sdf.format(Date(newStart))}) - (${sdf.format(Date(newEnd))})"
                                 )
                                 newStart = 0L
                                 newEnd = 0L
+                                onClose()
                             }
-                            onClose()
                         }
                     ) {
                         Text("OK")
@@ -71,7 +81,7 @@ fun DebugReservationCreator(
         ) { padding ->
             DateRangePicker(
                 state = dateRangePickerState,
-                showModeToggle = true, // Allows switching between calendar and text input
+                showModeToggle = true,
                 modifier = Modifier.fillMaxWidth().padding(padding)
             )
         }
