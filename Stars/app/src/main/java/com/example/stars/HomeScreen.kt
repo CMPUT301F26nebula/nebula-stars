@@ -94,6 +94,17 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            Button(
+                onClick = {
+                    navController.navigate("notifications")
+                },
+                modifier = Modifier.testTag("NotificationsButton") // for testing
+            ) {
+                Text("Notifications")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             if (currentUser.permission == UserPermission.ADMIN){
                 Button(
                     onClick = {
