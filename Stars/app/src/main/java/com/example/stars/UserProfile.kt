@@ -21,6 +21,7 @@ enum class UserPermission {
  * @param name the user's human-readable name
  * @param email the user's email address
  * @param phone the user's phone number currently stored as a string
+ * @param banned true if the user is banned from being an owner
  * @param permission the app permission level for the user
  */
 data class UserProfile(
@@ -28,6 +29,8 @@ data class UserProfile(
     var name: String = "",
     var email: String = "",
     var phone: String = "",
-    var permission: UserPermission = UserPermission.ENTRANT,
     val reservationIds: List<String> = emptyList()
+    var banned: Boolean = false,
+    var permission: UserPermission = UserPermission.ENTRANT
+
 )

@@ -25,7 +25,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    ){
         // Title
         Text(
             text = "Welcome ${currentUser.name}",
@@ -74,6 +74,17 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
             Button(
                 onClick = {
+                    navController.navigate("upload lottery")
+                },
+                modifier = Modifier.testTag("uploadLotteryButton") // for testing
+            ) {
+                Text("Create a Lottery")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
                     navController.navigate("profile")
                 },
                 modifier = Modifier.testTag("ProfileButton") // for testing
@@ -82,6 +93,42 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             }
 
             Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate("settings")
+                },
+                modifier = Modifier.testTag("SettingsButton") // for testing
+            ) {
+                Text("Settings")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate("notifications")
+                },
+                modifier = Modifier.testTag("NotificationsButton") // for testing
+            ) {
+                Text("Notifications")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            if (currentUser.permission == UserPermission.ADMIN){
+                Button(
+                    onClick = {
+                        navController.navigate("Users List")
+                    },
+                    modifier = Modifier.testTag("UsersButton") // for testing
+                ) {
+                    Text("Users List")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             // ... more tabs here
         }
 

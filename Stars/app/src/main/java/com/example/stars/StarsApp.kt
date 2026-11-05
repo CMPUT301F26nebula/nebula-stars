@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -30,9 +31,10 @@ object Databases {
 fun StarsApp() {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
-    val campsiteRepository = remember { CampsiteRepository() }
-    val userRepository = remember { UserRepository() }
-    val imageRepository = remember { ImageRepository() }
+    val campsiteRepository = remember { CampsiteRepository(scope) }
+    val userRepository = remember { UserRepository(scope) }
+    val imageRepository = remember { ImageRepository(scope) }
+    val lotteryRepository = remember { LotteryRepository(scope) }
     val reservationRepository = remember { ReservationRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
@@ -46,7 +48,7 @@ fun StarsApp() {
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        currentUser = getUserID(navController, context)
+        currentUser = getUserID(navController, context, userRepository)
         if (currentUser.name.isNotEmpty() && currentUser.email.isNotEmpty()){
             startAt = "home"
         }
@@ -62,11 +64,12 @@ fun StarsApp() {
             composable("waitlists") { }
             composable("reservations") { ReservationCalendarScreen(navController, currentUser, reservationRepository) }
             composable("messages") { }
-            composable("notifications") { }
-            composable("settings") { }
+            composable("notifications") { NotificationsScreen(navController, currentUser) }
+            composable("settings") { StarsBackground(Modifier, {SettingsScreen(navController, currentUser, userRepository)})}
             composable("profile") { StarsBackground(Modifier,{ EditProfile(navController, currentUser, userRepository) })}
             composable("new profile") { StarsBackground(Modifier,{ MakeNewProfile(navController, currentUser, userRepository) } ) }
-            composable("upload campsite") { UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository, scope) }
+            composable("upload campsite") { UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository) }
+            composable ( "Users List" ){ AdminViewUserProfiles(navController, userRepository, campsiteRepository) }
             composable(
                 route = "edit campsite {campsiteId}",
                 arguments = listOf(
@@ -74,7 +77,16 @@ fun StarsApp() {
                         type = NavType.StringType
                     }
                 )
-            ) { backStackEntry -> UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository,scope,backStackEntry.arguments?.getString("userId").orEmpty()) }
+            ) { backStackEntry -> UpdateCampsiteScreen(navController, currentUser, campsiteRepository, imageRepository, backStackEntry.arguments?.getString("campsiteId").orEmpty()) }
+            composable("upload lottery") { UpdateLotteryScreen(navController, currentUser, campsiteRepository, lotteryRepository) }
+            composable(
+                route = "edit lottery {lotteryId}",
+                arguments = listOf(
+                    navArgument("lotteryId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry -> UpdateLotteryScreen(navController, currentUser, campsiteRepository, lotteryRepository, backStackEntry.arguments?.getString("lotteryId").orEmpty()) }
         }
     }
 }
