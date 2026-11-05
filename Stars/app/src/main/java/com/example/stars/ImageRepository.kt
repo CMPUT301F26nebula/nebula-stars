@@ -9,13 +9,17 @@ import com.google.firebase.storage.storage
 import java.util.UUID
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 /**
  * A container of ImageUploads stored in Firestore and Firebase Cloud Storage
+ *
+ * @param scope the global coroutine scope used to run basic database operations
  */
-class ImageRepository {
+class ImageRepository(private val scope: CoroutineScope) {
     private val storageRef = Firebase.storage.reference
     private val db = Firebase.firestore
     private val imageListRef = db.collection("images")
@@ -54,9 +58,11 @@ class ImageRepository {
     /**
      * Deletes the image [imageId] from the list of images
      */
-    suspend fun deleteImage(imageId: String) {
-        storageRef.child("images/$imageId.jpg").delete().await()
-        imageListRef.document(imageId).delete().await()
+    fun deleteImage(imageId: String) {
+        scope.launch {
+            storageRef.child("images/$imageId.jpg").delete().await()
+            imageListRef.document(imageId).delete().await()
+        }
     }
 
     /**

@@ -57,7 +57,6 @@ import java.util.UUID
  * @param currentUser The ID of the currently logged in user
  * @param campsiteRepo The global campsite repository
  * @param lotteryRepo The global lottery repository
- * @param externalScope The scope needed to run the uploader asynchronously
  * @param lotteryId The ID of the lottery to update, or leave empty to make a new one
  */
 @Composable
@@ -66,7 +65,6 @@ fun UpdateLotteryScreen(
     currentUser: UserProfile,
     campsiteRepo: CampsiteRepository,
     lotteryRepo: LotteryRepository,
-    externalScope: CoroutineScope,
     lotteryId: String = UUID.randomUUID().toString()
 ) {
     // Set up
@@ -294,23 +292,21 @@ fun UpdateLotteryScreen(
             // Submission
             Button(
                 onClick = {
-                    externalScope.launch {
-                        lotteryRepo.addOrUpdateLottery(
-                            Lottery(
-                                id = lotteryId,
-                                ownerID = currentUser.id,
-                                campsiteIDs = campsiteIDs,
-                                timePeriod = timePeriod,
-                                deadline = deadline,
-                                numWinners = numWinners,
-                                entrantIDs = entrantIDs,
-                                waitlistCapacity = waitlistCapacity,
-                                pendingWinnerIDs = pendingWinnerIDs,
-                                confirmedIDs = confirmedIDs
-                            )
+                    lotteryRepo.addOrUpdateLottery(
+                        Lottery(
+                            id = lotteryId,
+                            ownerID = currentUser.id,
+                            campsiteIDs = campsiteIDs,
+                            timePeriod = timePeriod,
+                            deadline = deadline,
+                            numWinners = numWinners,
+                            entrantIDs = entrantIDs,
+                            waitlistCapacity = waitlistCapacity,
+                            pendingWinnerIDs = pendingWinnerIDs,
+                            confirmedIDs = confirmedIDs
                         )
-                        Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
-                    }
+                    )
+                    Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
                     navController.popBackStack()
                 },
                 content = { Text("Submit") },

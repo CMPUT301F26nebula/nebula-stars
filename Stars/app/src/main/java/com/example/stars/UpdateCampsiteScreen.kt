@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +44,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -56,7 +56,6 @@ import java.util.UUID
  * @param currentUser The ID of the currently logged in user
  * @param campsiteRepo The global campsite repository
  * @param imageRepo The global image repository
- * @param externalScope The scope needed to run the uploader asynchronously
  * @param campsiteId The ID of the campsite to update, or leave empty to make a new one
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +65,6 @@ fun UpdateCampsiteScreen(
     currentUser: UserProfile,
     campsiteRepo: CampsiteRepository,
     imageRepo: ImageRepository,
-    externalScope: CoroutineScope,
     campsiteId: String = UUID.randomUUID().toString()
 ) {
     // Set up
@@ -174,10 +172,11 @@ fun UpdateCampsiteScreen(
         Row() {
             Column() {
                 // Set up photo picker for image uploads if needed
+                val scope = rememberCoroutineScope()
                 val photoPickerLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia()
                 ) { uri: Uri? ->
-                    externalScope.launch {
+                    scope.launch {
                         if (uri != null) {
                             val imageId = imageRepo.uploadImage(uri)
                             imageIds.add(imageId)
@@ -194,9 +193,7 @@ fun UpdateCampsiteScreen(
                     editor = true,
                     onDelete = { id ->
                         imageIds.remove(id)
-                        externalScope.launch {
-                            imageRepo.deleteImage(id)
-                        }
+                        imageRepo.deleteImage(id)
                     }
                 )
                 // Necessary for uploading new images
@@ -294,24 +291,22 @@ fun UpdateCampsiteScreen(
         // Submission
         Button(
             onClick = {
-                externalScope.launch {
-                    campsiteRepo.addOrUpdateCampsite(
-                        Campsite(
-                            id = campsiteId,
-                            title = title,
-                            price = price,
-                            capacity = capacity,
-                            description = description,
-                            rules = rules,
-                            ownerId = currentUser.id,
-                            imageIds = imageIds.toList(),
-                            reservations = reservations.toList(),
-                            availabilitySchedule = availabilitySchedule.toList(),
-                            location = location
-                        )
+                campsiteRepo.addOrUpdateCampsite(
+                    Campsite(
+                        id = campsiteId,
+                        title = title,
+                        price = price,
+                        capacity = capacity,
+                        description = description,
+                        rules = rules,
+                        ownerId = currentUser.id,
+                        imageIds = imageIds.toList(),
+                        reservations = reservations.toList(),
+                        availabilitySchedule = availabilitySchedule.toList(),
+                        location = location
                     )
-                    Log.d("Campsite Update Submission", "Campsite Uploaded")
-                }
+                )
+                Log.d("Campsite Update Submission", "Campsite Uploaded")
                 navController.popBackStack()
             },
             content = { Text("Submit") },
