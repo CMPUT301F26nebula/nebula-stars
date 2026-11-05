@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 fun ConfirmOrDenyModal(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
-    title: @Composable (() -> Unit),
+    title: @Composable (() -> Unit) = {},
     content: @Composable (() -> Unit)
 ) {
     AlertDialog(
