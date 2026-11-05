@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 /**
  * ui colors
@@ -94,20 +96,35 @@ fun CampsitesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .statusBarsPadding()
-                .height(44.dp),
+                .statusBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Back button
+            Button(
+                onClick = { navController.popBackStack() },
+                shape = RectangleShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = starsTeal,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .testTag("backButton"), // for testing
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "◀",
+                    fontSize = 44.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
             // Title
             Text(
                 text = "CAMPSITES",
                 fontSize = 44.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = starsPurple,
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .offset(y = 4.dp)
             )
             // Filter button
             Button(
@@ -164,27 +181,6 @@ fun CampsitesScreen(
                 .background(Color.White),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Back button
-            Button(
-                onClick = { navController.popBackStack() },
-                shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = starsTeal,
-                    contentColor = Color.White
-                ),
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(64.dp)
-                    .testTag("backButton") // for testing
-            ) {
-                Text(
-                    text = "◀",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.offset(x = (-12).dp, y = (-2).dp)
-                )
-            }
-
             // Search field
             TextField(
                 value = search,
@@ -240,4 +236,3 @@ fun searchCampsites(campsites: List<Campsite>, search: String): List<Campsite> {
     // Concats and returns list
     return titleMatches + descriptionMatches
 }
-
