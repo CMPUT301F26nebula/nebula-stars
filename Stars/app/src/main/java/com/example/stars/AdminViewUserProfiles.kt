@@ -143,7 +143,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
 
                     // if not trying to delete user, show the ban button
-                    if (!confirmBan && userProfile.permission >= UserPermission.OWNER) {
+                    if (!confirmBan) {
                         AdminActionOnUser(
                             confirmDeletion, "Delete User",
                             onRequest = {
@@ -167,7 +167,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                     }
 
                     // if not trying to ban user show the delete button
-                    if (!confirmDeletion){
+                    if (!confirmDeletion && userProfile.permission >= UserPermission.OWNER){
                         AdminActionOnUser(confirmBan, "Ban Owner",
                             onRequest = {
                                 confirmDeletion = false
@@ -214,21 +214,6 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
     if (confirm) {
         Row() {
 
-            //
-            Button(onCancel,
-                shape = RoundedCornerShape(
-                    topStart = 5.dp,
-                    topEnd = 5.dp,
-                    bottomStart = 5.dp,
-                    bottomEnd = 5.dp
-                ),
-                colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
-                Text("Cancel",textAlign = TextAlign.Center)
-            }
-
-            Spacer(modifier = Modifier.size(10.dp))
-
             Button(onConfirm,
                 shape = RoundedCornerShape(
                     topStart = 5.dp,
@@ -241,6 +226,19 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 Text("Confirm", textAlign = TextAlign.Center)
             }
 
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Button(onCancel,
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
+                Text("Cancel",textAlign = TextAlign.Center)
+            }
 
         }
 
