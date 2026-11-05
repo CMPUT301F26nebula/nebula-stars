@@ -14,10 +14,18 @@ enum class ReservationStatus {
  * @param timeRange the timestamps between which the reservation is active
  * @param status the current status of the reservation
  * @param entrantId the unique ID of the user who made the reservation
+ * @param campsiteId the unique ID of the campsite the reservation is for
  */
 data class Reservation (
     val id: String = "",
     val timeRange: EpochRange = EpochRange(),
     val status: ReservationStatus = ReservationStatus.INVITED,
-    val entrantId: String = ""
-)
+    val entrantId: String = "",
+    val campsiteId: String = ""
+) {
+    companion object UniqueId {
+        fun uniqueIdFrom(entrantId: String, campsiteId: String, timeRange: EpochRange): String {
+            return "${entrantId}_${campsiteId}_${timeRange.start}_${timeRange.end}"
+        }
+    }
+}

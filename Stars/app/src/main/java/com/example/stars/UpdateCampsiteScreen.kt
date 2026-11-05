@@ -90,7 +90,7 @@ fun UpdateCampsiteScreen(
     var description by remember { mutableStateOf("") }
     var rules by remember { mutableStateOf("") }
     val imageIds = remember { mutableStateListOf<String>() }
-    val reservations = remember { mutableStateListOf<Reservation>() }
+    val reservations = remember { mutableStateListOf<String>() }
     val availabilitySchedule = remember { mutableStateListOf<EpochRange>() }
     var location by remember { mutableStateOf(LocationCoordinates(0.0, 0.0)) }
 
@@ -121,7 +121,7 @@ fun UpdateCampsiteScreen(
             description = oldCampsite.description
             rules = oldCampsite.rules
             imageIds.addAll(oldCampsite.imageIds)
-            reservations.addAll(oldCampsite.reservations)
+            reservations.addAll(oldCampsite.reservationIds)
             availabilitySchedule.addAll(oldCampsite.availabilitySchedule)
             location = oldCampsite.location
         }
@@ -423,7 +423,7 @@ fun UpdateCampsiteScreen(
                                 rules = rules,
                                 ownerId = currentUser.id,
                                 imageIds = imageIds.toList(),
-                                reservations = reservations.toList(),
+                                reservationIds = reservations.toList(),
                                 availabilitySchedule = availabilitySchedule.toList(),
                                 location = location
                             )

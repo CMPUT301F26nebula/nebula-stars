@@ -17,6 +17,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
 // This should be where the current User, and other data shared between screens is stored
+object Databases {
+    lateinit var campsiteRepository: CampsiteRepository
+    lateinit var userRepository: UserRepository
+    lateinit var imageRepository: ImageRepository
+    lateinit var reservationRepository: ReservationRepository
+}
 
 /**
  * Contains the NavHost
@@ -29,9 +35,16 @@ fun StarsApp() {
     val userRepository = remember { UserRepository(scope) }
     val imageRepository = remember { ImageRepository(scope) }
     val lotteryRepository = remember { LotteryRepository(scope) }
+    val reservationRepository = remember { ReservationRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
+    // TODO if u dont like it feel free to refactor these out after we make everything
+    // TODO honestly navController and currentUser would also be handy singletons
+    Databases.userRepository = userRepository
+    Databases.campsiteRepository = campsiteRepository
+    Databases.reservationRepository = reservationRepository
+    Databases.imageRepository = imageRepository
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -49,7 +62,7 @@ fun StarsApp() {
             composable("home") { HomeScreen(navController, currentUser) }
             composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
             composable("waitlists") { }
-            composable("reservations") { }
+            composable("reservations") { ReservationCalendarScreen(navController, currentUser, reservationRepository) }
             composable("messages") { }
             composable("notifications") { NotificationsScreen(navController, currentUser) }
             composable("settings") { StarsBackground(Modifier, {SettingsScreen(navController, currentUser, userRepository)})}

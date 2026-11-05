@@ -63,6 +63,17 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
             Button(
                 onClick = {
+                    navController.navigate("reservations")
+                },
+                modifier = Modifier.testTag("ReservationsButton") // for testing
+            ) {
+                Text("Reservations")
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Button(
+                onClick = {
                     navController.navigate("upload lottery")
                 },
                 modifier = Modifier.testTag("uploadLotteryButton") // for testing
