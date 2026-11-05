@@ -2,7 +2,6 @@ package com.example.stars
 
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
-import android.util.Log
 
 /**
  * Represents a single day in the calendar as well as any reservations that are on that day
@@ -29,8 +28,8 @@ class CalendarDay(
  * @param reservation a Reservation object supplying an EpochRange
  */
 class CalendarReservation(val reservation: Reservation) {
-    val start: GregorianCalendar = GregorianCalendar()
-    val end: GregorianCalendar = GregorianCalendar()
+    val start: GregorianCalendar = GregorianCalendar.getInstance() as GregorianCalendar
+    val end: GregorianCalendar = GregorianCalendar.getInstance() as GregorianCalendar
     init {
         // set date from epoch millis
         start.timeInMillis = reservation.timeRange.start
@@ -41,7 +40,7 @@ class CalendarReservation(val reservation: Reservation) {
      * Returns true if the given day is in the reservation range
      */
     fun isDayInRange(day: GregorianCalendar): Boolean {
-        // want this to be comparing by day not be millisecond
+        // want this to be comparing by day not by millisecond
         return start.get(Calendar.DAY_OF_YEAR) <= day.get(Calendar.DAY_OF_YEAR) &&
                 day.get(Calendar.DAY_OF_YEAR) <= end.get(Calendar.DAY_OF_YEAR) &&
                 start.get(Calendar.YEAR) <= day.get(Calendar.YEAR) &&
@@ -136,10 +135,13 @@ class CalendarManager(val reservations: List<Reservation>) {
         month: Int = current.get(Calendar.MONTH),
         year: Int = current.get(Calendar.YEAR)
     ): List<CalendarDay> {
+        val displayDay = GregorianCalendar.getInstance()
+        val actualDate = displayDay.get(Calendar.DAY_OF_YEAR)
+        val actualYear = displayDay.get(Calendar.YEAR)
+
         // find start of the current month
-        val displayDay = GregorianCalendar(year, month, 1)
-        val actualDate = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
-        val actualYear = Calendar.getInstance().get(Calendar.YEAR)
+        displayDay.set(year, month, 1)
+
         // if the first day of the month isnt the first sunday on the calendar then we show some
         // days from the last month to make it all rectangular
         val paddingDays = displayDay.get(Calendar.DAY_OF_WEEK) - 1
@@ -151,7 +153,7 @@ class CalendarManager(val reservations: List<Reservation>) {
                 val dateCopy = displayDay.clone() as GregorianCalendar
                 add(
                     CalendarDay(
-                        // dont want this to change when we rollover for the next day so copy it
+                        // dont want this to change when we roll over for the next day so copy it
                         date = dateCopy,
                         events = buildList {
                             for (r in reservedDates) {
