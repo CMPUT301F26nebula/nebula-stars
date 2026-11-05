@@ -38,15 +38,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-// TODO add tap/swipe behavior that opens the reservation info
 @Composable
-fun ReservationCalendarDay(day: CalendarDay, eventColors: Map<String, Color> = emptyMap(), onClick: () -> Unit = {}) {
+fun ReservationCalendarDay(
+    day: CalendarDay,
+    eventColors: Map<String, Color> = emptyMap(),
+    onClick: (List<Reservation>) -> Unit = {}
+) {
     val defaults = ButtonDefaults.buttonColors()
     var fg = defaults.containerColor
     var modifier = Modifier
         .fillMaxSize()
         .background(Color.Transparent)
-        .clickable(onClick = onClick)
+        .clickable(onClick = {
+                if (day.events.isNotEmpty()) {
+                    onClick(day.events)
+                }
+            }
+        )
 
     if (day.isCurrent) {
         fg = defaults.contentColor
@@ -87,7 +95,7 @@ fun ReservationCalendarDay(day: CalendarDay, eventColors: Map<String, Color> = e
 
 @OptIn(ExperimentalGridApi::class)
 @Composable
-fun ReservationCalendar(reservations: List<Reservation>) {
+fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reservation>) -> Unit = {}) {
     // TODO vvv these colours are VERY VERY placeholder
     val colors = listOf(Color.Cyan, Color.Magenta, Color.Yellow, Color.Red, Color.Green, Color.Blue)
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
@@ -188,7 +196,7 @@ fun ReservationCalendar(reservations: List<Reservation>) {
                             .fillMaxSize()
                     ) {
                         if (calendarDays.hasNext()) {
-                            ReservationCalendarDay(calendarDays.next(), eventColors = reservationColors)
+                            ReservationCalendarDay(calendarDays.next(), eventColors = reservationColors, onClick = onDayClick)
                         }
                     }
                 }
@@ -205,6 +213,7 @@ fun ReservationCalendarScreen(
 ) {
     var userReservations by remember { mutableStateOf<List<Reservation>>(emptyList()) }
     var calendarReady by remember { mutableStateOf(false) }
+    var selectedReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
 
     LaunchedEffect(Unit) {
         userReservations = reservationRepository.getUserReservations(currentUser.id)
@@ -222,13 +231,23 @@ fun ReservationCalendarScreen(
             onConfirm = { epochRange ->
                 reservationRepository.addUserReservation(
                     entrantId = currentUser.id,
-                    campsiteId = "test1",
+                    campsiteId = "test3",
                     epochRange = epochRange
                 )
             }
         )
     }
     */
+
+    if (selectedReservations.isNotEmpty()) {
+        ReservationDetailsModal(
+            // TODO bring up selector
+            selectedReservations[0],
+            onClose = {
+                selectedReservations = emptyList()
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -276,7 +295,9 @@ fun ReservationCalendarScreen(
 
         // the thingy doesnt like to recompose properly after the reservations are found so loading screen it is :P
         if (calendarReady) {
-            ReservationCalendar(userReservations)
+            ReservationCalendar(userReservations) {
+                selectedReservations = it
+            }
         } else {
             Text(
                 text = "Loading...",

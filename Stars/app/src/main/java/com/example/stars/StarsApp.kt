@@ -16,6 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
 // This should be where the current User, and other data shared between screens is stored
+object Databases {
+    lateinit var campsiteRepository: CampsiteRepository
+    lateinit var userRepository: UserRepository
+    lateinit var imageRepository: ImageRepository
+    lateinit var reservationRepository: ReservationRepository
+}
 
 /**
  * Contains the NavHost
@@ -30,6 +36,12 @@ fun StarsApp() {
     val reservationRepository = remember { ReservationRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
+
+    // TODO if u dont like it feel free to refactor these out after we make everything
+    Databases.userRepository = userRepository
+    Databases.campsiteRepository = campsiteRepository
+    Databases.reservationRepository = reservationRepository
+    Databases.imageRepository = imageRepository
 
 
     val context = LocalContext.current
