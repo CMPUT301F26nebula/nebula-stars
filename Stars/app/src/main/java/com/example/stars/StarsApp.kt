@@ -38,11 +38,11 @@ fun StarsApp() {
     var startAt by remember { mutableStateOf("home") }
 
     // TODO if u dont like it feel free to refactor these out after we make everything
+    // TODO honestly navController and currentUser would also be handy singletons
     Databases.userRepository = userRepository
     Databases.campsiteRepository = campsiteRepository
     Databases.reservationRepository = reservationRepository
     Databases.imageRepository = imageRepository
-
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {

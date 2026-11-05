@@ -39,6 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
+/**
+ * A single calendar day that will change its background colour if there is a campsite reservation on that day
+ *
+ * @param day CalendarDay object to display
+ * @param eventColors map of reservation IDs to their display colour
+ * @param onClick callback function that receives the list of reservations occurring on this day
+ */
 @Composable
 fun ReservationCalendarDay(
     day: CalendarDay,
@@ -50,15 +57,9 @@ fun ReservationCalendarDay(
     var modifier = Modifier
         .fillMaxSize()
         .background(Color.Transparent)
-        .clickable(onClick = {
-                if (day.events.isNotEmpty()) {
-                    onClick(day.events)
-                }
-            }
-        )
 
     if (day.isCurrent) {
-        fg = defaults.contentColor
+        //fg = defaults.contentColor
         modifier = modifier.background(defaults.containerColor)
     } else if (day.isFiller) {
         modifier = modifier.background(Color.LightGray)
@@ -75,7 +76,14 @@ fun ReservationCalendarDay(
             add(1.0f to (eventColors[day.events.last().id] ?: defaults.containerColor))
         }.toTypedArray()
         //fg = defaults.contentColor
-        modifier = modifier.background(Brush.verticalGradient(colorStops = colorStops))
+        modifier = modifier
+            .background(Brush.verticalGradient(colorStops = colorStops))
+            .clickable(onClick = {
+                if (day.events.isNotEmpty()) {
+                    onClick(day.events)
+                }
+            }
+        )
         if (day.isCurrent) {
             modifier = modifier.border(2.dp, defaults.containerColor)
         }
@@ -94,6 +102,12 @@ fun ReservationCalendarDay(
     }
 }
 
+/**
+ * Calendar widget for displaying user reservations
+ *
+ * @param reservations list of user reservations
+ * @param onDayClick callback function for when a day with reservations is tapped
+ */
 @OptIn(ExperimentalGridApi::class)
 @Composable
 fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reservation>) -> Unit = {}) {
@@ -139,6 +153,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
                 fontSize = 32.sp
             )
             Spacer(Modifier.weight(1.0f))
+            // change month buttons
             Button(
                 onClick = {
                     calendarManager.lastMonth()
@@ -206,11 +221,19 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
     }
 }
 
+/**
+ * Screen showing the reservations of the [currentUser]
+ *
+ * Displays reservations month by month and days can be clicked to view more info about the reservation
+ *
+ * @param autoRefresh if true, the calendar will automatically recompose when [reservationRepository] adds or deletes a reservation
+ */
 @Composable
 fun ReservationCalendarScreen(
     navController: NavController,
     currentUser: UserProfile,
-    reservationRepository: ReservationRepository
+    reservationRepository: ReservationRepository,
+    autoRefresh: Boolean = true
 ) {
     var userReservations by remember { mutableStateOf<List<Reservation>>(emptyList()) }
     var calendarReady by remember { mutableStateOf(false) }
@@ -218,8 +241,21 @@ fun ReservationCalendarScreen(
     var selectedReservation: Reservation? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
-        userReservations = reservationRepository.getUserReservations(currentUser.id)
-        calendarReady = true
+        // if the user cancels a reservation then it should update the calendar
+        // wont update if a reservation is cancelled externally tho
+        // TODO? maybe let one of the subviews signal the repository that something changed if it cant find a particular reservation in the db
+        while (autoRefresh) {
+            if (calendarReady) {
+                calendarReady = false
+            }
+            userReservations = reservationRepository
+                .getUserReservations(currentUser.id)
+                .sortedBy {
+                    it.timeRange.start
+                }
+            calendarReady = true
+            Databases.reservationRepository.waitForUpdate() // i miss pthreads...
+        }
     }
 
     // TODO remove at some point
@@ -239,6 +275,7 @@ fun ReservationCalendarScreen(
         )
     }
 
+    // if reservations overlap then the user should be able to choose which one they wanna look at
     if (selectedReservations.size > 1) {
         ReservationListModal(
             selectedReservations,
@@ -255,6 +292,7 @@ fun ReservationCalendarScreen(
         selectedReservations = emptyList()
     }
 
+    // reservation details
     if (selectedReservation != null) {
         ReservationDetailsModal(
             selectedReservation!!,
@@ -291,6 +329,7 @@ fun ReservationCalendarScreen(
             Text(
                 text = "Reservations",
                 fontSize = 32.sp,
+                // TODO debug, remove later
                 modifier = Modifier.combinedClickable(
                     onClick = {},
                     onLongClick = {
@@ -309,16 +348,7 @@ fun ReservationCalendarScreen(
                 selectedReservations = it
             }
         } else {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Loading...",
-                    fontSize = 32.sp
-                )
-            }
+            LoadingText()
         }
 
         Spacer(Modifier.weight(1.0f))

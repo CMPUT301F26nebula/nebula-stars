@@ -127,10 +127,9 @@ class CalendarManager(val reservations: List<Reservation>) {
      * If the start of the month isnt the first day of the week (Sunday) then a few days from the
      * previous month will be added to keep the "shape" of the calendar rectangular. Similarly, some
      * days of the next month will be added after the current month to fill out the end.
-     *
-     * TODO these params might not stay since the display date should be controlled by nextMonth()
-     * TODO and lastMonth()
      */
+    // TODO these params might not stay since the display date should be controlled by nextMonth()
+    // TODO and lastMonth()
     fun getMonthDisplayDays(
         month: Int = current.get(Calendar.MONTH),
         year: Int = current.get(Calendar.YEAR)

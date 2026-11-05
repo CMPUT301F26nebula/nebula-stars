@@ -1,10 +1,10 @@
 package com.example.stars
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -23,12 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import java.text.SimpleDateFormat
 import java.util.Date
 
+/**
+ * Detailed view of a reservation
+ */
 @Composable
 fun ReservationDetails(
     modifier: Modifier = Modifier,
@@ -36,16 +39,7 @@ fun ReservationDetails(
     campsite: Campsite,
     campOwner: UserProfile
 ) {
-    var confirmLeaveDialogState by remember { mutableStateOf(false) }
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
-    
-    if (confirmLeaveDialogState) {
-        ConfirmOrDenyModal(
-            onConfirm = {},
-            onCancel = {},
-            title = {},
-        ) { }
-    }
     
     Column(
         modifier = modifier
@@ -53,14 +47,6 @@ fun ReservationDetails(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center
     ) {
-        FilledTonalButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                confirmLeaveDialogState = true
-            }
-        ) { 
-            Text("Leave Reservation")
-        }
         // TODO these should bring u to their respective details pages
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -95,14 +81,44 @@ fun ReservationDetails(
     }
 }
 
+/**
+ * Modal dialogue showing the details of a reservation
+ */
 @Composable
 fun ReservationDetailsModal(reservation: Reservation, onClose: () -> Unit) {
     var campsite: Campsite? by remember { mutableStateOf(null) }
     var campOwner: UserProfile? by remember { mutableStateOf(null) }
+    var confirmLeaveDialogState by remember { mutableStateOf(false) }
+    val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
 
     LaunchedEffect(Unit) {
         campsite = Databases.campsiteRepository.getCampsite(reservation.campsiteId)
         campsite?.let { campOwner = Databases.userRepository.getUser(it.ownerId) }
+    }
+
+    // confirm before leaving a reservation
+    if (confirmLeaveDialogState) {
+        ConfirmOrDenyModal(
+            onConfirm = {
+                Databases.reservationRepository.removeUserReservation(reservation.id)
+                confirmLeaveDialogState = false
+                onClose()
+            },
+            onCancel = {
+                confirmLeaveDialogState = false
+            },
+            title = {
+                Text(campsite?.title ?: "MissingNo.")
+            },
+        ) {
+            Text(
+                "Cancel reservation from\n${
+                    simpleDateFormat.format(Date(reservation.timeRange.start))
+                } - ${
+                    simpleDateFormat.format(Date(reservation.timeRange.end))
+                }?"
+            )
+        }
     }
 
     Dialog(
@@ -125,6 +141,27 @@ fun ReservationDetailsModal(reservation: Reservation, onClose: () -> Unit) {
                         Text("Done")
                     }
                 }
+            },
+            topBar = {
+                Box(
+                    modifier = Modifier
+                        .padding(12.dp, 6.dp)
+                        .fillMaxWidth()
+                ) {
+                    if (campsite != null && campOwner != null) {
+                        FilledTonalButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                confirmLeaveDialogState = true
+                            }
+                        ) {
+                            Text(
+                                text = "Leave Reservation",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
         ) { padding ->
             if (campsite != null && campOwner != null) {
@@ -135,16 +172,7 @@ fun ReservationDetailsModal(reservation: Reservation, onClose: () -> Unit) {
                     campOwner = campOwner!!
                 )
             } else {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Loading...",
-                        fontSize = 32.sp
-                    )
-                }
+                LoadingText()
             }
         }
     }

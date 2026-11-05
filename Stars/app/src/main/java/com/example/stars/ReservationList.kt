@@ -29,6 +29,13 @@ import androidx.compose.ui.window.Dialog
 import java.text.SimpleDateFormat
 import java.util.Date
 
+/**
+ * Brief view of a reservation
+ *
+ * @param reservation Reservation object to display
+ * @param campsite campsite the reservation is for
+ * @param onClick callback function for when the card is tapped that receives the displayed reservation
+ */
 @Composable
 fun ReservationCard(
     reservation: Reservation,
@@ -70,6 +77,13 @@ fun ReservationCard(
     }
 }
 
+/**
+ * Displays a list of reservation cards
+ *
+ * @param reservations list of reservations to display
+ * @param campsites map of reservation IDs to their respective campsite
+ * @param onClick callback function for when a card is tapped that receives its displayed reservation
+ */
 @Composable
 fun ReservationList(
     modifier: Modifier = Modifier,
@@ -88,6 +102,13 @@ fun ReservationList(
     }
 }
 
+/**
+ * Modal dialogue showing a list of reservations the user can select from
+ *
+ * @param reservations list of reservations to display
+ * @param onClick callback function for when a card is tapped that receives its displayed reservation
+ * @param onClose callback function for when the user taps outside the dialogue or on "Back"
+ */
 @Composable
 fun ReservationListModal(
     reservations: List<Reservation>,
@@ -136,16 +157,7 @@ fun ReservationListModal(
                     onClick = onClick
                 )
             } else {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Loading...",
-                        fontSize = 32.sp
-                    )
-                }
+                LoadingText()
             }
         }
     }
