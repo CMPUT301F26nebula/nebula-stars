@@ -42,7 +42,7 @@ class FirebaseCRUDInstrumented {
      */
     @Test
     fun addAndDeleteUser() {
-        val userProfile = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER)
+        val userProfile = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", false,UserPermission.OWNER)
         runBlocking { userRepo.addOrUpdateUser(userProfile)}
         var user = runBlocking { userRepo.getUser("test1") }
         assertNotNull(user)
@@ -89,7 +89,7 @@ class FirebaseCRUDInstrumented {
     fun addAndRemoveCampsite() {
         // Create a user to own the campsite
         // There is no check whether the user that owns the campsite is actually valid at this time, but do it anyway for realism
-        val user = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", UserPermission.OWNER)
+        val user = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555",false, UserPermission.OWNER)
         runBlocking { userRepo.addOrUpdateUser(user) }
 
         // Add a partial campsite and give it a reservation

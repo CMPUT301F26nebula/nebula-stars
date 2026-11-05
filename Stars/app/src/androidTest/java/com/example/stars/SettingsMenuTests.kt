@@ -27,7 +27,6 @@ import org.junit.Test
  * A class for testing all the profile settings and other settings
  * TODO: create settings tests when settings exist
  */
-
 class SettingsMenuTests {
 
     private lateinit var userRepo: UserRepository
@@ -49,7 +48,7 @@ class SettingsMenuTests {
     create a good new profile without a phone number
      */
     @Test
-    fun CreateNewProfileWithoutPhoneNumber(){
+    fun createNewProfileWithoutPhoneNumber(){
 
         // create ID
         val user = UserProfile("Unit Test")
@@ -76,7 +75,7 @@ class SettingsMenuTests {
         // input good info
         composeTestRule.onNodeWithTag("Name Field").performTextInput("Unit Test")
         composeTestRule.onNodeWithTag("Email Field").performTextInput("Unit@test.test")
-        composeTestRule.onNodeWithTag("Confirm Profile").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure creation
         val fireUser = runBlocking { userRepo.getUser(user.id) }
@@ -93,7 +92,7 @@ class SettingsMenuTests {
     change to correct info, confirm creation, delete profile
      */
     @Test
-    fun CreateNewProfileWithBadPhoneAndEmail(){
+    fun createNewProfileWithBadPhoneAndEmail(){
         val user = UserProfile("Unit Test")
 
         /*
@@ -116,24 +115,24 @@ class SettingsMenuTests {
         }
 
         // ensure you can't make an incomplete profile
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("Name Field").performTextInput("Unit Test")
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("Name Field").performTextClearance()
         composeTestRule.onNodeWithTag("Email Field").performTextInput("Unit@test.test")
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
         composeTestRule.onNodeWithTag("Email Field").performTextClearance()
 
         //enter wrong stuff
         composeTestRule.onNodeWithTag("Name Field").performTextInput("Unit Test")
         composeTestRule.onNodeWithTag("Email Field").performTextInput("ad!qr14F>,1902<.{} %{}@9828320.com")
         composeTestRule.onNodeWithTag("Phone Field").performTextInput("ad!qr14F>,1902<.{} %{} 9828320")
-        composeTestRule.onNodeWithTag("Confirm Profile").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("Confirm").assertIsNotEnabled()
 
         // clear and enter good email
         composeTestRule.onNodeWithTag("Email Field").performTextClearance()
         composeTestRule.onNodeWithTag("Email Field").performTextInput("Unit@test.test")
-        composeTestRule.onNodeWithTag("Confirm Profile").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
 
 
         // confirm creation
@@ -151,7 +150,7 @@ class SettingsMenuTests {
     have user, try edits, assert correct changes
      */
     @Test
-    fun EditProfileCorrectlyAndDelete(){
+    fun editProfileCorrectlyAndDelete(){
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test")
 
         runBlocking {userRepo.addOrUpdateUser(user)}
@@ -198,11 +197,11 @@ class SettingsMenuTests {
     have user, try impossible edits, fail, cancel edits, delete user
      */
     @Test
-    fun FailEditAndDeleteProfile(){
+    fun failEditAndDeleteProfile(){
 
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
-            UserPermission.ADMIN)
+            false,UserPermission.ADMIN)
 
         // add the user to the repo
         runBlocking {userRepo.addOrUpdateUser(user)}
@@ -243,9 +242,9 @@ class SettingsMenuTests {
 
         // cancel deletion and then actually delete
         composeTestRule.onNodeWithTag("Delete Button").performClick()
-        composeTestRule.onNodeWithTag("Delete Cancel").performClick()
+        composeTestRule.onNodeWithTag("Cancel").performClick()
         composeTestRule.onNodeWithTag("Delete Button").performClick()
-        composeTestRule.onNodeWithTag("Delete Confirm").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure that the user was deleted
         composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} == null } // wait for firebase
@@ -254,5 +253,62 @@ class SettingsMenuTests {
         assertEquals("",user.email)
         assertEquals("", user.phone)
         assertEquals(UserPermission.ENTRANT, user.permission)
+    }
+
+    /*
+    testing to see if you can get and remove owner status
+     */
+    @Test
+    fun getOwnerStatusRemoveOwnerStatus(){
+
+        // set up the user
+        val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
+            false,UserPermission.ENTRANT)
+
+        // add the user to the repo
+        runBlocking {userRepo.addOrUpdateUser(user)}
+
+        /*
+       created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
+       "it is required in the code for MakeNewProfile. how do I fix this in the test?", and "write the recomended code"
+       https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+       claude sonnet 5.5, 2026-11-02
+        */
+        composeTestRule.setContent {
+            val context = LocalContext.current
+            navController = remember {
+                TestNavHostController(context).apply {
+                    navigatorProvider.addNavigator(ComposeNavigator())
+                }
+            }
+            NavHost(navController, startDestination = "new profile") {
+                composable("new profile") { SettingsScreen(navController, user, userRepo) }
+                composable("home") { }
+            }
+        }
+
+        // hit the become owner buttons
+        composeTestRule.onNodeWithTag("Become Owner").performClick()
+        composeTestRule.onNodeWithTag("Confirm Become Owner").performClick()
+
+        // ensure local and remote owner status
+        assertEquals(UserPermission.OWNER, user.permission)
+        val fireOwner = runBlocking { userRepo.getUser(user.id) }
+        assertEquals(UserPermission.OWNER, fireOwner?.permission)
+
+        // hit the remove owner status buttons
+        composeTestRule.onNodeWithTag("Remove Owner").performClick()
+        composeTestRule.onNodeWithTag("Confirm").performClick()
+
+        // ensure local and remote entrant status
+        assertEquals(UserPermission.ENTRANT, user.permission)
+        val fireUser = runBlocking { userRepo.getUser(user.id) }
+        assertEquals(UserPermission.ENTRANT, fireUser?.permission)
+
+        // delete
+        runBlocking { userRepo.deleteUser(user) }
+        composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} == null } // wait for firebase
+
+
     }
 }

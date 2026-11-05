@@ -8,6 +8,7 @@ package com.example.stars
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -50,4 +51,31 @@ class UserRepository {
         user.phone = ""
         user.permission = UserPermission.ENTRANT
     }
+
+    /**
+     * returns the current list of users
+     */
+    suspend fun getUsersList(): MutableList<UserProfile> {
+        return usersRef.get().await().toObjects(UserProfile::class.java)
+    }
+
+
+    /**
+     * receives [ownerProfile] and uses it to delete all campsites registered by the owner
+     * before demoting him to Entrant and banning him from ever again becoming owner or admin
+     * TODO: notify owner that they have been banned
+     * TODO: notify owner and anyone in a lottery for this site that it has been removed
+     */
+    suspend fun banOwner(ownerProfile: UserProfile) {
+        val campsiteRepository = CampsiteRepository()
+        val ownedCampsites = campsiteRepository.getUserCampsites(ownerProfile.id)
+        for (camp in ownedCampsites) {
+            campsiteRepository.deleteCampsite(camp.id)
+        }
+
+        ownerProfile.banned = true
+        ownerProfile.permission = UserPermission.ENTRANT
+        addOrUpdateUser(ownerProfile)
+    }
+
 }
