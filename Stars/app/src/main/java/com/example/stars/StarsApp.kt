@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -63,10 +64,10 @@ fun StarsApp() {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         currentUser = getUserID(navController, context, userRepository)
-        if (currentUser.name.isNotEmpty() && currentUser.email.isNotEmpty()){
+        if (currentUser.name.isNotEmpty() && currentUser.email.isNotEmpty()) {
             startAt = "home"
         }
-        if (currentUser.name.isEmpty() || currentUser.email.isEmpty()){
+        if (currentUser.name.isEmpty() || currentUser.email.isEmpty()) {
             startAt = "new profile"
         }
     }
@@ -86,9 +87,21 @@ fun StarsApp() {
                 }
                 composable("messages") { }
                 composable("notifications") { NotificationsScreen(navController, currentUser) }
-                composable("settings") { SettingsScreen(navController, currentUser, userRepository) }
+                composable("settings") {
+                    SettingsScreen(
+                        navController,
+                        currentUser,
+                        userRepository
+                    )
+                }
                 composable("profile") { EditProfile(navController, currentUser, userRepository) }
-                composable("new profile") { MakeNewProfile(navController, currentUser, userRepository) }
+                composable("new profile") {
+                    MakeNewProfile(
+                        navController,
+                        currentUser,
+                        userRepository
+                    )
+                }
                 composable("upload campsite") {
                     UpdateCampsiteScreen(
                         navController,
@@ -143,6 +156,46 @@ fun StarsApp() {
                         lotteryRepository,
                         backStackEntry.arguments?.getString("lotteryId").orEmpty()
                     )
+                }
+
+                /*
+                composable from claude qeustion: "I have CampsiteDetailsScreen(navController: NavController,
+                              currentUser: UserProfile,
+                              campsite: Campsite,
+                              campsiteRepository: CampsiteRepository,
+                              imageRepo: ImageRepository,
+                              userRepository: UserRepository,
+                              lotteryRepository: LotteryRepository) but campsite needs to be passed by a different function. Show me the code to do that."
+                 https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+                 claude sonnet 5.5, 2026-11-5
+                 */
+                composable(
+                    route = "campsite/{campsiteId}",
+                    arguments = listOf(navArgument("campsiteId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val campsiteId = backStackEntry.arguments?.getString("campsiteId")
+
+                    var campsite by remember(campsiteId) { mutableStateOf<Campsite?>(null) }
+
+                    LaunchedEffect(campsiteId) {
+                        campsite = campsiteId?.let { campsiteRepository.getCampsite(it) }
+                    }
+
+                    val loaded = campsite   // local copy, so Kotlin can smart cast it
+                    if (loaded != null) {
+                        StarsBackground(Modifier, {
+                            CampsiteDetailsScreen(
+                                navController = navController,
+                                currentUser = currentUser,
+                                campsite = loaded,
+                                campsiteRepository = campsiteRepository,
+                                imageRepo = imageRepository,
+                                userRepository = userRepository,
+                                lotteryRepository = lotteryRepository
+                            )
+                        }
+                        )
+                    }
                 }
             }
         }
