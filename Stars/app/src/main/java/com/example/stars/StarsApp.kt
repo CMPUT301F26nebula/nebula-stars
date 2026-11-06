@@ -71,7 +71,7 @@ fun StarsApp() {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
                 composable("home") { HomeScreen(navController, currentUser) }
-                composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
+                composable("campsites") { CampsitesScreen(navController, campsiteRepository, imageRepository) }
                 composable("waitlists") { }
                 composable("reservations") {
                     ReservationCalendarScreen(

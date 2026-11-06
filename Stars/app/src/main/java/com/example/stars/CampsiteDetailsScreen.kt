@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import kotlinx.coroutines.runBlocking
  * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
  * if you are an admin you can delete the listing or ban the owner.
  * TODO: add time and place details
+ * BUG: images have white space on the left and do not fill
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,13 +127,15 @@ fun CampsiteDetailsScreen(navController: NavController,
 
                 }
 
-                // images
-                ImageCarousel(
-                    imageIds = campsite.imageIds,
-                    imageRepo = imageRepo,
-                    editor = false,
-                    onDelete = {}
-                )
+
+                    // images
+                    ImageCarousel(
+                        imageIds = campsite.imageIds,
+                        imageRepo = imageRepo,
+                        editor = false,
+                        onDelete = {}
+                    )
+
 
 
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 0.dp, horizontal = 10.dp),
@@ -178,7 +182,6 @@ fun CampsiteDetailsScreen(navController: NavController,
 
                 LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)) {
 
-
                     item {Text(campsite.description)}
 
                 }
@@ -207,7 +210,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                 ) {
                     Text("Edit Campsite",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = StarsColors.White
                     )
                 }
 
@@ -230,7 +234,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                         Text(
                             "View Entrants",
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = StarsColors.White
                         )
                     }
                 }
@@ -297,7 +302,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                             Text(
                                 "Join Lottery",
                                 textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = StarsColors.White
                             )
                         }
 
@@ -330,7 +336,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                             Text(
                                 "Exit Lottery",
                                 textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = StarsColors.White
                             )
                         }
                     }

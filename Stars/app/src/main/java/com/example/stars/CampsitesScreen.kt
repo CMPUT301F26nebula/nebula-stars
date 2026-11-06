@@ -52,7 +52,8 @@ val campsiteCardColors = listOf(
 @Composable
 fun CampsitesScreen(
     navController: NavController,
-    campsiteRepository: CampsiteRepository
+    campsiteRepository: CampsiteRepository,
+    imageRepository: ImageRepository
 ) {
     var search by remember { mutableStateOf("") }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
@@ -127,7 +128,8 @@ fun CampsitesScreen(
                         CampsiteRow(
                             campsite = campsite,
                             color = campsiteCardColors[index % campsiteCardColors.size],
-                            onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")}
+                            onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
+                            imageRepository = imageRepository
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }

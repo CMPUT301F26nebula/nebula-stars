@@ -277,7 +277,8 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
             ) {
                 Text("Show Admin Actions",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium)
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = StarsColors.White)
             }
 
             Spacer(modifier = Modifier.size(height = 40.dp, width = 310.dp))
@@ -298,7 +299,8 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                 colors = ButtonDefaults.buttonColors(StarsColors.Yellow)){
                 Text("Hide Admin Actions",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium)
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = StarsColors.White)
             }
 
             Row() {
@@ -323,7 +325,8 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                 ) {
                     Text("Ban Owner",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = StarsColors.White)
                 }
 
                 Button(
@@ -343,7 +346,8 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                 ) {
                     Text("Remove Listing",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium)
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = StarsColors.White)
                 }
 
             }

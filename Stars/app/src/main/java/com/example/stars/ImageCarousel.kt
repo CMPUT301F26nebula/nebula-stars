@@ -3,6 +3,7 @@ Contains composable to display images in a scrollable carousel
  */
 package com.example.stars
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,9 +45,15 @@ fun ImageCarousel(
     val imageUris = remember { mutableStateListOf<String>() }
     LaunchedEffect(Unit) {
         for (imageId in imageIds) {
-            val imageUri = imageRepo.getImageUri(imageId)
-            if (imageUri != null) {
-                imageUris.add(imageUri)
+            try {
+                val imageUri = imageRepo.getImageUri(imageId)
+
+                if (imageUri != null) {
+                    imageUris.add(imageUri)
+                }
+            }
+            catch (e:Exception){
+                Log.e("Invalid Image", "ImageID Removed From Carousel: $imageId")
             }
         }
     }
