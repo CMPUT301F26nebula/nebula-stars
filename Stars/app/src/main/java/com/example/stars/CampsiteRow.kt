@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.runBlocking
 
 /**
  * Campsite card displayed in the campsite list
@@ -31,7 +32,8 @@ fun CampsiteRow(
     campsite: Campsite,
     color: Color,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    imageRepository: ImageRepository
 ) {
     Card(
         onClick = onClick,
@@ -57,11 +59,13 @@ fun CampsiteRow(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                val imageUrl = campsite.imageIds.firstOrNull()
+                val imageID = campsite.imageIds.firstOrNull()
 
-                if (!imageUrl.isNullOrBlank()) {
+                if (!imageID.isNullOrBlank()) {
+
+                    val imageUri =runBlocking { imageRepository.getImageUri(imageID) }
                     AsyncImage(
-                        model = imageUrl,
+                        model = imageUri,
                         contentDescription = campsite.title,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop // crops oversized image
