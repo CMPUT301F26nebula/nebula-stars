@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalGridApi
 import androidx.compose.foundation.layout.Grid
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -54,25 +59,31 @@ fun ReservationCalendarDay(
     eventColors: Map<String, Color> = emptyMap(),
     onClick: (List<Reservation>) -> Unit = {}
 ) {
+    var fg = StarsColors.White
+    var circleColor = StarsColors.Transparent
     var modifier = Modifier
         .fillMaxSize()
-        .background(starsTransparent)
+        .background(StarsColors.Purple)
+        .border(1.dp, StarsColors.White)
+
 
     if (day.isCurrent) {
-        modifier = modifier.background(starsBrightPurple)
-    } else if (day.isFiller) {
-        modifier = modifier.background(starsDullPurple)
+        fg = StarsColors.Purple
+        circleColor = StarsColors.White
+        modifier = modifier.background(StarsColors.White)
+    } else   if (day.isFiller) {
+        modifier = modifier.background(StarsColors.DullPurple)
     }
     if (day.events.isNotEmpty()) {
         val colorStops = buildList {
             val stopInc = 1.0f / day.events.size
             var stop = 0.0f
-            for (res in day.events) {
-                add(stop to (eventColors[res.id] ?: starsDullPurple))
+            for ((id) in day.events) {
+                add(stop to (eventColors[id] ?: StarsColors.Purple))
                 stop += stopInc
-                add(stop to (eventColors[res.id] ?: starsDullPurple))
+                add(stop to (eventColors[id] ?: StarsColors.Purple))
             }
-            add(1.0f to (eventColors[day.events.last().id] ?: starsDullPurple))
+            add(1.0f to (eventColors[day.events.last().id] ?: StarsColors.Purple))
         }.toTypedArray()
         modifier = modifier
             .background(Brush.verticalGradient(colorStops = colorStops))
@@ -81,22 +92,28 @@ fun ReservationCalendarDay(
                     onClick(day.events)
                 }
             }
-            )
-        if (day.isCurrent) {
-            modifier = modifier.border(3.dp, starsBrightPurple)
-        }
+        )
     }
 
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "${day.dayNumber()}",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = starsWhite
-        )
+        Box(
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .padding(12.dp)
+                .background(circleColor, shape = RoundedCornerShape(38.dp))
+                .aspectRatio(1.0f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "${day.dayNumber()}",
+                fontSize = 18.sp,
+                fontWeight = if (day.isFiller) FontWeight.Normal else FontWeight.Bold,
+                color = fg,
+            )
+        }
     }
 }
 
@@ -109,11 +126,7 @@ fun ReservationCalendarDay(
 @OptIn(ExperimentalGridApi::class)
 @Composable
 fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reservation>) -> Unit = {}) {
-    // TODO vvv these colours are VERY placeholder
-    val colors = listOf(
-        starsCyan, starsMagenta, starsYellow,
-        )
-        //Color(0xFFDC143C), Color(0xFF3CB371), Color(0xFF6495ED))
+    val colors = listOf(StarsColors.Cyan, StarsColors.Magenta, StarsColors.Yellow)
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
     // make sure reservation colour if consistent for all days
@@ -132,23 +145,41 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
     var currentMonth by remember { mutableStateOf(calendarManager.currentMonthName()) }
     var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
 
+    val changeMonthButtonModifier = Modifier
+        .border(1.dp, StarsColors.White, shape = RoundedCornerShape(24.dp))
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(6.dp)
+                .fillMaxWidth()
+        ) {
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = currentYear.toString(),
+                fontSize = 32.sp,
+                color = StarsColors.White
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(6.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Spacer(Modifier.width(12.dp))
             Text(
-                text = "$currentMonth $currentYear",
-                fontSize = 32.sp,
-                color = starsWhite
+                text = currentMonth,
+                fontSize = 38.sp,
+                color = StarsColors.White
             )
             Spacer(Modifier.weight(1.0f))
             // change month buttons
             Button(
+                modifier = changeMonthButtonModifier,
                 onClick = {
                     calendarManager.lastMonth()
                     // force text to recompose as well
@@ -157,14 +188,19 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
                     currentYear = calendarManager.currentYear()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = starsTransparent,
-                    contentColor = starsWhite
+                    containerColor = StarsColors.Transparent,
+                    contentColor = StarsColors.White
                 )
             ) {
-                Text("<")
+                Text(
+                    text = "<",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Spacer(Modifier.width(12.dp))
             Button(
+                modifier = changeMonthButtonModifier,
                 onClick = {
                     calendarManager.nextMonth()
                     calendarDays = calendarManager.getMonthDisplayDays().iterator()
@@ -172,27 +208,34 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
                     currentYear = calendarManager.currentYear()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = starsTransparent,
-                    contentColor = starsWhite
+                    containerColor = StarsColors.Transparent,
+                    contentColor = StarsColors.White
                 )
             ) {
-                Text(">")
+                Text(
+                    text = ">",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.background(starsWhite)
+            modifier = Modifier.background(StarsColors.White)
         ) {
             items(dayNames) { dayName ->
                 Box(
                     modifier = Modifier
+                        .background(color = StarsColors.White)
+                        .height(40.dp)
                         .fillMaxWidth(),
-                    contentAlignment = Alignment.BottomCenter
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = dayName,
                         fontSize = 22.sp,
-                        color = starsPurple
+                        fontWeight = FontWeight.Bold,
+                        color = StarsColors.Purple
                     )
                 }
             }
@@ -216,9 +259,9 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
                         modifier = Modifier
                             .gridItem(row = week, column = day)
                             .fillMaxSize()
-                            .background(starsWhite)
+                            .background(StarsColors.White)
                     ) {
-                        Box(modifier = Modifier.padding(1.dp).background(starsPurple)) {
+                        Box(modifier = Modifier.padding(1.dp).background(StarsColors.Purple)) {
                             if (calendarDays.hasNext()) {
                                 ReservationCalendarDay(
                                     calendarDays.next(),
@@ -327,7 +370,7 @@ fun ReservationCalendarScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starsWhite)
+                .background(StarsColors.White)
                 .statusBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -342,7 +385,7 @@ fun ReservationCalendarScreen(
                 text = "Reservations",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = starsPurple,
+                color = StarsColors.Purple,
                 // TODO debug, remove later
                 modifier = Modifier.combinedClickable(
                     onClick = {},

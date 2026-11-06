@@ -37,7 +37,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             text = "Welcome ${currentUser.name}",
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = starsPurple,
+            color = StarsColors.Purple,
         )
 
         // Change to fancier layout later

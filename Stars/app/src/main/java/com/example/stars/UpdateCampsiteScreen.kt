@@ -155,7 +155,7 @@ fun UpdateCampsiteScreen(
             Button(
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.testTag("backButton"),
-                colors = ButtonDefaults.buttonColors(starsCyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                 shape = buttonShape
             ) {
                 Text("<-")
@@ -167,7 +167,7 @@ fun UpdateCampsiteScreen(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starsWhite, shape = cardShape)
+                .background(StarsColors.White, shape = cardShape)
                 .padding(16.dp)
         ) {
             Column(
@@ -179,23 +179,23 @@ fun UpdateCampsiteScreen(
                     text = "CAMPSITE DETAILS",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = starsPurple
+                    color = StarsColors.Purple
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Basic Input fields
-                Text("TITLE", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("TITLE", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = starsPurple,
-                        focusedContainerColor = starsPurple,
-                        unfocusedTextColor = starsWhite,
-                        focusedTextColor = starsWhite,
-                        unfocusedLabelColor = starsWhite,
-                        focusedLabelColor = starsWhite
+                        unfocusedContainerColor = StarsColors.Purple,
+                        focusedContainerColor = StarsColors.Purple,
+                        unfocusedTextColor = StarsColors.White,
+                        focusedTextColor = StarsColors.White,
+                        unfocusedLabelColor = StarsColors.White,
+                        focusedLabelColor = StarsColors.White
                     ),
                     shape = fieldShape,
                     modifier = Modifier.fillMaxWidth().testTag("titleInput")
@@ -203,17 +203,17 @@ fun UpdateCampsiteScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("DESCRIPTION", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("DESCRIPTION", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = starsPurple,
-                        focusedContainerColor = starsPurple,
-                        unfocusedTextColor = starsWhite,
-                        focusedTextColor = starsWhite,
-                        unfocusedLabelColor = starsWhite,
-                        focusedLabelColor = starsWhite
+                        unfocusedContainerColor = StarsColors.Purple,
+                        focusedContainerColor = StarsColors.Purple,
+                        unfocusedTextColor = StarsColors.White,
+                        focusedTextColor = StarsColors.White,
+                        unfocusedLabelColor = StarsColors.White,
+                        focusedLabelColor = StarsColors.White
                     ),
                     shape = fieldShape,
                     modifier = Modifier.fillMaxWidth().testTag("descriptionInput")
@@ -221,7 +221,7 @@ fun UpdateCampsiteScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("PRICE ($)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("PRICE ($)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 OutlinedTextField(
                     value = if (price == 0.0) "" else price.toString(),
                     onValueChange = { newValue ->
@@ -232,12 +232,12 @@ fun UpdateCampsiteScreen(
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = starsPurple,
-                        focusedContainerColor = starsPurple,
-                        unfocusedTextColor = starsWhite,
-                        focusedTextColor = starsWhite,
-                        unfocusedLabelColor = starsWhite,
-                        focusedLabelColor = starsWhite
+                        unfocusedContainerColor = StarsColors.Purple,
+                        focusedContainerColor = StarsColors.Purple,
+                        unfocusedTextColor = StarsColors.White,
+                        focusedTextColor = StarsColors.White,
+                        unfocusedLabelColor = StarsColors.White,
+                        focusedLabelColor = StarsColors.White
                     ),
                     shape = fieldShape,
                     modifier = Modifier.fillMaxWidth().testTag("priceInput"),
@@ -246,7 +246,7 @@ fun UpdateCampsiteScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("CAPACITY", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("CAPACITY", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 OutlinedTextField(
                     value = if (capacity == 0) "" else capacity.toString(),
                     onValueChange = { newValue ->
@@ -257,12 +257,12 @@ fun UpdateCampsiteScreen(
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = starsPurple,
-                        focusedContainerColor = starsPurple,
-                        unfocusedTextColor = starsWhite,
-                        focusedTextColor = starsWhite,
-                        unfocusedLabelColor = starsWhite,
-                        focusedLabelColor = starsWhite
+                        unfocusedContainerColor = StarsColors.Purple,
+                        focusedContainerColor = StarsColors.Purple,
+                        unfocusedTextColor = StarsColors.White,
+                        focusedTextColor = StarsColors.White,
+                        unfocusedLabelColor = StarsColors.White,
+                        focusedLabelColor = StarsColors.White
                     ),
                     shape = fieldShape,
                     modifier = Modifier.fillMaxWidth().testTag("capacityInput"),
@@ -271,17 +271,17 @@ fun UpdateCampsiteScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("RULES", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("RULES", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 OutlinedTextField(
                     value = rules,
                     onValueChange = { rules = it },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = starsPurple,
-                        focusedContainerColor = starsPurple,
-                        unfocusedTextColor = starsWhite,
-                        focusedTextColor = starsWhite,
-                        unfocusedLabelColor = starsWhite,
-                        focusedLabelColor = starsWhite
+                        unfocusedContainerColor = StarsColors.Purple,
+                        focusedContainerColor = StarsColors.Purple,
+                        unfocusedTextColor = StarsColors.White,
+                        focusedTextColor = StarsColors.White,
+                        unfocusedLabelColor = StarsColors.White,
+                        focusedLabelColor = StarsColors.White
                     ),
                     shape = fieldShape,
                     modifier = Modifier.fillMaxWidth().testTag("rulesInput")
@@ -290,7 +290,7 @@ fun UpdateCampsiteScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Images Section
-                Text("IMAGES", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("IMAGES", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 Text("Count: ${imageIds.size}", color = Color.Gray, fontSize = 14.sp)
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -325,7 +325,7 @@ fun UpdateCampsiteScreen(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     },
-                    colors = ButtonDefaults.buttonColors(starsCyan),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                     shape = buttonShape,
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
@@ -335,7 +335,7 @@ fun UpdateCampsiteScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Availability (dates) Section
-                Text("AVAILABILITY", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("AVAILABILITY", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
 
                 val formatter = SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
 
@@ -343,7 +343,7 @@ fun UpdateCampsiteScreen(
                     availabilitySchedule.forEach { dateRange ->
                         Text(
                             "• Start: ${formatter.format(Date(dateRange.start))} | End: ${formatter.format(Date(dateRange.end))}",
-                            color = starsPurple,
+                            color = StarsColors.Purple,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -372,7 +372,7 @@ fun UpdateCampsiteScreen(
                         Text(
                             text = "Select availability dates",
                             modifier = Modifier.padding(12.dp),
-                            color = starsPurple,
+                            color = StarsColors.Purple,
                             fontWeight = FontWeight.Bold
                         )
                     },
@@ -392,7 +392,7 @@ fun UpdateCampsiteScreen(
                             newEnd = 0L
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(starsCyan),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                     shape = buttonShape,
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
@@ -402,7 +402,7 @@ fun UpdateCampsiteScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Geolocation Section
-                Text("LOCATION", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                Text("LOCATION", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                 Text("Lat: ${location.latitude}", color = Color.Gray, fontSize = 14.sp)
                 Text("Lng: ${location.longitude}", color = Color.Gray, fontSize = 14.sp)
 
@@ -451,7 +451,7 @@ fun UpdateCampsiteScreen(
                         Log.d("Campsite Update Submission", "Campsite Uploaded")
                         navController.popBackStack()
                     },
-                    colors = ButtonDefaults.buttonColors(starsCyan),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                     shape = buttonShape,
                     modifier = Modifier
                         .fillMaxWidth()

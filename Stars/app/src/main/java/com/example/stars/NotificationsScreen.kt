@@ -33,8 +33,9 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(starsPurple)
-            .navigationBarsPadding(),
+            .background(StarsColors.Purple)
+            .navigationBarsPadding()
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -42,13 +43,29 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starsWhite)
+                .background(StarsColors.White)
                 .statusBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Back button
-            BackButton(navController)
+            Button(
+                onClick = { navController.popBackStack() },
+                shape = RectangleShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = StarsColors.Cyan,
+                    contentColor = StarsColors.White
+                ),
+                modifier = Modifier
+                    .testTag("backButton"), // for testing
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "◀",
+                    fontSize = 44.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1.0f))
 
@@ -57,7 +74,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
                 text = "Notifications",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = starsPurple,
+                color = StarsColors.Purple,
             )
 
             Spacer(modifier = Modifier.weight(1.0f))
@@ -73,7 +90,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
         ) {
             /*
             if (false) {
-                Text("No campsites found", color = starsWhite)
+                Text("No campsites found", color = StarsColors.White)
             } else {
                 // List of campsites
                 LazyColumn {

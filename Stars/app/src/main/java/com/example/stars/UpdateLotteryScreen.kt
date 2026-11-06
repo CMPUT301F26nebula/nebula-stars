@@ -148,7 +148,7 @@ fun UpdateLotteryScreen(
             Button(
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.testTag("backButton"),
-                colors = ButtonDefaults.buttonColors(starsCyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                 shape = buttonShape
             ) {
                 Text("<-")
@@ -160,7 +160,7 @@ fun UpdateLotteryScreen(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starsWhite, shape = cardShape)
+                .background(StarsColors.White, shape = cardShape)
                 .padding(16.dp)
         ) {
             Column(
@@ -172,14 +172,14 @@ fun UpdateLotteryScreen(
                     text = "ADD A LOTTERY",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = starsPurple
+                    color = StarsColors.Purple
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (deadline <= 0.toLong() || deadline > System.currentTimeMillis()) {
                     // Input fields
-                    Text("NUMBER OF WINNERS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                    Text("NUMBER OF WINNERS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                     OutlinedTextField(
                         value = if (numWinners == 0) "" else numWinners.toString(),
                         onValueChange = { newValue: String ->
@@ -190,12 +190,12 @@ fun UpdateLotteryScreen(
                             }
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = starsPurple,
-                            focusedContainerColor = starsPurple,
-                            unfocusedTextColor = starsWhite,
-                            focusedTextColor = starsWhite,
-                            unfocusedLabelColor = starsWhite,
-                            focusedLabelColor = starsWhite
+                            unfocusedContainerColor = StarsColors.Purple,
+                            focusedContainerColor = StarsColors.Purple,
+                            unfocusedTextColor = StarsColors.White,
+                            focusedTextColor = StarsColors.White,
+                            unfocusedLabelColor = StarsColors.White,
+                            focusedLabelColor = StarsColors.White
                         ),
                         shape = fieldShape,
                         modifier = Modifier.fillMaxWidth().testTag("numWinnersInput"),
@@ -204,7 +204,7 @@ fun UpdateLotteryScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    Text("MAX NUMBER OF ENTRANTS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                    Text("MAX NUMBER OF ENTRANTS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                     OutlinedTextField(
                         value = if (waitlistCapacity == 0) "" else waitlistCapacity.toString(),
                         onValueChange = { newValue: String ->
@@ -217,12 +217,12 @@ fun UpdateLotteryScreen(
                             }
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = starsPurple,
-                            focusedContainerColor = starsPurple,
-                            unfocusedTextColor = starsWhite,
-                            focusedTextColor = starsWhite,
-                            unfocusedLabelColor = starsWhite,
-                            focusedLabelColor = starsWhite
+                            unfocusedContainerColor = StarsColors.Purple,
+                            focusedContainerColor = StarsColors.Purple,
+                            unfocusedTextColor = StarsColors.White,
+                            focusedTextColor = StarsColors.White,
+                            unfocusedLabelColor = StarsColors.White,
+                            focusedLabelColor = StarsColors.White
                         ),
                         shape = fieldShape,
                         modifier = Modifier.fillMaxWidth().testTag("waitlistCapacityInput"),
@@ -232,11 +232,11 @@ fun UpdateLotteryScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // Deadline date
-                    Text("ENTRY DEADLINE", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                    Text("ENTRY DEADLINE", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                     val formatter = SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
                     Text(
                         "Entry Deadline: ${if (deadline > 0) formatter.format(Date(deadline)) else "Not set"}",
-                        color = starsPurple,
+                        color = StarsColors.Purple,
                         fontWeight = FontWeight.Medium
                     )
 
@@ -257,7 +257,7 @@ fun UpdateLotteryScreen(
                             Text(
                                 text = "Select deadline date",
                                 modifier = Modifier.padding(12.dp),
-                                color = starsPurple,
+                                color = StarsColors.Purple,
                                 fontWeight = FontWeight.Bold
                             )
                         },
@@ -274,7 +274,7 @@ fun UpdateLotteryScreen(
                                 deadline = newDate
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(starsCyan),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                         shape = buttonShape,
                         modifier = Modifier.fillMaxWidth().height(48.dp)
                     ) {
@@ -284,7 +284,7 @@ fun UpdateLotteryScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // Campsites to include
-                    Text("CAMPSITES TO INCLUDE", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                    Text("CAMPSITES TO INCLUDE", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
 
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -303,7 +303,7 @@ fun UpdateLotteryScreen(
                                     text = item.title,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = starsPurple
+                                    color = StarsColors.Purple
                                 )
                                 Checkbox(
                                     checked = item.id in campsiteIDs,
@@ -315,8 +315,8 @@ fun UpdateLotteryScreen(
                                         }
                                     },
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = starsCyan,
-                                        uncheckedColor = starsPurple
+                                        checkedColor = StarsColors.Cyan,
+                                        uncheckedColor = StarsColors.Purple
                                     )
                                 )
                             }
@@ -326,10 +326,10 @@ fun UpdateLotteryScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // Reservation dates
-                    Text("RESERVATION DATES", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = starsPurple)
+                    Text("RESERVATION DATES", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
                     Text(
                         "Start: ${if (timePeriod.start > 0) formatter.format(Date(timePeriod.start)) else "N/A"} | End: ${if (timePeriod.end > 0) formatter.format(Date(timePeriod.end)) else "N/A"}",
-                        color = starsPurple,
+                        color = StarsColors.Purple,
                         fontWeight = FontWeight.Medium
                     )
 
@@ -361,7 +361,7 @@ fun UpdateLotteryScreen(
                             Text(
                                 text = "Select reservation dates",
                                 modifier = Modifier.padding(12.dp),
-                                color = starsPurple,
+                                color = StarsColors.Purple,
                                 fontWeight = FontWeight.Bold
                             )
                         },
@@ -379,7 +379,7 @@ fun UpdateLotteryScreen(
                                 timePeriod = EpochRange(newStart, newEnd)
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(starsCyan),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                         shape = buttonShape,
                         modifier = Modifier.fillMaxWidth().height(48.dp)
                     ) {
@@ -408,7 +408,7 @@ fun UpdateLotteryScreen(
                             Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(starsCyan),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                         shape = buttonShape,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -422,7 +422,7 @@ fun UpdateLotteryScreen(
                         text = "Sorry, this lottery has already finished and can no longer be edited.",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = starsPurple
+                        color = StarsColors.Purple
                     )
                 }
             }

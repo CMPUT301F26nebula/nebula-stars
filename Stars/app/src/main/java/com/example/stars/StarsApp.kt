@@ -15,20 +15,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
-/**
- * Background Color
- */
-val starsPurple = Color(0xFF4B0082)
-/**
- * Greyed Out Color
- */
-val starsDullPurple = Color(0xFF63357E)
-val starsBrightPurple = Color(0xFF8900EC)
-val starsCyan = Color(0xFF008B8B)
-val starsMagenta = Color(0xFFFF1493)
-val starsYellow = Color(0xFFEFC700)
-val starsWhite = Color(0xFFFFFFFF)
-val starsTransparent = Color(0x00FFFFFF)
+object StarsColors {
+    val Purple = Color(0xFF4B0082)
+    val DullPurple = Color(0xFF483D8B)
+    val BrightPurple = Color(0xFF9400D3)
+    val Cyan = Color(0xFF008B8B)
+    val Magenta = Color(0xFFFF1493)
+    val Yellow = Color(0xFFEFC700)
+    val White = Color(0xFFFFFFFF)
+    val Black = Color(0xFF000000)
+    val Transparent = Color(0x00FFFFFF)
+}
 
 // This should be where the current User, and other data shared between screens is stored
 object Databases {

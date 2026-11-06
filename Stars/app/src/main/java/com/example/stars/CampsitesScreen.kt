@@ -40,9 +40,9 @@ import androidx.navigation.NavController
 
 // cyan, magenta, yellow, from top to bottom
 val campsiteCardColors = listOf(
-    starsCyan,
-    starsMagenta,
-    starsYellow
+    StarsColors.Cyan,
+    StarsColors.Magenta,
+    StarsColors.Yellow
 )
 
 /**
@@ -63,8 +63,9 @@ fun CampsitesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(starsPurple)
-            .navigationBarsPadding(),
+            .background(StarsColors.Purple)
+            .navigationBarsPadding()
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -72,7 +73,7 @@ fun CampsitesScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starsWhite)
+                .background(StarsColors.White)
                 .statusBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -85,7 +86,7 @@ fun CampsitesScreen(
                 text = "CAMPSITES",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = starsPurple,
+                color = StarsColors.Purple,
             )
             // Filter button
             Button(
@@ -93,8 +94,8 @@ fun CampsitesScreen(
                     // for kaiwen to do : add filter
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = starsWhite,
-                    contentColor = starsPurple
+                    containerColor = StarsColors.White,
+                    contentColor = StarsColors.Purple
                 ),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
@@ -117,7 +118,7 @@ fun CampsitesScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (results.isEmpty()) {
-                Text("No campsites found", color = starsWhite)
+                Text("No campsites found", color = StarsColors.White)
             } else {
                 // List of campsites
                 LazyColumn {
@@ -138,7 +139,7 @@ fun CampsitesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
-                .background(starsWhite),
+                .background(StarsColors.White),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Search field
@@ -148,24 +149,24 @@ fun CampsitesScreen(
                 placeholder = {
                     Text(
                         text = "Search",
-                        color = starsPurple,
+                        color = StarsColors.Purple,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 textStyle = TextStyle(
-                    color = starsPurple,
+                    color = StarsColors.Purple,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 ),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = starsTransparent,
-                    unfocusedContainerColor = starsTransparent,
-                    disabledContainerColor = starsTransparent,
-                    focusedIndicatorColor = starsPurple,
-                    unfocusedIndicatorColor = starsPurple.copy(alpha = 0.6f),
-                    cursorColor = starsPurple
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    focusedIndicatorColor = StarsColors.Purple,
+                    unfocusedIndicatorColor = StarsColors.Purple.copy(alpha = 0.6f),
+                    cursorColor = StarsColors.Purple
                 ),
                 modifier = Modifier
                     .weight(1f)
