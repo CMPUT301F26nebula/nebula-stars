@@ -93,6 +93,7 @@ fun UpdateCampsiteScreen(
     val reservations = remember { mutableStateListOf<String>() }
     val availabilitySchedule = remember { mutableStateListOf<EpochRange>() }
     var location by remember { mutableStateOf(LocationCoordinates(0.0, 0.0)) }
+    var campsiteExists by remember(campsiteId) { mutableStateOf(false) }
 
     // Shapes matching theme
     val fieldShape = RoundedCornerShape(
@@ -123,6 +124,14 @@ fun UpdateCampsiteScreen(
             availabilitySchedule.addAll(oldCampsite.availabilitySchedule)
             location = oldCampsite.location
         }
+    }
+    
+    // display QR code only for an existing, saved campsite
+    LaunchedEffect(campsiteId) {
+        val savedCampsite = campsiteRepo.getCampsite(campsiteId)
+        campsiteExists = savedCampsite != null &&
+                savedCampsite.ownerId == currentUser.id
+
     }
 
     Column(
@@ -404,6 +413,20 @@ fun UpdateCampsiteScreen(
                     initialLongitude = if (location.longitude != 0.0) location.longitude else 113.4903,
                     onLocationConfirmed = { result -> location = result }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // changed this because this now ensures the button is only displayed to the campsites owner
+                if (campsiteExists) {
+                    Button(
+                        onClick = {
+                            navController.navigate("qr code/$campsiteId")
+                        },
+                        modifier = Modifier.testTag("viewQRCodeButton")
+                    ) {
+                        Text("View QR Code")
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
