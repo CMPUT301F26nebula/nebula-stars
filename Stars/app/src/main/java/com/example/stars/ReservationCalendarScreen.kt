@@ -361,28 +361,17 @@ fun ReservationCalendarScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(StarsColors.White)
-                .statusBarsPadding(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        ScreenHeader(
+            navController = navController,
+            title = "RESERVATIONS"
         ) {
-            // Back button
-            BackButton(navController)
-
-            Spacer(modifier = Modifier.weight(1.0f))
-
-            // Title
             Text(
-                text = "Reservations",
+                text = "+ ",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = StarsColors.Purple,
@@ -394,9 +383,8 @@ fun ReservationCalendarScreen(
                     }
                 )
             )
-
-            Spacer(modifier = Modifier.weight(1.0f))
         }
+
         Spacer(Modifier.weight(1.0f))
 
         // the thingy doesnt like to recompose properly after the reservations are found so loading screen it is :P

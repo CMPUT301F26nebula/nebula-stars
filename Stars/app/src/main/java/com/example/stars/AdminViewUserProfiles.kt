@@ -48,18 +48,10 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
     // column to hold things and make background purple
     Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple)) {
 
-        // back button
-        Button(onClick = { navController.popBackStack() },
-            modifier = Modifier.systemBarsPadding().testTag("Back"),
-            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-            shape = RoundedCornerShape(
-                topStart = 5.dp,
-                topEnd = 5.dp,
-                bottomStart = 5.dp,
-                bottomEnd = 5.dp
-            ),) {
-            Text("<-")
-        }
+        ScreenHeader(
+            navController = navController,
+            title = "Users"
+        )
 
         // column for each individual user card
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
