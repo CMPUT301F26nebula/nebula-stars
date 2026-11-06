@@ -40,7 +40,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(starsPurple)
+            .background(StarsColors.Purple)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
@@ -48,7 +48,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(starsWhite)
+                .background(StarsColors.White)
                 .statusBarsPadding(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -58,7 +58,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                 text = "Welcome ${currentUser.name}",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = starsPurple,
+                color = StarsColors.Purple,
             )
         }
 
@@ -105,8 +105,8 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                     tab = UserPermission.ENTRANT
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = starsBrightPurple,
-                    contentColor = starsWhite
+                    containerColor = StarsColors.BrightPurple,
+                    contentColor = StarsColors.White
                 )
             ) {
                 Text(
@@ -121,8 +121,8 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                     tab = UserPermission.OWNER
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = starsBrightPurple,
-                    contentColor = starsWhite
+                    containerColor = StarsColors.BrightPurple,
+                    contentColor = StarsColors.White
                 )
             ) {
                 Text(
@@ -138,8 +138,8 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         tab = UserPermission.ADMIN
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = starsBrightPurple,
-                        contentColor = starsWhite
+                        containerColor = StarsColors.BrightPurple,
+                        contentColor = StarsColors.White
                     )
                 ) {
                     Text(
