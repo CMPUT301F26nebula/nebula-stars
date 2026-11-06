@@ -8,13 +8,17 @@ package com.example.stars
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 /**
  * A container of UserProfiles stored in Firestore
+ *
+ * @param scope the global coroutine scope used to run basic database operations
  */
-class UserRepository {
+class UserRepository(private val scope: CoroutineScope) {
     private val db = Firebase.firestore
     private val usersRef = db.collection("users")
 
@@ -29,8 +33,10 @@ class UserRepository {
      * Adds or updates a [user] in the users list
      * If user.id matches an existing user, updates it, otherwise creates a new entry
      */
-    suspend fun addOrUpdateUser(user: UserProfile) {
-        usersRef.document(user.id).set(user).await()
+    fun addOrUpdateUser(user: UserProfile) {
+        scope.launch {
+            usersRef.document(user.id).set(user).await()
+        }
     }
 
     /**
@@ -38,18 +44,20 @@ class UserRepository {
      * Also removes any campsites, reservations, and waiting list positions held by that user
      * Also edit [user] to be effectively deleted
      */
-    suspend fun deleteUser(user: UserProfile) {
+    fun deleteUser(user: UserProfile) {
         // TODO: delete all reservations and waiting list positions associated with the user
-        val campsiteRepository = CampsiteRepository()
-        for (campsite in campsiteRepository.getUserCampsites(user.id)) {
-            campsiteRepository.deleteCampsite(campsite.id)
-        }
+        val campsiteRepository = CampsiteRepository(scope)
+        scope.launch {
+            for (campsite in campsiteRepository.getUserCampsites(user.id)) {
+                campsiteRepository.deleteCampsite(campsite.id)
+            }
 
-        usersRef.document(user.id).delete().await()
-        user.name = ""
-        user.email = ""
-        user.phone = ""
-        user.permission = UserPermission.ENTRANT
+            usersRef.document(user.id).delete().await()
+            user.name = ""
+            user.email = ""
+            user.phone = ""
+            user.permission = UserPermission.ENTRANT
+        }
     }
 
     /**
@@ -66,16 +74,18 @@ class UserRepository {
      * TODO: notify owner that they have been banned
      * TODO: notify owner and anyone in a lottery for this site that it has been removed
      */
-    suspend fun banOwner(ownerProfile: UserProfile) {
-        val campsiteRepository = CampsiteRepository()
-        val ownedCampsites = campsiteRepository.getUserCampsites(ownerProfile.id)
-        for (camp in ownedCampsites) {
-            campsiteRepository.deleteCampsite(camp.id)
-        }
+    fun banOwner(ownerProfile: UserProfile) {
+        scope.launch {
+            val campsiteRepository = CampsiteRepository(scope)
+            val ownedCampsites = campsiteRepository.getUserCampsites(ownerProfile.id)
+            for (camp in ownedCampsites) {
+                campsiteRepository.deleteCampsite(camp.id)
+            }
 
-        ownerProfile.banned = true
-        ownerProfile.permission = UserPermission.ENTRANT
-        addOrUpdateUser(ownerProfile)
+            ownerProfile.banned = true
+            ownerProfile.permission = UserPermission.ENTRANT
+            addOrUpdateUser(ownerProfile)
+        }
     }
 
 }

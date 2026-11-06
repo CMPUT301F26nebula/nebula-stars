@@ -16,7 +16,7 @@ package com.example.stars
  * @param rules campsite rules policy
  * @param ownerId user profile ID of the account that owns this campsite
  * @param imageIds list of promotional images uploaded to this campsite's page
- * @param reservations list of current reservations
+ * @param reservationIds list of current reservation ids
  * @param availabilitySchedule list of times the campsite is available
  * @param location geographic location of the campsite
  */
@@ -29,7 +29,7 @@ data class Campsite (
     val rules: String = "",
     val ownerId: String = "",
     val imageIds: List<String> = emptyList(),
-    val reservations: List<Reservation> = emptyList(),
+    val reservationIds: List<String> = emptyList(),
     val availabilitySchedule: List<EpochRange> = emptyList(),
     val location: LocationCoordinates = LocationCoordinates(0.0, 0.0)
 )
