@@ -32,6 +32,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.runBlocking
 
@@ -143,7 +144,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
 
                     // if not trying to delete user, show the ban button
-                    if (!confirmBan && userProfile.permission >= UserPermission.OWNER) {
+                    if (!confirmBan) {
                         AdminActionOnUser(
                             confirmDeletion, "Delete User",
                             onRequest = {
@@ -167,7 +168,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                     }
 
                     // if not trying to ban user show the delete button
-                    if (!confirmDeletion){
+                    if (!confirmDeletion  && userProfile.permission >= UserPermission.OWNER){
                         AdminActionOnUser(confirmBan, "Ban Owner",
                             onRequest = {
                                 confirmDeletion = false
@@ -214,7 +215,20 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
     if (confirm) {
         Row() {
 
-            //
+            Button(onConfirm,
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(starsMagenta),
+                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
+                Text("Confirm", textAlign = TextAlign.Center)
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
             Button(onCancel,
                 shape = RoundedCornerShape(
                     topStart = 5.dp,
@@ -227,19 +241,9 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 Text("Cancel",textAlign = TextAlign.Center)
             }
 
-            Spacer(modifier = Modifier.size(10.dp))
 
-            Button(onConfirm,
-                shape = RoundedCornerShape(
-                    topStart = 5.dp,
-                    topEnd = 5.dp,
-                    bottomStart = 5.dp,
-                    bottomEnd = 5.dp
-                ),
-                colors = ButtonDefaults.buttonColors(starsMagenta),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
-                Text("Confirm", textAlign = TextAlign.Center)
-            }
+
+
 
 
         }
@@ -258,39 +262,91 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
     var showButtons by remember { mutableStateOf(false) }
 
     if (!showButtons){
-        Button(onClick = {showButtons = true},
-            modifier = Modifier.testTag("Admin Actions")){
-            Text("Show Admin Actions")
+        Column() {
+
+            Button(
+                onClick = { showButtons = true },
+                modifier = Modifier.testTag("Admin Actions").size(height = 40.dp, width = 310.dp),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 10.dp,
+                    bottomEnd = 10.dp
+                ),
+                colors = ButtonDefaults.buttonColors(starsYellow)
+            ) {
+                Text("Show Admin Actions",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium)
+            }
+
+            Spacer(modifier = Modifier.size(height = 40.dp, width = 310.dp))
         }
     }
     if (showButtons){
 
-        Row() {
+        Column() {
 
             Button(onClick = {showButtons = false},
-                modifier = Modifier.testTag("Hide Actions")) {
-                Text("Hide Admin Actions")
+                modifier = Modifier.testTag("Admin Actions").size(height = 40.dp, width = 310.dp),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(starsYellow)){
+                Text("Hide Admin Actions",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium)
             }
-            Button(onClick = {
-                val user = runBlocking { userRepository.getUser(campsite.id) }
 
-                if (user != null) {
-                    runBlocking { userRepository.banOwner(user) }
+            Row() {
+
+
+                Button(
+                    onClick = {
+                        val user = runBlocking { userRepository.getUser(campsite.id) }
+
+                        if (user != null) {
+                            runBlocking { userRepository.banOwner(user) }
+                        }
+                    },
+                    modifier = Modifier.testTag("Ban Owner").size(height = 40.dp, width = 155.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 10.dp,
+                        bottomEnd = 0.dp
+                    ),
+                    colors = ButtonDefaults.buttonColors(starsMagenta)
+                ) {
+                    Text("Ban Owner",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium)
                 }
-            },
-                modifier = Modifier.testTag("Ban Owner")
-            ) {
-                Text("Ban Owner")
-            }
 
-            Button(onClick = {
-                runBlocking { campsiteRepository.deleteCampsite(campsite.id) }
-            },
-                modifier = Modifier.testTag("Remove Campsite")
-            ) {
-                Text("Remove Listing")
-            }
+                Button(
+                    onClick = {
+                        runBlocking { campsiteRepository.deleteCampsite(campsite.id) }
+                    },
+                    modifier = Modifier.testTag("Remove Campsite")
+                        .size(height = 40.dp, width = 155.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 10.dp
+                    ),
+                    colors = ButtonDefaults.buttonColors(starsCyan)
 
+                ) {
+                    Text("Remove Listing",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium)
+                }
+
+            }
         }
 
 
