@@ -68,7 +68,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
         // Contents
 
         HomeLayout(
-            rememberNavController(),
+            navController,
             when (tab) {
                 UserPermission.ENTRANT -> arrayOf(
                     HomeButtonData("Campsites", "campsiteButton", "campsites"),

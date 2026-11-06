@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -55,12 +57,13 @@ fun HomeLayoutBox(navController: NavController, data: HomeButtonData, height: Dp
 
 //TODO fix text fitting (currently slides under next box to the right)
 @Composable
-fun HomeLayout(navController: NavController, boxDatas: Array<HomeButtonData>, modifier: Modifier = Modifier) {
-    var i = boxDatas.size-1
+fun HomeLayout(navController: NavController, boxData: Array<HomeButtonData>, modifier: Modifier = Modifier) {
+    var i = boxData.size-1
     var row: Int
     var column: Int
+
     Box(contentAlignment = Alignment.BottomEnd, modifier = modifier) {
-        for (data in boxDatas) {
+        for (data in boxData) {
             row = (i%maxHeight)
             column = (i/maxHeight)
             HomeLayoutBox(navController, data, ((row+1)*boxSize - column*50).dp, (((column+1)*boxSize) - row*10).dp,
