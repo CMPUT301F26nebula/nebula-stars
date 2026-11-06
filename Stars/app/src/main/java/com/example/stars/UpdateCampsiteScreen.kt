@@ -136,329 +136,370 @@ fun UpdateCampsiteScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // Header Row
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
         ) {
-            // Back button
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.testTag("backButton"),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                shape = buttonShape
-            ) {
-                Text("<-")
-            }
-        }
+            // Header
+            ScreenHeader(
+                navController = navController
+            )
 
-        // White Card Container (matching ProfileScreen Box)
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(StarsColors.White, shape = cardShape)
-                .padding(16.dp)
-        ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                // Title Header
-                Text(
-                    text = "CAMPSITE DETAILS",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = StarsColors.Purple
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Basic Input fields
-                Text("TITLE", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = StarsColors.Purple,
-                        focusedContainerColor = StarsColors.Purple,
-                        unfocusedTextColor = StarsColors.White,
-                        focusedTextColor = StarsColors.White,
-                        unfocusedLabelColor = StarsColors.White,
-                        focusedLabelColor = StarsColors.White
-                    ),
-                    shape = fieldShape,
-                    modifier = Modifier.fillMaxWidth().testTag("titleInput")
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text("DESCRIPTION", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = StarsColors.Purple,
-                        focusedContainerColor = StarsColors.Purple,
-                        unfocusedTextColor = StarsColors.White,
-                        focusedTextColor = StarsColors.White,
-                        unfocusedLabelColor = StarsColors.White,
-                        focusedLabelColor = StarsColors.White
-                    ),
-                    shape = fieldShape,
-                    modifier = Modifier.fillMaxWidth().testTag("descriptionInput")
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text("PRICE ($)", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                OutlinedTextField(
-                    value = if (price == 0.0) "" else price.toString(),
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty()) {
-                            price = 0.0
-                        } else {
-                            newValue.toDoubleOrNull()?.let { price = it }
-                        }
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = StarsColors.Purple,
-                        focusedContainerColor = StarsColors.Purple,
-                        unfocusedTextColor = StarsColors.White,
-                        focusedTextColor = StarsColors.White,
-                        unfocusedLabelColor = StarsColors.White,
-                        focusedLabelColor = StarsColors.White
-                    ),
-                    shape = fieldShape,
-                    modifier = Modifier.fillMaxWidth().testTag("priceInput"),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text("CAPACITY", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                OutlinedTextField(
-                    value = if (capacity == 0) "" else capacity.toString(),
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty()) {
-                            capacity = 0
-                        } else {
-                            newValue.toIntOrNull()?.let { capacity = it }
-                        }
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = StarsColors.Purple,
-                        focusedContainerColor = StarsColors.Purple,
-                        unfocusedTextColor = StarsColors.White,
-                        focusedTextColor = StarsColors.White,
-                        unfocusedLabelColor = StarsColors.White,
-                        focusedLabelColor = StarsColors.White
-                    ),
-                    shape = fieldShape,
-                    modifier = Modifier.fillMaxWidth().testTag("capacityInput"),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text("RULES", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                OutlinedTextField(
-                    value = rules,
-                    onValueChange = { rules = it },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = StarsColors.Purple,
-                        focusedContainerColor = StarsColors.Purple,
-                        unfocusedTextColor = StarsColors.White,
-                        focusedTextColor = StarsColors.White,
-                        unfocusedLabelColor = StarsColors.White,
-                        focusedLabelColor = StarsColors.White
-                    ),
-                    shape = fieldShape,
-                    modifier = Modifier.fillMaxWidth().testTag("rulesInput")
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Images Section
-                Text("IMAGES", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                Text("Count: ${imageIds.size}", color = Color.Gray, fontSize = 14.sp)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                val scope = rememberCoroutineScope()
-                val photoPickerLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.PickVisualMedia()
-                ) { uri: Uri? ->
-                    scope.launch {
-                        if (uri != null) {
-                            val imageId = imageRepo.uploadImage(uri)
-                            imageIds.add(imageId)
-                        }
-                    }
-                }
-
-                ImageCarousel(
-                    imageIds = imageIds,
-                    imageRepo = imageRepo,
-                    editor = true,
-                    onDelete = { id ->
-                        imageIds.remove(id)
-                        imageRepo.deleteImage(id)
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = {
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                    shape = buttonShape,
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
-                ) {
-                    Text("Add Image", fontSize = 18.sp)
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Availability (dates) Section
-                Text("AVAILABILITY", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-
-                val formatter = SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
-
-                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-                    availabilitySchedule.forEach { dateRange ->
-                        Text(
-                            "• Start: ${formatter.format(Date(dateRange.start))} | End: ${formatter.format(Date(dateRange.end))}",
-                            color = StarsColors.Purple,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-
-                var newStart by remember { mutableLongStateOf(0L) }
-                var newEnd by remember { mutableLongStateOf(0L) }
-                val dateRangePickerState = rememberDateRangePickerState(
-                    initialDisplayMode = DisplayMode.Input,
-                    selectableDates = object : SelectableDates {
-                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                            if (utcTimeMillis <= System.currentTimeMillis()) return false
-                            for (currentRange in availabilitySchedule) {
-                                if (utcTimeMillis > currentRange.start && utcTimeMillis < currentRange.end) {
-                                    return false
-                                }
-                            }
-                            return true
-                        }
-                    }
-                )
-
-                DateRangePicker(
-                    state = dateRangePickerState,
-                    title = {
-                        Text(
-                            text = "Select availability dates",
-                            modifier = Modifier.padding(12.dp),
-                            color = StarsColors.Purple,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    showModeToggle = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = {
-                        newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
-                        newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
-                        if (newStart > 0L && newEnd > 0L) {
-                            availabilitySchedule.add(EpochRange(newStart, newEnd))
-                            newStart = 0L
-                            newEnd = 0L
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                    shape = buttonShape,
-                    modifier = Modifier.fillMaxWidth().height(48.dp)
-                ) {
-                    Text("Add new availability date", fontSize = 18.sp)
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Geolocation Section
-                Text("LOCATION", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                Text("Lat: ${location.latitude}", color = Color.Gray, fontSize = 14.sp)
-                Text("Lng: ${location.longitude}", color = Color.Gray, fontSize = 14.sp)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OpenStreetLocationPicker(
-                    initialLatitude = if (location.latitude != 0.0) location.latitude else 53.5344,
-                    initialLongitude = if (location.longitude != 0.0) location.longitude else 113.4903,
-                    onLocationConfirmed = { result -> location = result }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // changed this because this now ensures the button is only displayed to the campsites owner
-                if (campsiteExists) {
-                    Button(
-                        onClick = {
-                            navController.navigate("qr code/$campsiteId")
-                        },
-                        modifier = Modifier.testTag("viewQRCodeButton")
-                    ) {
-                        Text("View QR Code")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Submission Button
-                Button(
-                    onClick = {
-                        campsiteRepo.addOrUpdateCampsite(
-                            Campsite(
-                                id = campsiteId,
-                                title = title,
-                                price = price,
-                                capacity = capacity,
-                                description = description,
-                                rules = rules,
-                                ownerId = currentUser.id,
-                                imageIds = imageIds.toList(),
-                                reservationIds = reservations.toList(),
-                                availabilitySchedule = availabilitySchedule.toList(),
-                                location = location
-                            )
-                        )
-                        Log.d("Campsite Update Submission", "Campsite Uploaded")
-                        navController.popBackStack()
-                    },
-                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                    shape = buttonShape,
+                // White Card Container (matching ProfileScreen Box)
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .size(height = 50.dp, width = 300.dp)
-                        .testTag("submitCampsite")
+                        .background(StarsColors.White, shape = cardShape)
+                        .padding(16.dp)
                 ) {
-                    Text("Submit", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        // Title Header
+                        Text(
+                            text = "CAMPSITE DETAILS",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Basic Input fields
+                        Text(
+                            "TITLE",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = title,
+                            onValueChange = { title = it },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("titleInput")
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            "DESCRIPTION",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = description,
+                            onValueChange = { description = it },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("descriptionInput")
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            "PRICE ($)",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = if (price == 0.0) "" else price.toString(),
+                            onValueChange = { newValue ->
+                                if (newValue.isEmpty()) {
+                                    price = 0.0
+                                } else {
+                                    newValue.toDoubleOrNull()?.let { price = it }
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("priceInput"),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            "CAPACITY",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = if (capacity == 0) "" else capacity.toString(),
+                            onValueChange = { newValue ->
+                                if (newValue.isEmpty()) {
+                                    capacity = 0
+                                } else {
+                                    newValue.toIntOrNull()?.let { capacity = it }
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("capacityInput"),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            "RULES",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = rules,
+                            onValueChange = { rules = it },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("rulesInput")
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Images Section
+                        Text(
+                            "IMAGES",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        Text("Count: ${imageIds.size}", color = Color.Gray, fontSize = 14.sp)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        val scope = rememberCoroutineScope()
+                        val photoPickerLauncher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.PickVisualMedia()
+                        ) { uri: Uri? ->
+                            scope.launch {
+                                if (uri != null) {
+                                    val imageId = imageRepo.uploadImage(uri)
+                                    imageIds.add(imageId)
+                                }
+                            }
+                        }
+
+                        ImageCarousel(
+                            imageIds = imageIds,
+                            imageRepo = imageRepo,
+                            editor = true,
+                            onDelete = { id ->
+                                imageIds.remove(id)
+                                imageRepo.deleteImage(id)
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = {
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            shape = buttonShape,
+                            modifier = Modifier.fillMaxWidth().height(48.dp)
+                        ) {
+                            Text("Add Image", fontSize = 18.sp)
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Availability (dates) Section
+                        Text(
+                            "AVAILABILITY",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+
+                        val formatter =
+                            SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
+
+                        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                            availabilitySchedule.forEach { dateRange ->
+                                Text(
+                                    "• Start: ${formatter.format(Date(dateRange.start))} | End: ${
+                                        formatter.format(
+                                            Date(dateRange.end)
+                                        )
+                                    }",
+                                    color = StarsColors.Purple,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+
+                        var newStart by remember { mutableLongStateOf(0L) }
+                        var newEnd by remember { mutableLongStateOf(0L) }
+                        val dateRangePickerState = rememberDateRangePickerState(
+                            initialDisplayMode = DisplayMode.Input,
+                            selectableDates = object : SelectableDates {
+                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                    if (utcTimeMillis <= System.currentTimeMillis()) return false
+                                    for (currentRange in availabilitySchedule) {
+                                        if (utcTimeMillis > currentRange.start && utcTimeMillis < currentRange.end) {
+                                            return false
+                                        }
+                                    }
+                                    return true
+                                }
+                            }
+                        )
+
+                        DateRangePicker(
+                            state = dateRangePickerState,
+                            title = {
+                                Text(
+                                    text = "Select availability dates",
+                                    modifier = Modifier.padding(12.dp),
+                                    color = StarsColors.Purple,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            showModeToggle = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = {
+                                newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
+                                newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
+                                if (newStart > 0L && newEnd > 0L) {
+                                    availabilitySchedule.add(EpochRange(newStart, newEnd))
+                                    newStart = 0L
+                                    newEnd = 0L
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            shape = buttonShape,
+                            modifier = Modifier.fillMaxWidth().height(48.dp)
+                        ) {
+                            Text("Add new availability date", fontSize = 18.sp)
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Geolocation Section
+                        Text(
+                            "LOCATION",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        Text("Lat: ${location.latitude}", color = Color.Gray, fontSize = 14.sp)
+                        Text("Lng: ${location.longitude}", color = Color.Gray, fontSize = 14.sp)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OpenStreetLocationPicker(
+                            initialLatitude = if (location.latitude != 0.0) location.latitude else 53.5344,
+                            initialLongitude = if (location.longitude != 0.0) location.longitude else 113.4903,
+                            onLocationConfirmed = { result -> location = result }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // changed this because this now ensures the button is only displayed to the campsites owner
+                        if (campsiteExists) {
+                            Button(
+                                onClick = {
+                                    navController.navigate("qr code/$campsiteId")
+                                },
+                                modifier = Modifier.testTag("viewQRCodeButton")
+                            ) {
+                                Text("View QR Code")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Submission Button
+                        Button(
+                            onClick = {
+                                campsiteRepo.addOrUpdateCampsite(
+                                    Campsite(
+                                        id = campsiteId,
+                                        title = title,
+                                        price = price,
+                                        capacity = capacity,
+                                        description = description,
+                                        rules = rules,
+                                        ownerId = currentUser.id,
+                                        imageIds = imageIds.toList(),
+                                        reservationIds = reservations.toList(),
+                                        availabilitySchedule = availabilitySchedule.toList(),
+                                        location = location
+                                    )
+                                )
+                                Log.d("Campsite Update Submission", "Campsite Uploaded")
+                                navController.popBackStack()
+                            },
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            shape = buttonShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .size(height = 50.dp, width = 300.dp)
+                                .testTag("submitCampsite")
+                        ) {
+                            Text("Submit", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
             }
         }

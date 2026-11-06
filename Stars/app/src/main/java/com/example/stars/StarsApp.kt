@@ -72,7 +72,7 @@ fun StarsApp() {
             NavHost(navController = navController, startDestination = startAt) {
                 composable("home") { HomeScreen(navController, currentUser) }
                 composable("campsites") { CampsitesScreen(navController, campsiteRepository) }
-                composable("waitlists") { }
+                composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
                     ReservationCalendarScreen(
                         navController,
@@ -80,7 +80,7 @@ fun StarsApp() {
                         reservationRepository
                     )
                 }
-                composable("messages") { }
+                composable("messages") { PlaceholderScreen("MESSAGES", navController) }
                 composable("notifications") { NotificationsScreen(navController, currentUser) }
                 composable("settings") {
                     SettingsScreen(
@@ -217,16 +217,16 @@ fun StarsApp() {
                             type = NavType.StringType
                         }
                     )
-                ){backStackEntry ->
+                ){ backStackEntry ->
                     val lotteryID = backStackEntry.arguments
                         ?.getString("lotteryID")
                         .orEmpty()
 
                     OwnerViewUserProfiles(
-                    navController = navController,
-                    lotteryID = lotteryID,
-                    userRepository = userRepository,
-                    lotteryRepository = lotteryRepository
+                        navController = navController,
+                        lotteryID = lotteryID,
+                        userRepository = userRepository,
+                        lotteryRepository = lotteryRepository
                     )
                 }
             }
