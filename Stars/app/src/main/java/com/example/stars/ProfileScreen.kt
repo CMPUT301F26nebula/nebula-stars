@@ -93,7 +93,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
 
     Button(onClick = { navController.popBackStack() },
         modifier = Modifier.systemBarsPadding(),
-        colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+        colors = ButtonDefaults.buttonColors(starsCyan),
         shape = RoundedCornerShape(
             topStart = 5.dp,
             topEnd = 5.dp,
@@ -110,7 +110,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.background(
-                Color(0xFFFFFFFF),
+                starsWhite,
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
                     topEnd = 30.dp,
@@ -130,7 +130,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     "NAME",
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4B0082)
+                    color = starsPurple
                 )
                 OutlinedTextField(
                     value = newName,
@@ -141,13 +141,13 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor = Color(0xFF4B0082),
-                        unfocusedTextColor = Color(0xFFFFFFFF),
-                        focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF),
-                        disabledTextColor = Color(0xFFFFFFFF),
-                        disabledContainerColor = Color(0xFF4B0082)
+                        unfocusedContainerColor = starsPurple,
+                        focusedContainerColor = starsPurple,
+                        unfocusedTextColor = starsWhite,
+                        focusedTextColor = starsWhite,
+                        unfocusedLabelColor = starsWhite,
+                        disabledTextColor = starsWhite,
+                        disabledContainerColor = starsPurple
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -174,7 +174,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     "EMAIL",
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4B0082)
+                    color = starsPurple
                 )
                 OutlinedTextField(
                     value = newEmail,
@@ -194,15 +194,15 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor = Color(0xFF4B0082),
-                        unfocusedTextColor = Color(0xFFFFFFFF),
-                        focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF),
-                        errorContainerColor = Color(0xFF4B0082),
-                        errorTextColor = Color(0xFFFFFFFF),
-                        disabledTextColor = Color(0xFFFFFFFF),
-                        disabledContainerColor = Color(0xFF4B0082)
+                        unfocusedContainerColor = starsPurple,
+                        focusedContainerColor = starsPurple,
+                        unfocusedTextColor = starsWhite,
+                        focusedTextColor = starsWhite,
+                        unfocusedLabelColor = starsWhite,
+                        errorContainerColor = starsPurple,
+                        errorTextColor = starsWhite,
+                        disabledTextColor = starsWhite,
+                        disabledContainerColor = starsPurple
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -228,7 +228,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                     "PHONE",
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4B0082)
+                    color = starsPurple
                 )
                 val numericRegex = Regex("[^0-9]")
                 OutlinedTextField(
@@ -250,14 +250,14 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor = Color(0xFF4B0082),
-                        unfocusedTextColor = Color(0xFFFFFFFF),
-                        focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF),
-                        disabledTextColor = Color(0xFFFFFFFF),
-                        disabledContainerColor = Color(0xFF4B0082),
-                        disabledLabelColor = Color(0xFFFFFFFF)
+                        unfocusedContainerColor = starsPurple,
+                        focusedContainerColor = starsPurple,
+                        unfocusedTextColor = starsWhite,
+                        focusedTextColor = starsWhite,
+                        unfocusedLabelColor = starsWhite,
+                        disabledTextColor = starsWhite,
+                        disabledContainerColor = starsPurple,
+                        disabledLabelColor = starsWhite
 
                     ),
                     shape = RoundedCornerShape(
@@ -288,7 +288,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                                 bottomStart = 5.dp,
                                 bottomEnd = 0.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+                            colors = ButtonDefaults.buttonColors(starsCyan),
                         ) {
                             Text("Edit", fontSize = 20.sp)
                         }
@@ -303,7 +303,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             ),
                             modifier = Modifier.size(width = 150.dp, height = 50.dp)
                                 .testTag("Delete Button"),
-                            colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
+                            colors = ButtonDefaults.buttonColors(starsMagenta),
                         ) { Text("Delete", fontSize = 20.sp) }
                     }
                 }
@@ -374,7 +374,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             ),
                             modifier = Modifier.size(width = 150.dp, height = 50.dp)
                                 .testTag("Save Edits"),
-                            colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
+                            colors = ButtonDefaults.buttonColors(starsCyan)
 
                         ) {
                             Text("Save", fontSize = 20.sp)
@@ -392,7 +392,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             ),
                             modifier = Modifier.size(width = 150.dp, height = 50.dp)
                                 .testTag("Cancel Edits"),
-                            colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
+                            colors = ButtonDefaults.buttonColors(starsMagenta),
                         ) {
                             Text("Cancel", fontSize = 20.sp)
                         }
@@ -457,7 +457,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.background(
-                Color(0xFFFFFFFF),
+                starsWhite,
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
                     topEnd = 30.dp,
@@ -477,7 +477,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     "NAME",
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4B0082)
+                    color = starsPurple
                 )
                 OutlinedTextField(
                     value = newName,
@@ -488,11 +488,11 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor = Color(0xFF4B0082),
-                        unfocusedTextColor = Color(0xFFFFFFFF),
-                        focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF)
+                        unfocusedContainerColor = starsPurple,
+                        focusedContainerColor = starsPurple,
+                        unfocusedTextColor = starsWhite,
+                        focusedTextColor = starsWhite,
+                        unfocusedLabelColor = starsWhite
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -518,7 +518,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     "EMAIL",
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4B0082)
+                    color = starsPurple
                 )
                 OutlinedTextField(
                     value = newEmail,
@@ -538,13 +538,13 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor = Color(0xFF4B0082),
-                        unfocusedTextColor = Color(0xFFFFFFFF),
-                        focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF),
-                        errorContainerColor = Color(0xFF4B0082),
-                        errorTextColor = Color(0xFFFFFFFF),
+                        unfocusedContainerColor = starsPurple,
+                        focusedContainerColor = starsPurple,
+                        unfocusedTextColor = starsWhite,
+                        focusedTextColor = starsWhite,
+                        unfocusedLabelColor = starsWhite,
+                        errorContainerColor = starsPurple,
+                        errorTextColor = starsWhite,
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -569,7 +569,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     "PHONE",
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4B0082)
+                    color = starsPurple
                 )
                 val numericRegex = Regex("[^0-9]")
                 OutlinedTextField(
@@ -591,11 +591,11 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         }
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFF4B0082),
-                        focusedContainerColor = Color(0xFF4B0082),
-                        unfocusedTextColor = Color(0xFFFFFFFF),
-                        focusedTextColor = Color(0xFFFFFFFF),
-                        unfocusedLabelColor = Color(0xFFFFFFFF)
+                        unfocusedContainerColor = starsPurple,
+                        focusedContainerColor = starsPurple,
+                        unfocusedTextColor = starsWhite,
+                        focusedTextColor = starsWhite,
+                        unfocusedLabelColor = starsWhite
                     ),
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -661,7 +661,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                             bottomEnd = 5.dp
                         ),
                         modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Confirm"),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF008B8B))
+                        colors = ButtonDefaults.buttonColors(starsCyan)
                     ) {
                         Text("Confirm", fontSize = 30.sp)
                     }

@@ -37,7 +37,7 @@ fun CampsiteRow(
         onClick = onClick,
         colors  = CardDefaults.cardColors(
             containerColor = color,
-            contentColor = Color.White
+            contentColor = starsWhite
         ),
         modifier = modifier
             .fillMaxWidth()
