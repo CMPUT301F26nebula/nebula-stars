@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -40,6 +40,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(starsPurple)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
@@ -61,182 +62,94 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             )
         }
 
+
+
         // Change to fancier layout later
         // Contents
-        Column(
-            modifier = Modifier.weight(1.0f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+
+        HomeLayout(
+            rememberNavController(),
             when (tab) {
-                UserPermission.ENTRANT -> {
-                    Button(
-                        onClick = {
-                            navController.navigate("campsites")
-                        },
-                        modifier = Modifier.testTag("campsiteButton") // for testing
-                    ) {
-                        Text("Campsites")
-                    }
+                UserPermission.ENTRANT -> arrayOf(
+                    HomeButtonData("Campsites", "campsiteButton", "campsites"),
+                    HomeButtonData("Waitlists", "WaitListsButton", "waitlists"),
+                    HomeButtonData("Reservations", "ReservationsButton", "reservations"),
+                    HomeButtonData("Messages", "MessagesButton", "messages"),
+                    HomeButtonData("Notifications", "NotificationsButton", "notifications"),
+                    HomeButtonData("Profile", "ProfileButton", "profile"),
+                    HomeButtonData("Settings", "SettingsButton", "settings")
+                )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                UserPermission.OWNER -> arrayOf(
+                    HomeButtonData("Add a Campsite", "uploadCampsiteButton", "upload campsite"),
+                    HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery")
+                )
 
-                    Button(
-                        onClick = {
-                            navController.navigate("waitlists")
-                        },
-                        modifier = Modifier.testTag("WaitListsButton") // for testing
-                    ) {
-                        Text("Waitlists")
-                    }
+                UserPermission.ADMIN -> arrayOf(
+                    HomeButtonData("Users List", "UsersButton", "users list"),
+                )
+            },
+            modifier = Modifier
+                .weight(1.0f)
+                .fillMaxWidth()
+                .padding(10.dp))
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("reservations")
-                        },
-                        modifier = Modifier.testTag("ReservationsButton") // for testing
-                    ) {
-                        Text("Reservations")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("messages")
-                        },
-                        modifier = Modifier.testTag("MessagesButton") // for testing
-                    ) {
-                        Text("Messages")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("notifications")
-                        },
-                        modifier = Modifier.testTag("NotificationsButton") // for testing
-                    ) {
-                        Text("Notifications")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("profile")
-                        },
-                        modifier = Modifier.testTag("ProfileButton") // for testing
-                    ) {
-                        Text("Profile")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("settings")
-                        },
-                        modifier = Modifier.testTag("SettingsButton") // for testing
-                    ) {
-                        Text("Settings")
-                    }
-
-                    // ... more tabs here
-                }
-                UserPermission.OWNER -> {
-                    Button(
-                        onClick = {
-                            navController.navigate("upload campsite")
-                        },
-                        modifier = Modifier.testTag("uploadCampsiteButton") // for testing
-                    ) {
-                        Text("Add a Campsite")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("upload lottery")
-                        },
-                        modifier = Modifier.testTag("uploadLotteryButton") // for testing
-                    ) {
-                        Text("Create a Lottery")
-                    }
-                }
-                UserPermission.ADMIN -> {
-                    Button(
-                        onClick = {
-                            navController.navigate("users list")
-                        },
-                        modifier = Modifier.testTag("UsersButton") // for testing
-                    ) {
-                        Text("Users List")
-                    }
-                }
+    // User/Owner/Admin tabs? Admin has to be able to switch back from User to Admin
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        if (currentUser.permission != UserPermission.ENTRANT) {
+            Button(
+                onClick = {
+                    tab = UserPermission.ENTRANT
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = starsBrightPurple,
+                    contentColor = starsWhite
+                )
+            ) {
+                Text(
+                    text = "Entrant"
+                )
             }
-        }
 
-        // User/Owner/Admin tabs? Admin has to be able to switch back from User to Admin
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            if (currentUser.permission != UserPermission.ENTRANT) {
-                Button(
-                    onClick = {
-                        tab = UserPermission.ENTRANT
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = starsPurple,
-                        contentColor = starsWhite
-                    )
-                ) {
-                    Text(
-                        text = "Entrant"
-                    )
-                }
+            Spacer(modifier = Modifier.width(4.dp))
 
+            Button(
+                onClick = {
+                    tab = UserPermission.OWNER
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = starsBrightPurple,
+                    contentColor = starsWhite
+                )
+            ) {
+                Text(
+                    text = "Owner"
+                )
+            }
+
+            if (currentUser.permission == UserPermission.ADMIN) {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Button(
                     onClick = {
-                        tab = UserPermission.OWNER
+                        tab = UserPermission.ADMIN
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = starsPurple,
+                        containerColor = starsBrightPurple,
                         contentColor = starsWhite
                     )
                 ) {
                     Text(
-                        text = "Owner"
+                        text = "Admin"
                     )
-                }
-
-                if (currentUser.permission == UserPermission.ADMIN) {
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Button(
-                        onClick = {
-                            tab = UserPermission.ADMIN
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = starsPurple,
-                            contentColor = starsWhite
-                        )
-                    ) {
-                        Text(
-                            text = "Admin"
-                        )
-                    }
                 }
             }
         }
     }
+}
 }
 
 @Preview
