@@ -34,8 +34,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
         modifier = Modifier
             .fillMaxSize()
             .background(starsPurple)
-            .navigationBarsPadding()
-            .imePadding(),
+            .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -49,35 +48,19 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Back button
-            Button(
-                onClick = { navController.popBackStack() },
-                shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = starsCyan,
-                    contentColor = starsWhite
-                ),
-                modifier = Modifier
-                    .testTag("backButton"), // for testing
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "◀",
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            BackButton(navController)
 
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1.0f))
 
             // Title
             Text(
                 text = "Notifications",
-                fontSize = 44.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = starsPurple,
             )
 
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1.0f))
         }
 
         // Content

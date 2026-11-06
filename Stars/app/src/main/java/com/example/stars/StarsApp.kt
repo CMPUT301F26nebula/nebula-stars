@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
@@ -16,11 +15,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
+/**
+ * Background Color
+ */
 val starsPurple = Color(0xFF4B0082)
+/**
+ * Greyed Out Color
+ */
+val starsDullPurple = Color(0xFF63357E)
+val starsBrightPurple = Color(0xFF8900EC)
 val starsCyan = Color(0xFF008B8B)
 val starsMagenta = Color(0xFFFF1493)
 val starsYellow = Color(0xFFEFC700)
 val starsWhite = Color(0xFFFFFFFF)
+val starsTransparent = Color(0x00FFFFFF)
 
 // This should be where the current User, and other data shared between screens is stored
 object Databases {

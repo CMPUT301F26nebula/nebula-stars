@@ -64,8 +64,7 @@ fun CampsitesScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(starsPurple)
-            .navigationBarsPadding()
-            .imePadding(),
+            .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -79,28 +78,12 @@ fun CampsitesScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Back button
-            Button(
-                onClick = { navController.popBackStack() },
-                shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = starsCyan,
-                    contentColor = starsWhite
-                ),
-                modifier = Modifier
-                    .testTag("backButton"), // for testing
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "◀",
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            BackButton(navController)
 
             // Title
             Text(
                 text = "CAMPSITES",
-                fontSize = 44.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = starsPurple,
             )
@@ -115,7 +98,6 @@ fun CampsitesScreen(
                 ),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
-                    .padding(end = 12.dp)
                     .testTag("filterButton") // for testing
             ) {
                 Text(
@@ -178,9 +160,9 @@ fun CampsitesScreen(
                 ),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
+                    focusedContainerColor = starsTransparent,
+                    unfocusedContainerColor = starsTransparent,
+                    disabledContainerColor = starsTransparent,
                     focusedIndicatorColor = starsPurple,
                     unfocusedIndicatorColor = starsPurple.copy(alpha = 0.6f),
                     cursorColor = starsPurple

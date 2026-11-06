@@ -131,7 +131,6 @@ fun UpdateLotteryScreen(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .imePadding()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
