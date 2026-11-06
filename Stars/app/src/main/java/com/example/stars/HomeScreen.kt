@@ -1,16 +1,20 @@
 package com.example.stars
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,14 +27,18 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         // Title
         Text(
             text = "Welcome ${currentUser.name}",
-            fontSize = 32.sp
-            )
+            fontSize = 32.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = starsPurple,
+        )
 
         // Change to fancier layout later
         // Contents

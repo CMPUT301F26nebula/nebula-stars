@@ -190,7 +190,7 @@ class SettingsMenuTests {
         val userRepo = UserRepository(this)
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
-            false,UserPermission.ADMIN)
+            listOf(),false,UserPermission.ADMIN)
 
         // add the user to the repo
         userRepo.addOrUpdateUser(user)
@@ -253,7 +253,7 @@ class SettingsMenuTests {
 
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
-            false,UserPermission.ENTRANT)
+            listOf(), false,UserPermission.ENTRANT)
 
         // add the user to the repo
         userRepo.addOrUpdateUser(user)

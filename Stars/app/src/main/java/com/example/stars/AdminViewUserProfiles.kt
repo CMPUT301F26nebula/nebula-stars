@@ -45,12 +45,12 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
     val users = runBlocking { userRepository.getUsersList() }
 
     // column to hold things and make background purple
-    Column(modifier = Modifier.fillMaxSize().background(color = Color(0xFF4B0082))) {
+    Column(modifier = Modifier.fillMaxSize().background(color = starsPurple)) {
 
         // back button
         Button(onClick = { navController.popBackStack() },
             modifier = Modifier.systemBarsPadding().testTag("Back"),
-            colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+            colors = ButtonDefaults.buttonColors(starsCyan),
             shape = RoundedCornerShape(
                 topStart = 5.dp,
                 topEnd = 5.dp,
@@ -143,7 +143,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
 
                     // if not trying to delete user, show the ban button
-                    if (!confirmBan) {
+                    if (!confirmBan && userProfile.permission >= UserPermission.OWNER) {
                         AdminActionOnUser(
                             confirmDeletion, "Delete User",
                             onRequest = {
@@ -167,7 +167,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                     }
 
                     // if not trying to ban user show the delete button
-                    if (!confirmDeletion && userProfile.permission >= UserPermission.OWNER){
+                    if (!confirmDeletion){
                         AdminActionOnUser(confirmBan, "Ban Owner",
                             onRequest = {
                                 confirmDeletion = false
@@ -204,7 +204,7 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 bottomStart = 5.dp,
                 bottomEnd = 5.dp
             ),
-            colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
+            colors = ButtonDefaults.buttonColors(starsMagenta),
             modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("get options")) {
             Text(action, textAlign = TextAlign.Center)
         }
@@ -214,20 +214,7 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
     if (confirm) {
         Row() {
 
-            Button(onConfirm,
-                shape = RoundedCornerShape(
-                    topStart = 5.dp,
-                    topEnd = 5.dp,
-                    bottomStart = 5.dp,
-                    bottomEnd = 5.dp
-                ),
-                colors = ButtonDefaults.buttonColors(Color(0xFFFF1493)),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
-                Text("Confirm", textAlign = TextAlign.Center)
-            }
-
-            Spacer(modifier = Modifier.size(10.dp))
-
+            //
             Button(onCancel,
                 shape = RoundedCornerShape(
                     topStart = 5.dp,
@@ -235,10 +222,25 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomStart = 5.dp,
                     bottomEnd = 5.dp
                 ),
-                colors = ButtonDefaults.buttonColors(Color(0xFF008B8B)),
+                colors = ButtonDefaults.buttonColors(starsCyan),
                 modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
                 Text("Cancel",textAlign = TextAlign.Center)
             }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Button(onConfirm,
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(starsMagenta),
+                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
+                Text("Confirm", textAlign = TextAlign.Center)
+            }
+
 
         }
 

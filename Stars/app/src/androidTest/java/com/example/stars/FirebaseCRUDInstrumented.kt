@@ -27,7 +27,8 @@ class FirebaseCRUDInstrumented {
     @Test
     fun addAndDeleteUser() = runTest {
         val userRepo = UserRepository(this)
-        val userProfile = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555", false,UserPermission.OWNER)
+        val userProfile = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555",
+            listOf(), false,UserPermission.OWNER)
         userRepo.addOrUpdateUser(userProfile)
         var user = userRepo.getUser("test1")
         assertNotNull(user)
@@ -50,7 +51,8 @@ class FirebaseCRUDInstrumented {
     fun uploadAndDeleteImage() = runTest {
         val imageRepo = ImageRepository(this)
         // Set up dummy image file
-        val file = File(ApplicationProvider.getApplicationContext<android.content.Context>().cacheDir, "testing123.jpg")
+        val file = File(ApplicationProvider.getApplicationContext<android.content.Context>().cacheDir,
+            "testing123.jpg")
         FileOutputStream(file).use { out ->
             val bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.RGB_565)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
@@ -77,29 +79,45 @@ class FirebaseCRUDInstrumented {
     fun addAndRemoveCampsite() = runTest {
         val userRepo = UserRepository(this)
         val campsiteRepo = CampsiteRepository(this)
+        val reservationRepo = ReservationRepository(this)
         // Create a user to own the campsite
-        // There is no check whether the user that owns the campsite is actually valid at this time, but do it anyway for realism
-        val user = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555",false, UserPermission.OWNER)
-        userRepo.addOrUpdateUser(user)
+        // There is no check whether the user that owns the campsite is actually valid at this time,
+        // but do it anyway for realism
+        val userO = UserProfile("testUO", "John Doe", "email@email.com", "555-555-5555",
+            listOf(),
+            false, UserPermission.OWNER)
+        userRepo.addOrUpdateUser(userO)
+        assertNotNull(userO)
+        assertEquals(userO, userRepo.getUser(userO.id))
+
+        // Create a user to reserve the campsite
+        val userE = UserProfile("testUE", "Jenny Calender", "email@email.com", "555-555-5555",
+            listOf(),
+            false, UserPermission.ENTRANT)
+        userRepo.addOrUpdateUser(userE)
+        assertNotNull(userE)
+        assertEquals(userE, userRepo.getUser(userE.id))
 
         // Add a partial campsite and give it a reservation
-        campsiteRepo.addOrUpdateCampsite(Campsite(id = "test2", ownerId = "test1", reservations = listOf(Reservation(id = "test3", timeRange = EpochRange(1, 2)))))
-        var campsite = campsiteRepo.getCampsite("test2")
+        val campsite = Campsite(id = "testC", ownerId = "testUO")
+        campsiteRepo.addOrUpdateCampsite(campsite)
+
         // Campsite should exist and have matching attributes
         assertNotNull(campsite)
-        assertEquals("test1", campsite?.ownerId)
-        assertEquals(0, campsite?.capacity)
-        // Make sure the reservation exists
-        assertNotEquals(emptyList<Reservation>(), campsite?.reservations)
-        val reservation = campsite?.reservations?.find {it.id == "test3" && it.timeRange == EpochRange(1, 2)}
-        assertNotNull(reservation)
-        // Delete everything, including the test user
-        campsiteRepo.deleteCampsite("test2")
-        Thread.sleep(5000)
-        campsite = campsiteRepo.getCampsite("test2")
-        assertNull(campsite)
+        assertEquals(campsite, campsiteRepo.getCampsite(campsite.id))
+        assertEquals("testUO", campsite.ownerId)
+        assertEquals(0, campsite.capacity)
 
-        userRepo.deleteUser(user)
+        reservationRepo.addUserReservation(userE.id, campsite.id, EpochRange(1,2))
+        // Make sure the reservation exists
+        assertNotNull(reservationRepo.getUserReservations(userE.id))
+        // Delete everything, including the test user
+        campsiteRepo.deleteCampsite("testC")
+        Thread.sleep(5000)
+        assertNull(campsiteRepo.getCampsite("testC"))
+
+        userRepo.deleteUser(userO)
+        userRepo.deleteUser(userE)
     }
 
 }
