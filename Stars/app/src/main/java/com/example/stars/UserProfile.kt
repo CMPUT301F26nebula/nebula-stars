@@ -21,6 +21,7 @@ enum class UserPermission {
  * @param name the user's human-readable name
  * @param email the user's email address
  * @param phone the user's phone number currently stored as a string
+ * @param reservationIds the user's associated reservations
  * @param banned true if the user is banned from being an owner
  * @param permission the app permission level for the user
  */

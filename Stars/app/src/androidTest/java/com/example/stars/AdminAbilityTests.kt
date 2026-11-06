@@ -23,8 +23,8 @@ class AdminAbilityTests {
         val userRepo = UserRepository(this)
         val campsiteRepo = CampsiteRepository(this)
 
-        val owner = UserProfile("Admin Power Test","Test Owner", "admin@test.power", phone = "", banned = false,
-            UserPermission.OWNER)
+        val owner = UserProfile("Admin Power Test","Test Owner", "admin@test.power",
+            phone = "", permission = UserPermission.OWNER)
 
         val campsite = Campsite("Admin Campsite Test", "Test Campsite", 10.0, 5,
             "does not need description","Don't die when deleted", "Admin Power Test")
@@ -52,8 +52,8 @@ class AdminAbilityTests {
         val userRepo = UserRepository(this)
         val campsiteRepo = CampsiteRepository(this)
 
-        val owner = UserProfile("Admin Power Test","Test Owner", "admin@test.power", phone = "", banned = false,
-            UserPermission.OWNER)
+        val owner = UserProfile("Admin Power Test","Test Owner", "admin@test.power",
+            phone = "", permission = UserPermission.OWNER)
 
         val campsite = Campsite("Admin Campsite Test", "Test Campsite", 10.0, 5,
             "does not need description","Don't die when deleted", "Admin Power Test")
