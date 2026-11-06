@@ -14,6 +14,7 @@ package com.example.stars
 enum class UserPermission {
     ENTRANT, OWNER, ADMIN
 }
+
 /**
  * A profile for a user registered to the app
  *
