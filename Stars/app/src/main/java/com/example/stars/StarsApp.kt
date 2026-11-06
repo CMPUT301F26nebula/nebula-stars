@@ -144,6 +144,23 @@ fun StarsApp() {
                         backStackEntry.arguments?.getString("lotteryId").orEmpty()
                     )
                 }
+                composable(
+                    route = "qr code/{campsiteId}",
+                    arguments = listOf(
+                        navArgument("campsiteId") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val campsiteId = backStackEntry.arguments
+                        ?.getString("campsiteId")
+                        .orEmpty()
+
+                    QRCodeScreen(
+                        navController = navController,
+                        campsiteId = campsiteId
+                    )
+                }
             }
         }
     }
