@@ -94,7 +94,7 @@ fun StarsApp() {
                         imageRepository
                     )
                 }
-                composable("Users List") {
+                composable("users list") {
                     AdminViewUserProfiles(
                         navController,
                         userRepository,
