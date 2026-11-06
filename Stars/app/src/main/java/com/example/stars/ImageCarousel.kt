@@ -52,6 +52,7 @@ fun ImageCarousel(
     }
 
     if (imageUris.isNotEmpty()) {
+
         val carouselState = rememberCarouselState(itemCount = { imageUris.size })
 
         HorizontalMultiBrowseCarousel(
