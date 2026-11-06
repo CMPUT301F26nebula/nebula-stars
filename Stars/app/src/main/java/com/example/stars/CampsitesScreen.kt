@@ -1,5 +1,6 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -164,7 +165,8 @@ fun CampsitesScreen(
                     itemsIndexed(results) { index, campsite ->
                         CampsiteRow(
                             campsite = campsite,
-                            color = campsiteCardColors[index % campsiteCardColors.size]
+                            color = campsiteCardColors[index % campsiteCardColors.size],
+                            onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")}
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }

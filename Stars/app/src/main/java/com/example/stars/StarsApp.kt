@@ -87,6 +87,48 @@ fun StarsApp() {
                     }
                 )
             ) { backStackEntry -> UpdateLotteryScreen(navController, currentUser, campsiteRepository, lotteryRepository, backStackEntry.arguments?.getString("lotteryId").orEmpty()) }
+
+
+            /*
+            composable from claude qeustion: "I have CampsiteDetailsScreen(navController: NavController,
+                          currentUser: UserProfile,
+                          campsite: Campsite,
+                          campsiteRepository: CampsiteRepository,
+                          imageRepo: ImageRepository,
+                          userRepository: UserRepository,
+                          lotteryRepository: LotteryRepository) but campsite needs to be passed by a different function. Show me the code to do that."
+             https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+             claude sonnet 5.5, 2026-11-5
+             */
+            composable(
+                route = "campsite/{campsiteId}",
+                arguments = listOf(navArgument("campsiteId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val campsiteId = backStackEntry.arguments?.getString("campsiteId")
+
+                var campsite by remember(campsiteId) { mutableStateOf<Campsite?>(null) }
+
+                LaunchedEffect(campsiteId) {
+                    campsite = campsiteId?.let { campsiteRepository.getCampsite(it) }
+                }
+
+                val loaded = campsite   // local copy, so Kotlin can smart cast it
+                if (loaded != null) {
+                    StarsBackground(Modifier,{ CampsiteDetailsScreen(
+                        navController = navController,
+                        currentUser = currentUser,
+                        campsite = loaded,
+                        campsiteRepository = campsiteRepository,
+                        imageRepo = imageRepository,
+                        userRepository = userRepository,
+                        lotteryRepository = lotteryRepository
+                                                        )
+                                                    }
+                    )
+                } else {
+                    // show a loading indicator here
+                }
+            }
         }
     }
 }
