@@ -129,301 +129,324 @@ fun UpdateLotteryScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // Header Row
-        Row(
+        // Header
+        ScreenHeader(
+            navController = navController
+        )
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            // Back button
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.testTag("backButton"),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                shape = buttonShape
+            // White Card Container (matching ProfileScreen Box)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(StarsColors.White, shape = cardShape)
+                    .padding(16.dp)
             ) {
-                Text("<-")
-            }
-        }
-
-        // White Card Container (matching ProfileScreen Box)
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(StarsColors.White, shape = cardShape)
-                .padding(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
-            ) {
-                // Title Header
-                Text(
-                    text = "ADD A LOTTERY",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = StarsColors.Purple
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (deadline <= 0.toLong() || deadline > System.currentTimeMillis()) {
-                    // Input fields
-                    Text("NUMBER OF WINNERS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                    OutlinedTextField(
-                        value = if (numWinners == 0) "" else numWinners.toString(),
-                        onValueChange = { newValue: String ->
-                            if (newValue.isEmpty()) {
-                                numWinners = 0
-                            } else {
-                                newValue.toIntOrNull()?.let { numWinners = it }
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = StarsColors.Purple,
-                            focusedContainerColor = StarsColors.Purple,
-                            unfocusedTextColor = StarsColors.White,
-                            focusedTextColor = StarsColors.White,
-                            unfocusedLabelColor = StarsColors.White,
-                            focusedLabelColor = StarsColors.White
-                        ),
-                        shape = fieldShape,
-                        modifier = Modifier.fillMaxWidth().testTag("numWinnersInput"),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text("MAX NUMBER OF ENTRANTS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                    OutlinedTextField(
-                        value = if (waitlistCapacity == 0) "" else waitlistCapacity.toString(),
-                        onValueChange = { newValue: String ->
-                            if (newValue.isEmpty()) {
-                                waitlistCapacity = 0
-                            } else {
-                                newValue.toIntOrNull()?.let { parsed ->
-                                    waitlistCapacity = if (parsed < entrantIDs.size) entrantIDs.size else parsed
-                                }
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = StarsColors.Purple,
-                            focusedContainerColor = StarsColors.Purple,
-                            unfocusedTextColor = StarsColors.White,
-                            focusedTextColor = StarsColors.White,
-                            unfocusedLabelColor = StarsColors.White,
-                            focusedLabelColor = StarsColors.White
-                        ),
-                        shape = fieldShape,
-                        modifier = Modifier.fillMaxWidth().testTag("waitlistCapacityInput"),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Deadline date
-                    Text("ENTRY DEADLINE", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                    val formatter = SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    // Title Header
                     Text(
-                        "Entry Deadline: ${if (deadline > 0) formatter.format(Date(deadline)) else "Not set"}",
-                        color = StarsColors.Purple,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    val datePickerState = rememberDatePickerState(
-                        initialDisplayMode = DisplayMode.Input,
-                        selectableDates = object : SelectableDates {
-                            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                return utcTimeMillis > System.currentTimeMillis()
-                            }
-                        }
-                    )
-
-                    DatePicker(
-                        state = datePickerState,
-                        title = {
-                            Text(
-                                text = "Select deadline date",
-                                modifier = Modifier.padding(12.dp),
-                                color = StarsColors.Purple,
-                                fontWeight = FontWeight.Bold
-                            )
-                        },
-                        showModeToggle = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(
-                        onClick = {
-                            val newDate = datePickerState.selectedDateMillis ?: 0L
-                            if (newDate > 0L) {
-                                deadline = newDate
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                        shape = buttonShape,
-                        modifier = Modifier.fillMaxWidth().height(48.dp)
-                    ) {
-                        Text("Set deadline date", fontSize = 18.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Campsites to include
-                    Text("CAMPSITES TO INCLUDE", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        userCampsites.forEach { item ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp)
-                                    .padding(horizontal = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = item.title,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = StarsColors.Purple
-                                )
-                                Checkbox(
-                                    checked = item.id in campsiteIDs,
-                                    onCheckedChange = {
-                                        if (item.id in campsiteIDs) {
-                                            campsiteIDs.remove(item.id)
-                                        } else {
-                                            campsiteIDs.add(item.id)
-                                        }
-                                    },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = StarsColors.Cyan,
-                                        uncheckedColor = StarsColors.Purple
-                                    )
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Reservation dates
-                    Text("RESERVATION DATES", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = StarsColors.Purple)
-                    Text(
-                        "Start: ${if (timePeriod.start > 0) formatter.format(Date(timePeriod.start)) else "N/A"} | End: ${if (timePeriod.end > 0) formatter.format(Date(timePeriod.end)) else "N/A"}",
-                        color = StarsColors.Purple,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    val dateRangePickerState = rememberDateRangePickerState(
-                        initialDisplayMode = DisplayMode.Input,
-                        selectableDates = object : SelectableDates {
-                            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                if (utcTimeMillis <= System.currentTimeMillis()) return false
-                                if (deadline > 0L && utcTimeMillis <= deadline) return false
-                                for (campsite in userCampsites) {
-                                    if (campsite.id in campsiteIDs) {
-                                        for (timeBlock in campsite.availabilitySchedule) {
-                                            if (utcTimeMillis > timeBlock.end || utcTimeMillis < timeBlock.start) {
-                                                return false
-                                            }
-                                        }
-                                    }
-                                }
-                                return true
-                            }
-                        }
-                    )
-
-                    DateRangePicker(
-                        state = dateRangePickerState,
-                        title = {
-                            Text(
-                                text = "Select reservation dates",
-                                modifier = Modifier.padding(12.dp),
-                                color = StarsColors.Purple,
-                                fontWeight = FontWeight.Bold
-                            )
-                        },
-                        showModeToggle = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(
-                        onClick = {
-                            val newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
-                            val newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
-                            if (newStart > 0L && newEnd > 0L) {
-                                timePeriod = EpochRange(newStart, newEnd)
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                        shape = buttonShape,
-                        modifier = Modifier.fillMaxWidth().height(48.dp)
-                    ) {
-                        Text("Set reservation dates", fontSize = 18.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Submission
-                    Button(
-                        onClick = {
-                            lotteryRepo.addOrUpdateLottery(
-                                Lottery(
-                                    id = lotteryId,
-                                    ownerID = currentUser.id,
-                                    campsiteIDs = campsiteIDs,
-                                    timePeriod = timePeriod,
-                                    deadline = deadline,
-                                    numWinners = numWinners,
-                                    entrantIDs = entrantIDs,
-                                    waitlistCapacity = waitlistCapacity,
-                                    pendingWinnerIDs = pendingWinnerIDs,
-                                    confirmedIDs = confirmedIDs
-                                )
-                            )
-                            Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
-                            navController.popBackStack()
-                        },
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                        shape = buttonShape,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .size(height = 50.dp, width = 300.dp)
-                            .testTag("submitLottery")
-                    ) {
-                        Text("Submit", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                    }
-                } else {
-                    Text(
-                        text = "Sorry, this lottery has already finished and can no longer be edited.",
-                        fontSize = 18.sp,
+                        text = "ADD A LOTTERY",
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = StarsColors.Purple
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (deadline <= 0.toLong() || deadline > System.currentTimeMillis()) {
+                        // Input fields
+                        Text(
+                            "NUMBER OF WINNERS",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = if (numWinners == 0) "" else numWinners.toString(),
+                            onValueChange = { newValue: String ->
+                                if (newValue.isEmpty()) {
+                                    numWinners = 0
+                                } else {
+                                    newValue.toIntOrNull()?.let { numWinners = it }
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("numWinnersInput"),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            "MAX NUMBER OF ENTRANTS",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        OutlinedTextField(
+                            value = if (waitlistCapacity == 0) "" else waitlistCapacity.toString(),
+                            onValueChange = { newValue: String ->
+                                if (newValue.isEmpty()) {
+                                    waitlistCapacity = 0
+                                } else {
+                                    newValue.toIntOrNull()?.let { parsed ->
+                                        waitlistCapacity =
+                                            if (parsed < entrantIDs.size) entrantIDs.size else parsed
+                                    }
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.Purple,
+                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedTextColor = StarsColors.White,
+                                focusedTextColor = StarsColors.White,
+                                unfocusedLabelColor = StarsColors.White,
+                                focusedLabelColor = StarsColors.White
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("waitlistCapacityInput"),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Deadline date
+                        Text(
+                            "ENTRY DEADLINE",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        val formatter =
+                            SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
+                        Text(
+                            "Entry Deadline: ${if (deadline > 0) formatter.format(Date(deadline)) else "Not set"}",
+                            color = StarsColors.Purple,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        val datePickerState = rememberDatePickerState(
+                            initialDisplayMode = DisplayMode.Input,
+                            selectableDates = object : SelectableDates {
+                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                    return utcTimeMillis > System.currentTimeMillis()
+                                }
+                            }
+                        )
+
+                        DatePicker(
+                            state = datePickerState,
+                            title = {
+                                Text(
+                                    text = "Select deadline date",
+                                    modifier = Modifier.padding(12.dp),
+                                    color = StarsColors.Purple,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            showModeToggle = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = {
+                                val newDate = datePickerState.selectedDateMillis ?: 0L
+                                if (newDate > 0L) {
+                                    deadline = newDate
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            shape = buttonShape,
+                            modifier = Modifier.fillMaxWidth().height(48.dp)
+                        ) {
+                            Text("Set deadline date", fontSize = 18.sp)
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Campsites to include
+                        Text(
+                            "CAMPSITES TO INCLUDE",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            userCampsites.forEach { item ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp)
+                                        .padding(horizontal = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = item.title,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = StarsColors.Purple
+                                    )
+                                    Checkbox(
+                                        checked = item.id in campsiteIDs,
+                                        onCheckedChange = {
+                                            if (item.id in campsiteIDs) {
+                                                campsiteIDs.remove(item.id)
+                                            } else {
+                                                campsiteIDs.add(item.id)
+                                            }
+                                        },
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = StarsColors.Cyan,
+                                            uncheckedColor = StarsColors.Purple
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Reservation dates
+                        Text(
+                            "RESERVATION DATES",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                        Text(
+                            "Start: ${if (timePeriod.start > 0) formatter.format(Date(timePeriod.start)) else "N/A"} | End: ${
+                                if (timePeriod.end > 0) formatter.format(
+                                    Date(timePeriod.end)
+                                ) else "N/A"
+                            }",
+                            color = StarsColors.Purple,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        val dateRangePickerState = rememberDateRangePickerState(
+                            initialDisplayMode = DisplayMode.Input,
+                            selectableDates = object : SelectableDates {
+                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                    if (utcTimeMillis <= System.currentTimeMillis()) return false
+                                    if (deadline > 0L && utcTimeMillis <= deadline) return false
+                                    for (campsite in userCampsites) {
+                                        if (campsite.id in campsiteIDs) {
+                                            for (timeBlock in campsite.availabilitySchedule) {
+                                                if (utcTimeMillis > timeBlock.end || utcTimeMillis < timeBlock.start) {
+                                                    return false
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return true
+                                }
+                            }
+                        )
+
+                        DateRangePicker(
+                            state = dateRangePickerState,
+                            title = {
+                                Text(
+                                    text = "Select reservation dates",
+                                    modifier = Modifier.padding(12.dp),
+                                    color = StarsColors.Purple,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            showModeToggle = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = {
+                                val newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
+                                val newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
+                                if (newStart > 0L && newEnd > 0L) {
+                                    timePeriod = EpochRange(newStart, newEnd)
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            shape = buttonShape,
+                            modifier = Modifier.fillMaxWidth().height(48.dp)
+                        ) {
+                            Text("Set reservation dates", fontSize = 18.sp)
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Submission
+                        Button(
+                            onClick = {
+                                lotteryRepo.addOrUpdateLottery(
+                                    Lottery(
+                                        id = lotteryId,
+                                        ownerID = currentUser.id,
+                                        campsiteIDs = campsiteIDs,
+                                        timePeriod = timePeriod,
+                                        deadline = deadline,
+                                        numWinners = numWinners,
+                                        entrantIDs = entrantIDs,
+                                        waitlistCapacity = waitlistCapacity,
+                                        pendingWinnerIDs = pendingWinnerIDs,
+                                        confirmedIDs = confirmedIDs
+                                    )
+                                )
+                                Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
+                                navController.popBackStack()
+                            },
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            shape = buttonShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .size(height = 50.dp, width = 300.dp)
+                                .testTag("submitLottery")
+                        ) {
+                            Text("Submit", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        }
+                    } else {
+                        Text(
+                            text = "Sorry, this lottery has already finished and can no longer be edited.",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.Purple
+                        )
+                    }
                 }
             }
         }

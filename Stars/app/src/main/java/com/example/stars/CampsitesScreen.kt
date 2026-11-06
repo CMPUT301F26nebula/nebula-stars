@@ -65,30 +65,15 @@ fun CampsitesScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(StarsColors.Purple)
-            .navigationBarsPadding()
-            .imePadding(),
+            ,//.navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(StarsColors.White)
-                .statusBarsPadding(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        ScreenHeader(
+            navController = navController,
+            title = "CAMPSITES"
         ) {
-            // Back button
-            BackButton(navController)
-
-            // Title
-            Text(
-                text = "CAMPSITES",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = StarsColors.Purple,
-            )
             // Filter button
             Button(
                 onClick = {
@@ -134,7 +119,6 @@ fun CampsitesScreen(
                 }
             }
         }
-
 
         // Search bar
         Row(

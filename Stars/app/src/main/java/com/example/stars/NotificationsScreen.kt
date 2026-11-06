@@ -34,61 +34,25 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
         modifier = Modifier
             .fillMaxSize()
             .background(StarsColors.Purple)
-            .navigationBarsPadding()
-            .imePadding(),
+            .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(StarsColors.White)
-                .statusBarsPadding(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Back button
-            Button(
-                onClick = { navController.popBackStack() },
-                shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = StarsColors.Cyan,
-                    contentColor = StarsColors.White
-                ),
+        ScreenHeader(
+            navController = navController,
+            title = "NOTIFICATIONS"
+        )
+
+        StarsBackground {
+            // Content
+            Column(
                 modifier = Modifier
-                    .testTag("backButton"), // for testing
-                contentPadding = PaddingValues(0.dp)
+                    .padding(top = 12.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "◀",
-                    fontSize = 44.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1.0f))
-
-            // Title
-            Text(
-                text = "Notifications",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = StarsColors.Purple,
-            )
-
-            Spacer(modifier = Modifier.weight(1.0f))
-        }
-
-        // Content
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(top = 12.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            /*
+                /*
             if (false) {
                 Text("No campsites found", color = StarsColors.White)
             } else {
@@ -102,6 +66,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile) 
             }
 
              */
+            }
         }
     }
 }

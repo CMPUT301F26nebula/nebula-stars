@@ -14,6 +14,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
+/**
+ * Generic back button
+ *
+ * @param navController NavController for popping the ui stack
+ */
 @Composable
 fun BackButton(navController: NavController) {
     Button(
