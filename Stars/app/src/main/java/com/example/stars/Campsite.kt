@@ -19,7 +19,6 @@ package com.example.stars
  * @param reservationIds list of current reservation ids
  * @param availabilitySchedule list of times the campsite is available
  * @param location geographic location of the campsite
- * @param lotteries a list of all the lotteries it is a part of.
  */
 data class Campsite (
     val id: String = "",
@@ -32,6 +31,5 @@ data class Campsite (
     val imageIds: List<String> = emptyList(),
     val reservationIds: List<String> = emptyList(),
     val availabilitySchedule: List<EpochRange> = emptyList(),
-    val location: LocationCoordinates = LocationCoordinates(0.0, 0.0),
-    val lotteries: List<Lottery> = emptyList()
+    val location: LocationCoordinates = LocationCoordinates(0.0, 0.0)
 )
