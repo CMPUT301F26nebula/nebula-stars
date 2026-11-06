@@ -38,15 +38,15 @@ fun StarsBackground(
                 val top = h - stripeH
 
                 // Base color
-                drawRect(starsPurple)
+                drawRect(StarsColors.Purple)
 
                 // Rotate around the bottom-right corner, like the mockup
                 withTransform({ rotate(-45f, Offset(w, h)) }) {
                     // Widest stripe first, narrower ones drawn on top,
                     // so there are no hairline gaps between stripes
-                    drawRect(starsYellow, Offset(0f, top), Size(stripeW * 4, stripeH))
-                    drawRect(starsMagenta, Offset(0f, top), Size(stripeW * 3, stripeH))
-                    drawRect(starsCyan, Offset(0f, top), Size(stripeW * 2, stripeH))
+                    drawRect(StarsColors.Yellow, Offset(0f, top), Size(stripeW * 4, stripeH))
+                    drawRect(StarsColors.Magenta, Offset(0f, top), Size(stripeW * 3, stripeH))
+                    drawRect(StarsColors.Cyan, Offset(0f, top), Size(stripeW * 2, stripeH))
                     // The fourth (Indigo) stripe is the same as the base, so it's skipped
                 }
             },

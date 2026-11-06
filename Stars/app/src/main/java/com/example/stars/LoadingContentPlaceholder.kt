@@ -21,7 +21,8 @@ fun LoadingText() {
     ) {
         Text(
             text = "Loading...",
-            fontSize = 32.sp
+            fontSize = 32.sp,
+            color = StarsColors.White
         )
     }
 }

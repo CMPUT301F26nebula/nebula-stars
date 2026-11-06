@@ -66,7 +66,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.background(
-                starsWhite,
+                StarsColors.White,
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
                     topEnd = 30.dp,
@@ -96,7 +96,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(starsYellow),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
                         enabled = !currentUser.banned
                     ) { Text("Request Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
                 }
@@ -120,7 +120,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(starsCyan)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
                     ) {
                         Text("Confirm Become Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -136,7 +136,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 5.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(starsMagenta)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
                     ) {
                         Text(
                             "Remove Admin Status",
@@ -176,7 +176,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(starsYellow),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
                         enabled = !currentUser.banned
                     ) {
                         Text("Become Owner", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -203,7 +203,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(starsCyan)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
                     ) {
                         Text("Confirm Become Owner", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -223,7 +223,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(starsMagenta),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
                         modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Remove Owner")
                     ) {
                         Text(
@@ -273,9 +273,9 @@ fun ConfirmCancelButtons(onConfirm: () -> Unit, onCancel: () -> Unit){
                 bottomStart = 5.dp,
                 bottomEnd = 0.dp
             ),
-            colors = ButtonDefaults.buttonColors(starsMagenta)
+            colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
         ) {
-            Text("Confirm", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsWhite)
+            Text("Confirm", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.White)
         }
 
 
@@ -288,9 +288,9 @@ fun ConfirmCancelButtons(onConfirm: () -> Unit, onCancel: () -> Unit){
                 bottomStart = 0.dp,
                 bottomEnd = 15.dp
             ),
-            colors = ButtonDefaults.buttonColors(starsCyan)
+            colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
         ){
-            Text("Cancel", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = starsWhite)
+            Text("Cancel", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.White)
         }
     }
 }

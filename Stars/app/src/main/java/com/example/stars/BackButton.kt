@@ -20,8 +20,8 @@ fun BackButton(navController: NavController) {
         onClick = { navController.popBackStack() },
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = starsPurple,
-            contentColor = starsWhite
+            containerColor = StarsColors.Purple,
+            contentColor = StarsColors.White
         ),
         modifier = Modifier
             .testTag("backButton"), // for testing

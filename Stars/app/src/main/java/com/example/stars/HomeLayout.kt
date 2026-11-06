@@ -48,7 +48,7 @@ fun HomeLayoutBox(navController: NavController, data: HomeButtonData, height: Dp
     ) {
         Text(
             text = data.text,
-            color = starsWhite,
+            color = StarsColors.White,
             fontSize = (boxSize/7).sp,
             fontWeight = FontWeight.Bold
         )
@@ -68,10 +68,10 @@ fun HomeLayout(navController: NavController, boxData: Array<HomeButtonData>, mod
             column = (i/maxHeight)
             HomeLayoutBox(navController, data, ((row+1)*boxSize - column*50).dp, (((column+1)*boxSize) - row*10).dp,
                 when ((i + column)%3) {
-                    0 -> starsYellow
-                    1 -> starsCyan
-                    2 -> starsMagenta
-                    else -> starsCyan
+                    0 -> StarsColors.Yellow
+                    1 -> StarsColors.Cyan
+                    2 -> StarsColors.Magenta
+                    else -> StarsColors.Cyan
                 })
             i--
         }
@@ -82,7 +82,7 @@ fun HomeLayout(navController: NavController, boxData: Array<HomeButtonData>, mod
 @Preview
 @Composable
 fun BoxPreview() {
-    HomeLayoutBox(rememberNavController(), HomeButtonData("test", "testButton", "testScreen"), 100.dp, 100.dp, starsYellow)
+    HomeLayoutBox(rememberNavController(), HomeButtonData("test", "testButton", "testScreen"), 100.dp, 100.dp, StarsColors.Yellow)
 }
 
  */
