@@ -214,6 +214,26 @@ fun StarsApp() {
                         campsiteId = campsiteId
                     )
                 }
+
+                composable(
+                    route = "entrants/{lotteryID}",
+                    arguments = listOf(
+                        navArgument("lotteryID"){
+                            type = NavType.StringType
+                        }
+                    )
+                ){backStackEntry ->
+                    val lotteryID = backStackEntry.arguments
+                        ?.getString("lotteryID")
+                        .orEmpty()
+
+                    OwnerViewUserProfiles(
+                    navController = navController,
+                    lotteryID = lotteryID,
+                    userRepository = userRepository,
+                    lotteryRepository = lotteryRepository
+                    )
+                }
             }
         }
     }
