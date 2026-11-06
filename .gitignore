@@ -32,3 +32,6 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# ok which one of u is a mac user
+.DS_Store
