@@ -202,7 +202,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                         bottomStart = corner,
                         bottomEnd = 0.dp
                     ),
-                    colors = ButtonDefaults.buttonColors(starsMagenta),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
                     modifier = Modifier.size(height = 40.dp, width = 155.dp),
                 ) {
                     Text("Edit Campsite",
@@ -224,7 +224,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             bottomStart = 0.dp,
                             bottomEnd = corner
                         ),
-                        colors = ButtonDefaults.buttonColors(starsCyan),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                         modifier = Modifier.size(height = 40.dp, width = 155.dp),
                     ) {
                         Text(
@@ -239,7 +239,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 if (currentLottery == null) {
                     Box(modifier = Modifier
                         .background(
-                            starsCyan,
+                            StarsColors.Cyan,
                             shape = RoundedCornerShape(
                                 topStart = 0.dp,
                                 topEnd = 0.dp,
@@ -254,7 +254,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             "No Lottery",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = starsWhite
+                            color = StarsColors.White
                         )
                     }
                 }
@@ -291,7 +291,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 bottomStart = corner,
                                 bottomEnd = 0.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(starsCyan),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                             modifier = Modifier.size(height = 40.dp, width = 155.dp),
                         ) {
                             Text(
@@ -324,7 +324,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 bottomStart = corner,
                                 bottomEnd = 0.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(starsCyan),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                             modifier = Modifier.size(height = 40.dp, width = 155.dp),
                         ) {
                             Text(
@@ -340,7 +340,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 if (currentLottery == null) {
                     Box(modifier = Modifier
                         .background(
-                            starsCyan,
+                            StarsColors.Cyan,
                             shape = RoundedCornerShape(
                                 topStart = 0.dp,
                                 topEnd = 0.dp,
@@ -355,7 +355,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             "No Lottery",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = starsWhite,
+                            color = StarsColors.White,
 
                         )
                     }
@@ -368,7 +368,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                         topEnd = 0.dp,
                         bottomStart = 0.dp,
                         bottomEnd = corner
-                    ),colors = ButtonDefaults.buttonColors(starsMagenta),
+                    ),colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
                     modifier = Modifier.size(height = 40.dp, width = 155.dp),
 
                 ) {Text("QR Code",textAlign = TextAlign.Center,
@@ -396,7 +396,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
 
 
     // column to hold things and make background purple
-    Column(modifier = Modifier.fillMaxSize().background(color = starsPurple).statusBarsPadding()) {
+    Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple).statusBarsPadding()) {
 
         BackButton(navController)
 

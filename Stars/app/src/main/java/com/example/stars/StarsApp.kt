@@ -18,7 +18,7 @@ import androidx.navigation.navArgument
 
 object StarsColors {
     val Purple = Color(0xFF4B0082)
-    val DullPurple = Color(0xFF483D8B)
+    val DullPurple = Color(0xFF800080)
     val BrightPurple = Color(0xFF9400D3)
     val Cyan = Color(0xFF008B8B)
     val Magenta = Color(0xFFFF1493)
@@ -51,8 +51,6 @@ fun StarsApp() {
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
-    // TODO if u dont like it feel free to refactor these out after we make everything
-    // TODO honestly navController and currentUser would also be handy singletons
     Databases.userRepository = userRepository
     Databases.campsiteRepository = campsiteRepository
     Databases.reservationRepository = reservationRepository

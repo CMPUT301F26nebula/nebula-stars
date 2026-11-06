@@ -82,7 +82,7 @@ fun HomeLayout(navController: NavController, boxData: Array<HomeButtonData>, mod
 @Preview
 @Composable
 fun BoxPreview() {
-    HomeLayoutBox(rememberNavController(), HomeButtonData("test", "testButton", "testScreen"), 100.dp, 100.dp, starsYellow)
+    HomeLayoutBox(rememberNavController(), HomeButtonData("test", "testButton", "testScreen"), 100.dp, 100.dp, StarsColors.Yellow)
 }
 
  */
