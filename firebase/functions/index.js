@@ -77,7 +77,7 @@ exports.LotteryDraw = onSchedule("0 * * * *", async (event) => {
                navDestination: "" // TODO: Update this to take the user to the booking screen for the lottery if they won
             };
             // Add to firestore
-            await db.collection("notifications").doc(notifId).set(notifData);
+            await setDoc(doc(db, "notifications", notifId), notifData);
             // Push
             // Get user FID
             let userSnap = doc(db, "users", entrantID);
