@@ -7,6 +7,7 @@ package com.example.stars
 import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.installations.FirebaseInstallations
@@ -26,10 +27,14 @@ object PushTokenManager {
     // Optional: Call in LaunchedEffect on app start or right after notification
     // permission is granted to guarantee the current FID is synced.
     suspend fun syncCurrentDevice(context: Context) {
-        getAndroidId(context) ?: return
-        FirebaseMessaging.getInstance().register().await()
-        val fid = FirebaseInstallations.getInstance().id.await()
-        saveFidForDevice(context, fid)
+        try {
+            getAndroidId(context) ?: return
+            FirebaseMessaging.getInstance().register().await()
+            val fid = FirebaseInstallations.getInstance().id.await()
+            saveFidForDevice(context, fid)
+        } catch (e: Exception) {
+            Log.w("FCM", "Failed to sync firebase installation ID; ignore if this is on first startup", e)
+        }
     }
 
     // Called automatically whenever FCM registers or rotates the FID
