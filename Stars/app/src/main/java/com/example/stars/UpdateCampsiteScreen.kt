@@ -3,6 +3,7 @@ Screen to add a new campsite, or update the details for an existing one
  */
 package com.example.stars
 
+import android.R.attr.end
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,10 +33,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -366,32 +373,53 @@ fun UpdateCampsiteScreen(
                             color = StarsColors.Purple
                         )
 
-                        val formatter =
-                            SimpleDateFormat("yyyy-MM-dd", LocalLocale.current.platformLocale)
+                        val formatter = SimpleDateFormat(
+                            "MMM dd, yyyy",
+                            LocalLocale.current.platformLocale
+                        )
 
-                        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-                            availabilitySchedule.forEach { dateRange ->
-                                Text(
-                                    "• Start: ${formatter.format(Date(dateRange.start))} | End: ${
-                                        formatter.format(
-                                            Date(dateRange.end)
+                        // display list of selected date ranges
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)) {
+                                availabilitySchedule.forEach { dateRange ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "${formatter.format(Date(dateRange.start))} - " +
+                                                    "${formatter.format(Date(dateRange.end))}",
+                                            color = StarsColors.Purple,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Medium
                                         )
-                                    }",
-                                    color = StarsColors.Purple,
-                                    fontWeight = FontWeight.Medium
-                                )
+                                        Button(
+                                            modifier = Modifier.width(IntrinsicSize.Min),
+                                            onClick = {
+                                                availabilitySchedule.remove(dateRange)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = "X",
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
                             }
                         }
 
                         var newStart by remember { mutableLongStateOf(0L) }
                         var newEnd by remember { mutableLongStateOf(0L) }
                         val dateRangePickerState = rememberDateRangePickerState(
-                            initialDisplayMode = DisplayMode.Input,
+                            initialDisplayMode = DisplayMode.Picker,
                             selectableDates = object : SelectableDates {
                                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                                     if (utcTimeMillis <= System.currentTimeMillis()) return false
-                                    for (currentRange in availabilitySchedule) {
-                                        if (utcTimeMillis > currentRange.start && utcTimeMillis < currentRange.end) {
+                                    for ((start, end) in availabilitySchedule) {
+                                        // must check equals to as well otherwise it wont count the start and end dates
+                                        if (utcTimeMillis in start..end) {
                                             return false
                                         }
                                     }
@@ -400,31 +428,119 @@ fun UpdateCampsiteScreen(
                             }
                         )
 
-                        DateRangePicker(
-                            state = dateRangePickerState,
-                            title = {
-                                Text(
-                                    text = "Select availability dates",
-                                    modifier = Modifier.padding(12.dp),
-                                    color = StarsColors.Purple,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            },
-                            showModeToggle = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        // TODO this + dialog should probably be moved to the start of the display hierarchy
+                        var dateRangeDialogState by remember { mutableStateOf(false) }
+                        // anon function for consistency
+                        // if we ever lift the dialogue into its own function itd be a closure for the closure lol
+                        val closeDialog = {
+                            newStart = 0L
+                            newEnd = 0L
+                            // null unselects the date picker selection
+                            dateRangePickerState.setSelection(null, null)
+                            dateRangeDialogState = false
+                        }
+                        if (dateRangeDialogState) {
+                            Dialog(
+                                onDismissRequest = closeDialog
+                            ) {
+                                // tall date input looks yuckyy
+                                val dialogHeight = when (dateRangePickerState.displayMode) {
+                                    DisplayMode.Picker -> 600.dp
+                                    else -> 300.dp
+                                }
+                                Scaffold(
+                                    modifier = Modifier
+                                        .background(StarsColors.Transparent)
+                                        .height(dialogHeight),
+                                    bottomBar = {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceEvenly
+                                        ) {
+                                            TextButton(
+                                                onClick = closeDialog
+                                            ) {
+                                                Text("Cancel", fontSize = 18.sp)
+                                            }
+                                            Button(
+                                                onClick = {
+                                                    newStart =
+                                                        dateRangePickerState.selectedStartDateMillis
+                                                            ?: 0L
+                                                    newEnd =
+                                                        dateRangePickerState.selectedEndDateMillis ?: 0L
+                                                    if (newStart > 0L && newEnd > 0L) {
+                                                        val toRemove = mutableListOf<EpochRange>()
+                                                        for (range in availabilitySchedule) {
+                                                            // cant put start/end on an invalid date but you can surround one
+                                                            // in that case we just remove all enclosed ranges so they get
+                                                            // "globbed" into the larger one
+                                                            if (newStart < range.start && range.end < newEnd) {
+                                                                // throws a concurrency exception if we try and remove each range individually
+                                                                // so we batch them before removing all at once
+                                                                toRemove.add(range)
+                                                            }
+                                                        }
+                                                        availabilitySchedule.add(
+                                                            EpochRange(
+                                                                newStart,
+                                                                newEnd
+                                                            )
+                                                        )
+                                                        availabilitySchedule.removeAll(toRemove)
+                                                        availabilitySchedule.sortWith { a, b ->
+                                                            if (a.start == b.start) {
+                                                                if (a.end == b.end) {
+                                                                    return@sortWith 0
+                                                                }
+                                                                return@sortWith (a.end - b.end).toInt()
+                                                            }
+                                                            (a.start - b.start).toInt()
+                                                        }
+                                                        closeDialog()
+                                                    }
+                                                }
+                                            ) {
+                                                Text("Add", fontSize = 18.sp)
+                                            }
+                                        }
+                                    }
+                                ) { innerPadding ->
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(innerPadding),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        DateRangePicker(
+                                            state = dateRangePickerState,
+                                            title = {
+                                                Text(
+                                                    text = "Select availability dates",
+                                                    modifier = Modifier.padding(12.dp),
+                                                    color = StarsColors.Purple,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            },
+                                            showModeToggle = true,
+                                            modifier = Modifier.fillMaxSize(),
+                                            focusRequester = null
+                                        )
+                                    }
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
+                        // opens date picker dialog
                         Button(
                             onClick = {
-                                newStart = dateRangePickerState.selectedStartDateMillis ?: 0L
-                                newEnd = dateRangePickerState.selectedEndDateMillis ?: 0L
-                                if (newStart > 0L && newEnd > 0L) {
-                                    availabilitySchedule.add(EpochRange(newStart, newEnd))
-                                    newStart = 0L
-                                    newEnd = 0L
-                                }
+                                dateRangeDialogState = true
                             },
                             colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                             shape = buttonShape,
