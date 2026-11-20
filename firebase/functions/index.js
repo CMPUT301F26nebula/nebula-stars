@@ -40,7 +40,7 @@ function getUniqueRandom(arr, n) {
 }
 
 // Lottery picker
-exports.LotteryDraw = onSchedule("* * * * *", async (event) => {
+exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
   const lotteriesRef = db.collection("lotteries");
   const snapshot = await lotteriesRef.where("deadline", "<", Date.now()).get();
 
