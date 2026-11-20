@@ -34,13 +34,15 @@ object Databases {
     lateinit var userRepository: UserRepository
     lateinit var imageRepository: ImageRepository
     lateinit var reservationRepository: ReservationRepository
+    lateinit var notificationRepository: NotificationRepository
 }
 
 /**
  * Contains the NavHost
+ * @param notifs true if we have permission to send push notifications
  */
 @Composable
-fun StarsApp() {
+fun StarsApp(notifs: Boolean = false) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val campsiteRepository = remember { CampsiteRepository(scope) }
@@ -48,6 +50,7 @@ fun StarsApp() {
     val imageRepository = remember { ImageRepository(scope) }
     val lotteryRepository = remember { LotteryRepository(scope) }
     val reservationRepository = remember { ReservationRepository(scope) }
+    val notificationRepository = remember { NotificationRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
@@ -55,10 +58,11 @@ fun StarsApp() {
     Databases.campsiteRepository = campsiteRepository
     Databases.reservationRepository = reservationRepository
     Databases.imageRepository = imageRepository
+    Databases.notificationRepository = notificationRepository
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        currentUser = getUserID(navController, context, userRepository)
+        currentUser = getUserID(navController, context, userRepository, notifs)
         if (currentUser.name.isNotEmpty() && currentUser.email.isNotEmpty()) {
             startAt = "home"
         }
@@ -81,7 +85,7 @@ fun StarsApp() {
                     )
                 }
                 composable("messages") { PlaceholderScreen("MESSAGES", navController) }
-                composable("notifications") { NotificationsScreen(navController, currentUser) }
+                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
                 composable("settings") {
                     SettingsScreen(
                         navController,
