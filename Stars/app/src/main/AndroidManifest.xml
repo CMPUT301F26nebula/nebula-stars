@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required for Notifications on 13 (API 33) and above -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +27,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Google Cloud Messaging Service Integration -->
+        <!-- Written by Gemini https://gemini.google.com/share/d/1qNVvsL0vRT0jLS_4x3j5z1WMtwIbrxcO?usp=sharing 2026-11-17 -->
+        <!-- Register your custom FirebaseMessagingService -->
+        <service
+            android:name=".StarsFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Enable modern Firebase Installation ID (FID) registration -->
+        <meta-data
+            android:name="firebase_messaging_installation_id_enabled"
+            android:value="true" />
     </application>
 
 </manifest>

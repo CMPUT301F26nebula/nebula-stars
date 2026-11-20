@@ -4,16 +4,24 @@ import android.util.Log
 import android.content.Context
 import android.provider.Settings
 import androidx.navigation.NavController
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.tasks.await
+
 /**
  * Takes context of the app and retrieves the ID of the Android device it's installed on.
  * Then retrieves the corresponding userProfile from userRepository
  * or creates one if none were found,
  * and returns it
  * TODO: make it so that if you do not have an account you goto the edit profile page to make one
+ * @param navController
+ * @param context
+ * @param userRepository
+ * @param notifs default setting for notifications. True if we have permission on notif channel, false otherwise. Only used when creating a new profile
  *
  * @return the userProfile associated with the device
  */
-suspend fun getUserID(navController: NavController, context: Context, userRepository: UserRepository): UserProfile {
+suspend fun getUserID(navController: NavController, context: Context, userRepository: UserRepository, notifs: Boolean): UserProfile {
 
     // android ID that I don't really understand, but it's fixed for the life of the device
     val deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -28,6 +36,8 @@ suspend fun getUserID(navController: NavController, context: Context, userReposi
     if (storedUser != null) {
         // show in log that a match was found
         Log.d("User ID Check", "user match found")
+        // Make sure firebase messaging ID is up to date
+        PushTokenManager.syncCurrentDevice(context)
         return storedUser
     }
     // if currentUser was never re-assigned then it's a new account so create a new user
@@ -36,8 +46,11 @@ suspend fun getUserID(navController: NavController, context: Context, userReposi
     else {
         Log.d("User ID Check", "New Device")
 
+        // Get Firebase ID
+        FirebaseMessaging.getInstance().register().await()
+        val fid = FirebaseInstallations.getInstance().id.await()
         // create a new UserProfile and add it to the firebase repo
-        val currentUser = UserProfile(id = deviceId)
+        val currentUser = UserProfile(id = deviceId, notifs = notifs, firebaseId = fid)
         userRepository.addOrUpdateUser(currentUser)
 
         return currentUser

@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -57,6 +59,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
     var newName by remember { mutableStateOf(currentUser.name) }
     var newEmail by remember { mutableStateOf(currentUser.email) }
     var newPhone by remember { mutableStateOf(currentUser.phone) }
+    var newNotifs by remember { mutableStateOf(currentUser.notifs) }
 
     // Used to launch updater function
     val scope = rememberCoroutineScope()
@@ -268,6 +271,34 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
 
                 Spacer(modifier = Modifier.padding(10.dp))
 
+                // Checkbox to toggle notifications
+                // From Gemini https://gemini.google.com/share/d/12V5TlyBwf4xR_JFURXXjZEklhkWv95LI?usp=sharing 2026-11-17
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "NOTIFICATIONS",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = StarsColors.Purple
+                    )
+                    Checkbox(
+                        checked = newNotifs,
+                        onCheckedChange = { newNotifs = it },
+                        enabled = !readonlyDetails,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = StarsColors.Purple,
+                            uncheckedColor = StarsColors.Purple,
+                            checkmarkColor = StarsColors.White,
+                            disabledCheckedColor = StarsColors.Purple,
+                            disabledUncheckedColor = StarsColors.Purple
+                        ),
+                        modifier = Modifier.testTag("Notifications Checkbox")
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
 
                 if (readonlyDetails && !confirm) {
                     Row() {
@@ -345,6 +376,11 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                                     changeOccurred = true
                                 }
 
+                                if (newNotifs != currentUser.notifs) {
+                                    currentUser.notifs = newNotifs
+                                    changeOccurred = true
+                                }
+
                                 // if a change actually happened then update the firebase UserProfile
                                 if (changeOccurred) {
                                     scope.launch {
@@ -409,6 +445,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
     var newName by remember { mutableStateOf("") }
     var newEmail by remember { mutableStateOf("") }
     var newPhone by remember { mutableStateOf("") }
+    var newNotifs by remember { mutableStateOf(currentUser.notifs) }
 
     // used to hide the label
     var showNewNameLabel by remember { mutableStateOf(true) }
@@ -604,6 +641,31 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
 
                 Spacer(modifier = Modifier.padding(10.dp))
 
+                // Checkbox to toggle notifications
+                // From Gemini https://gemini.google.com/share/d/12V5TlyBwf4xR_JFURXXjZEklhkWv95LI?usp=sharing 2026-11-17
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "NOTIFICATIONS",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = StarsColors.Purple
+                    )
+                    Checkbox(
+                        checked = newNotifs,
+                        onCheckedChange = { newNotifs = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = StarsColors.Purple,
+                            uncheckedColor = StarsColors.Purple,
+                            checkmarkColor = StarsColors.White
+                        ),
+                        modifier = Modifier.testTag("Notifications Checkbox")
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(10.dp))
+
                 Row() {
                     // save new stuff button
                     Button(
@@ -623,6 +685,11 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
 
                             if (newPhone != currentUser.phone) {
                                 currentUser.phone = newPhone
+                                changeOccurred = true
+                            }
+
+                            if (newNotifs != currentUser.notifs) {
+                                currentUser.notifs = newNotifs
                                 changeOccurred = true
                             }
 
