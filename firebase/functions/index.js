@@ -40,7 +40,7 @@ function getUniqueRandom(arr, n) {
 }
 
 // Lottery picker
-exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
+exports.LotteryDraw = onSchedule("* * * * *", async (event) => {
   const lotteriesRef = db.collection("lotteries");
   const snapshot = await lotteriesRef.where("deadline", "<", Date.now()).get();
 
@@ -49,6 +49,9 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
   }
 
   for (const lotteryDoc of snapshot.docs) {
+    const pendingWinners = lotteryDoc.get("pendingWinnerIDs")
+    if (pendingWinners.length >= 0)
+      continue;
     const entrantIDs = lotteryDoc.get("entrantIDs") || [];
     const numWinners = lotteryDoc.get("numWinners") || 0;
     const winners = getUniqueRandom(entrantIDs, numWinners);
