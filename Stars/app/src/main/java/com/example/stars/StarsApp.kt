@@ -1,5 +1,6 @@
 package com.example.stars
 
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,11 +11,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.runBlocking
 
 object StarsColors {
     val Purple = Color(0xFF4B0082)
@@ -68,6 +74,35 @@ fun StarsApp(notifs: Boolean = false) {
         }
         if (currentUser.name.isEmpty() || currentUser.email.isEmpty()) {
             startAt = "new profile"
+        }
+    }
+
+    /**
+     * to end of launchEffect generated bty claude conversation starting at:
+     * "write me the code to make a listener for changes in user profile"
+     * Claude sonnet 5.5, 2026-11-21
+     * https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+     */
+    val deviceId = remember {
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    // create the flow once per device ID, so the Firestore listener isn't re-registered
+    val userFlow = remember(deviceId) { userRepository.observeUser(deviceId) }
+    val updatedUser by userFlow.collectAsStateWithLifecycle(initialValue = null)
+
+    val user = updatedUser   // local copy, so the smart cast works
+
+    // the one fact we care about: a loaded profile that is missing its name or email
+    val needsProfile = user != null && (user.name.isEmpty() || user.email.isEmpty())
+    val navHostReady = currentUser.id.isNotBlank()
+    LaunchedEffect(needsProfile, navHostReady) {
+        if (needsProfile && navController.currentDestination?.route != "new profile" && navHostReady) {
+            currentUser = user
+            navController.navigate("new profile") {
+                popUpTo(navController.graph.id) { inclusive = true }
+                launchSingleTop = true
+            }
         }
     }
 
@@ -236,4 +271,5 @@ fun StarsApp(notifs: Boolean = false) {
             }
         }
     }
+
 }
