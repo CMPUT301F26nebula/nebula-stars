@@ -63,4 +63,65 @@ class CampsiteRepository(private val scope: CoroutineScope){
     suspend fun deleteCampsite(campsiteId: String) {
         campsitesRef.document(campsiteId).delete().await()
     }
+
+    /**
+     * Gets the rating [userId] gave the campsite with ID [campsiteId]
+     *
+     * @return the user's rating, or null if they haven't rated this campsite
+     */
+    suspend fun getUserRating(campsiteId: String, userId: String): Rating? {
+        return campsitesRef.document(campsiteId)
+            .collection("ratings")
+            .document(userId)
+            .get().await()
+            .toObject(Rating::class.java)
+    }
+
+    /**
+     * Adds or replaces [userId]'s rating of the campsite with ID [campsiteId],
+     * and updates the campsite's ratingTotal and ratingCount to match
+     *
+     * @param stars the rating from 1.0 to 5.0, in increments of 0.5
+     * @param comment optional comment from the user
+     */
+    suspend fun setRating(campsiteId: String, userId: String, stars: Double, comment: String) {
+        require (stars in 1.0..5.0) { "stars must be between 1.0 and 5.0, was $stars" }
+
+        val campsiteDoc = campsitesRef.document(campsiteId)
+        val ratingDoc = campsiteDoc.collection("ratings").document(userId)
+
+        db.runTransaction { transaction ->
+            val campsiteSnapshot = transaction.get(campsiteDoc)
+            val oldRatingSnapshot = transaction.get(ratingDoc)
+            val oldTotal = campsiteSnapshot.getDouble("ratingTotal") ?: 0.0
+            val oldCount = campsiteSnapshot.getLong("ratingCount") ?: 0L
+            val oldStars = oldRatingSnapshot.getDouble("stars")
+            val newTotal: Double
+            val newCount: Long
+            if (oldStars == null) {
+                // new rating: add their stars and one more rating
+                newTotal = oldTotal + stars
+                newCount = oldCount + 1
+            } else {
+                // editing: swap their old stars for new ones, count stays the same
+                newTotal = oldTotal - oldStars + stars
+                newCount = oldCount
+            }
+
+            transaction.set(
+                ratingDoc,
+                Rating(
+                    userId = userId,
+                    campsiteId = campsiteId,
+                    stars = stars,
+                    comment = comment.trim(),
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+            transaction.update(
+                campsiteDoc,
+                mapOf("ratingTotal" to newTotal, "ratingCount" to newCount)
+            )
+        }.await()
+    }
 }

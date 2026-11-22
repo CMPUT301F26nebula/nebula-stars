@@ -49,6 +49,26 @@ class ReservationRepository(private val externalScope: CoroutineScope) {
     }
 
     /**
+     * Checks wheter [userId] has finished a stay at the campsite with ID [campsiteId]
+     * meaning they have accepted the reservation there whose end time has already passed
+     *
+     * @return true if the user has completed a stay and is allowed to rate the campsite
+     */
+    suspend fun hasCompletedStay(userId: String, campsiteId: String): Boolean {
+        val now = System.currentTimeMillis()
+
+        return reservationsRef
+            .whereEqualTo("entrantId", userId)
+            .whereEqualTo("campsiteId", campsiteId)
+            .get().await()
+            .toObjects(Reservation::class.java)
+            .any { reservation ->
+                reservation.status == ReservationStatus.ACCEPTED && reservation.timeRange.end < now
+            }
+
+    }
+
+    /**
      * Deletes the user reservation with unique id [reservationId]
      */
     fun removeUserReservation(reservationId: String) {

@@ -1,5 +1,5 @@
-/**
- * Contains the class representing a  user's rating of a campsite
+/*
+Contains the class representing a  user's rating of a campsite
  */
 package com.example.stars
 /**
