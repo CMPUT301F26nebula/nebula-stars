@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -50,15 +51,32 @@ fun StarRatingDisplay(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        Text(starsText, color = color, style = MaterialTheme.typography.bodyLarge)
-        Spacer(Modifier.width(6.dp))
-
         if (count == 0) {
-            Text("No ratings yet", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Unrated",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
         } else {
-            Text(averageText, style = MaterialTheme.typography.bodyLarge)
+            // stars (★★★★☆)
+            Text(
+                starsText,
+                color = color,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            // avg rating (4.3)
+            Spacer(Modifier.width(6.dp))
+            Text(
+                averageText,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            // rating count (23)
             if (count != null) {
-                Text(" ($count)", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    " ($count)",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
