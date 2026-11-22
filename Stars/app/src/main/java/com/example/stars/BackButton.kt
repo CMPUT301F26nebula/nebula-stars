@@ -15,8 +15,7 @@ import androidx.navigation.NavController
 
 /**
  * Generic back button
- * BUG: if you double-click the back button with only 1 back available it will send you to a
- * un-interactable background page.
+ *
  * @param navController NavController for popping the ui stack
  */
 @Composable
