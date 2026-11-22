@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -588,23 +589,25 @@ fun UpdateCampsiteScreen(
                         // Submission Button
                         Button(
                             onClick = {
-                                campsiteRepo.addOrUpdateCampsite(
-                                    Campsite(
-                                        id = campsiteId,
-                                        title = title,
-                                        price = price,
-                                        capacity = capacity,
-                                        description = description,
-                                        rules = rules,
-                                        ownerId = currentUser.id,
-                                        imageIds = imageIds.toList(),
-                                        reservationIds = reservations.toList(),
-                                        availabilitySchedule = availabilitySchedule.toList(),
-                                        location = location
+                                scope.launch {
+                                    campsiteRepo.addOrUpdateCampsite(
+                                        Campsite(
+                                            id = campsiteId,
+                                            title = title,
+                                            price = price,
+                                            capacity = capacity,
+                                            description = description,
+                                            rules = rules,
+                                            ownerId = currentUser.id,
+                                            imageIds = imageIds.toList(),
+                                            reservationIds = reservations.toList(),
+                                            availabilitySchedule = availabilitySchedule.toList(),
+                                            location = location
+                                        )
                                     )
-                                )
-                                Log.d("Campsite Update Submission", "Campsite Uploaded")
-                                navController.popBackStack()
+                                    Log.d("Campsite Update Submission", "Campsite Uploaded")
+                                    navController.popBackStack()
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                             shape = buttonShape,

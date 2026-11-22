@@ -9,6 +9,7 @@ package com.example.stars
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -36,10 +37,9 @@ class UserRepository(private val scope: CoroutineScope) {
      * Adds or updates a [user] in the users list
      * If user.id matches an existing user, updates it, otherwise creates a new entry
      */
-    fun addOrUpdateUser(user: UserProfile) {
-        scope.launch {
-            usersRef.document(user.id).set(user).await()
-        }
+    suspend fun addOrUpdateUser(user: UserProfile) {
+        usersRef.document(user.id).set(user).await()
+
     }
 
     /**
@@ -47,20 +47,20 @@ class UserRepository(private val scope: CoroutineScope) {
      * Also removes any campsites, reservations, and waiting list positions held by that user
      * Also edit [user] to be effectively deleted
      */
-    fun deleteUser(user: UserProfile) {
+    suspend fun deleteUser(user: UserProfile) {
         // TODO: delete all reservations and waiting list positions associated with the user
         val campsiteRepository = CampsiteRepository(scope)
-        scope.launch {
-            for (campsite in campsiteRepository.getUserCampsites(user.id)) {
-                campsiteRepository.deleteCampsite(campsite.id)
-            }
 
-            user.name = ""
-            user.email = ""
-            user.phone = ""
-            user.permission = UserPermission.ENTRANT
-            addOrUpdateUser(user)
+        for (campsite in campsiteRepository.getUserCampsites(user.id)) {
+            campsiteRepository.deleteCampsite(campsite.id)
         }
+
+        user.name = ""
+        user.email = ""
+        user.phone = ""
+        user.permission = UserPermission.ENTRANT
+        addOrUpdateUser(user)
+
     }
 
     /**
@@ -77,24 +77,28 @@ class UserRepository(private val scope: CoroutineScope) {
      * TODO: notify owner that they have been banned
      * TODO: notify owner and anyone in a lottery for this site that it has been removed
      */
-    fun banOwner(ownerProfile: UserProfile) {
-        scope.launch {
-            val campsiteRepository = CampsiteRepository(scope)
-            val ownedCampsites = campsiteRepository.getUserCampsites(ownerProfile.id)
-            for (camp in ownedCampsites) {
-                campsiteRepository.deleteCampsite(camp.id)
-            }
+    suspend fun banOwner(ownerProfile: UserProfile) {
 
-            ownerProfile.banned = true
-            ownerProfile.permission = UserPermission.ENTRANT
-            addOrUpdateUser(ownerProfile)
+        val campsiteRepository = CampsiteRepository(scope)
+        val ownedCampsites = campsiteRepository.getUserCampsites(ownerProfile.id)
+        for (camp in ownedCampsites) {
+            campsiteRepository.deleteCampsite(camp.id)
         }
+
+        ownerProfile.banned = true
+        ownerProfile.permission = UserPermission.ENTRANT
+        addOrUpdateUser(ownerProfile)
+
     }
 
     /**
      * Generted by claude prompt: "write me the code to make a listener for changes in user profile"
      * Claude sonnet 5.5, 2026-11-21
      * https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+     */
+    /**
+     * uses [userId] to watch firebase for changes in the current users profile so that you get
+     * instantly returned to make user profile if you get deleted.
      */
     fun observeUser(userId: String): Flow<UserProfile?> = callbackFlow {
         val registration = usersRef.document(userId)
@@ -109,6 +113,10 @@ class UserRepository(private val scope: CoroutineScope) {
 
         // runs when the collector stops, so the listener never leaks
         awaitClose { registration.remove() }
+    }
+
+    suspend fun deleteUserEntirely(user: UserProfile){
+        usersRef.document(user.id).delete().await()
     }
 
 }
