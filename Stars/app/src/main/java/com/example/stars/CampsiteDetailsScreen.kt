@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,11 +39,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -202,24 +207,6 @@ fun CampsiteDetailsScreen(navController: NavController,
             // had a pixel of background between button and box, so I fixed it with this offset
             Row(Modifier.offset(y= (-1).dp)) {
 
-                Button(
-                    onClick = { navController.navigate("edit campsite ${Uri.encode(campsite.id)}") },
-                    shape = RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomStart = corner,
-                        bottomEnd = 0.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
-                    modifier = Modifier.size(height = 40.dp, width = 155.dp),
-                ) {
-                    Text("Edit Campsite",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White
-                    )
-                }
-
 
                 // if there is a lottery show view entrants
                 if (currentLottery != null) {
@@ -230,8 +217,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
                             topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = corner
+                            bottomStart = corner,
+                            bottomEnd = 0.dp
                         ),
                         colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                         modifier = Modifier.size(height = 40.dp, width = 155.dp),
@@ -247,27 +234,47 @@ fun CampsiteDetailsScreen(navController: NavController,
 
                 // if there isn't a lottery say so
                 if (currentLottery == null) {
-                    Box(modifier = Modifier
-                        .background(
-                            StarsColors.Cyan,
-                            shape = RoundedCornerShape(
-                                topStart = 0.dp,
-                                topEnd = 0.dp,
-                                bottomStart = corner,
-                                bottomEnd = 0.dp
-                            )
-                        )
-                        .size(height = 40.dp, width = 155.dp),
-                        contentAlignment = Alignment.Center)
+                    Button(
+                        onClick = {navController.navigate("upload lottery")},
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomStart = corner,
+                            bottomEnd = 0.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                        modifier = Modifier.size(height = 40.dp, width = 155.dp),
+                    )
+
                     {
                         Text(
-                            "No Lottery",
+                            "Create Lottery",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
                             color = StarsColors.White
                         )
                     }
                 }
+
+                Button(
+                    onClick = { navController.navigate("edit campsite ${Uri.encode(campsite.id)}") },
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = corner
+                    ),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                    modifier = Modifier.size(height = 40.dp, width = 155.dp),
+                ) {
+                    Text("Edit Campsite",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = StarsColors.White
+                    )
+                }
+
+
             }
         }
 
@@ -454,34 +461,53 @@ fun OwnerUserRow(userProfile: UserProfile){
 
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        colors = cardColors(StarsColors.White)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
 
-            // Name
-            Text(
-                text = userProfile.name,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+        Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
 
+            Column() {
+
+                // Name
+                Text(
+                    text = userProfile.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+
+                    )
+
+                // email
+                Text(
+                    text = userProfile.email,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
 
-            Text(
-                text = userProfile.email,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 4.dp)
-            )
+                // used for phone number formating
+                val nanpVisualTransformation = NanpVisualTransformation()
 
-            // used for phone number formating
-            val nanpVisualTransformation = NanpVisualTransformation()
 
-            // phone number
-            Text(
-                text = nanpVisualTransformation.filter(AnnotatedString(userProfile.phone)).text,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 4.dp),
+                // phone number
+                Text(
+                    text = nanpVisualTransformation.filter(AnnotatedString(userProfile.phone)).text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+
+            }
+
+            AsyncImage(
+                model = userProfile.profilePic,
+                contentDescription = "profile picture",
+                modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
+                contentScale = ContentScale.Crop,
+                fallback = painterResource(R.drawable.default_pfp), // shown when model is null
+                error = painterResource(R.drawable.default_pfp)
             )
         }
+
     }
 }
 
