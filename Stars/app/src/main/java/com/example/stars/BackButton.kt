@@ -1,7 +1,6 @@
 package com.example.stars
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -22,7 +21,11 @@ import androidx.navigation.NavController
 @Composable
 fun BackButton(navController: NavController) {
     Button(
-        onClick = { navController.popBackStack() },
+        onClick = {
+            if (!navController.popBackStack()) {
+                navController.navigate("home")
+                }
+                  },
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(
             containerColor = StarsColors.Purple,
