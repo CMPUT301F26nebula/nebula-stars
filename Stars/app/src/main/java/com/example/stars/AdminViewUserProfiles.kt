@@ -215,8 +215,8 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomEnd = 5.dp
                 ),
                 colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
-                Text("Cancel",textAlign = TextAlign.Center)
+                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
+                Text("Confirm",textAlign = TextAlign.Center)
             }
 
             Spacer(modifier = Modifier.size(10.dp))
@@ -229,8 +229,8 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomEnd = 5.dp
                 ),
                 colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
-                Text("Confirm", textAlign = TextAlign.Center)
+                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
+                Text("Cancel", textAlign = TextAlign.Center)
             }
 
 

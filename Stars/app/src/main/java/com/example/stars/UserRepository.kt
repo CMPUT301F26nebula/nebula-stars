@@ -12,6 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 /**
  * A container of UserProfiles stored in Firestore
@@ -52,11 +55,11 @@ class UserRepository(private val scope: CoroutineScope) {
                 campsiteRepository.deleteCampsite(campsite.id)
             }
 
-            usersRef.document(user.id).delete().await()
             user.name = ""
             user.email = ""
             user.phone = ""
             user.permission = UserPermission.ENTRANT
+            addOrUpdateUser(user)
         }
     }
 
@@ -86,6 +89,26 @@ class UserRepository(private val scope: CoroutineScope) {
             ownerProfile.permission = UserPermission.ENTRANT
             addOrUpdateUser(ownerProfile)
         }
+    }
+
+    /**
+     * Generted by claude prompt: "write me the code to make a listener for changes in user profile"
+     * Claude sonnet 5.5, 2026-11-21
+     * https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+     */
+    fun observeUser(userId: String): Flow<UserProfile?> = callbackFlow {
+        val registration = usersRef.document(userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)                  // ends the flow and reports the error
+                    return@addSnapshotListener
+                }
+                // null means the document doesn't exist (or was deleted)
+                trySend(snapshot?.toObject(UserProfile::class.java))
+            }
+
+        // runs when the collector stops, so the listener never leaks
+        awaitClose { registration.remove() }
     }
 
 }
