@@ -74,6 +74,7 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
           read: false,
           content: notifContent,
           navDestination: "", // TODO: Update this to take the user to the booking screen for the lottery if they won
+          sender: "SYSTEM"
         };
 
         // Add to Firestore
@@ -108,7 +109,7 @@ exports.sendPushNotification = onCall(async (request) => {
   if (userSnap.exists && userSnap.get("notifs") && fid) {
     await messaging.send({
       token: fid,
-      notification: { title: "Lottery Update", body: content },
+      notification: { title: "STARS Update", body: content },
       data: {},
     });
   }
