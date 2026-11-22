@@ -3,10 +3,13 @@ package com.example.stars
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * testing class for admin abilities
@@ -32,16 +35,17 @@ class AdminAbilityTests {
 
         userRepo.addOrUpdateUser(owner)
         campsiteRepo.addOrUpdateCampsite(campsite)
-
         userRepo.banOwner(owner)
 
         val deletedCampsite = campsiteRepo.getCampsite(campsite.id)
         assertEquals(null, deletedCampsite)
         assertEquals(true, owner.banned)
 
-        runBlocking { userRepo.deleteUser(owner) }
-        //val deletedOwner = userRepo.getUser(owner.id)
-        //assertNull(deletedOwner)
+        userRepo.deleteUser(owner)
+        assertEquals("", userRepo.getUser(owner.id)?.name)
+        userRepo.deleteUserEntirely(owner)
+        assertNull(userRepo.getUser(owner.id))
+
     }
 
     /**
@@ -68,6 +72,8 @@ class AdminAbilityTests {
 
         userRepo.deleteUser(owner)
         val deletedOwner = userRepo.getUser(owner.id)
-        assertNull(deletedOwner)
+        assertEquals("", deletedOwner?.name)
+        userRepo.deleteUserEntirely(owner)
+        assertNull(userRepo.getUser(owner.id))
     }
 }

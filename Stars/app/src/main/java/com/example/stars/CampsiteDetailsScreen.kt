@@ -75,6 +75,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 lottery = individualLottery
             }
         }
+
     }
     val currentLottery = lottery
 

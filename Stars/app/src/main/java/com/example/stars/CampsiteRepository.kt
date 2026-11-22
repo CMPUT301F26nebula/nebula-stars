@@ -51,10 +51,9 @@ class CampsiteRepository(private val scope: CoroutineScope){
      * Adds or updates a [campsite] in the campsite list
      * If campsite Id matches an existing campsite, updates it, otherwise creates a new entry
      */
-    fun addOrUpdateCampsite(campsite: Campsite) {
-        scope.launch {
-            campsitesRef.document(campsite.id).set(campsite).await()
-        }
+    suspend fun addOrUpdateCampsite(campsite: Campsite) {
+        campsitesRef.document(campsite.id).set(campsite).await()
+
     }
 
     /**
@@ -62,8 +61,6 @@ class CampsiteRepository(private val scope: CoroutineScope){
      * TODO: Notify all people affected (reservations, entrants and the owner) that the campsite has been removed
      */
     suspend fun deleteCampsite(campsiteId: String) {
-        scope.launch {
-            campsitesRef.document(campsiteId).delete().await()
-        }
+        campsitesRef.document(campsiteId).delete().await()
     }
 }

@@ -71,7 +71,10 @@ class SettingsMenuTests {
         // delete user
         userRepo.deleteUser(user)
         val deleted = userRepo.getUser(user.id)
-        assertNull(deleted)
+        assertEquals("", deleted?.name)
+
+        userRepo.deleteUserEntirely(user)
+        assertNull(userRepo.getUser(user.id))
     }
 
     /*
@@ -131,7 +134,10 @@ class SettingsMenuTests {
         // delete
         userRepo.deleteUser(user)
         val deleted = userRepo.getUser(user.id)
-        assertNull(deleted)
+        assertEquals("", deleted?.name)
+
+        userRepo.deleteUserEntirely(user)
+        assertNull(userRepo.getUser(user.id))
     }
 
     /*
@@ -179,14 +185,17 @@ class SettingsMenuTests {
             userRepo.getUser("Unit Test")
         }
 
-        assertNull(deleted)
+        assertEquals("", deleted?.name)
+
+        userRepo.deleteUserEntirely(user)
+        assertNull(userRepo.getUser(user.id))
     }
 
     /*
     have user, try impossible edits, fail, cancel edits, delete user
      */
     @Test
-    fun failEditAndDeleteProfile() = runTest {
+    fun failEditAndDeleteProfile() = runBlocking {
         val userRepo = UserRepository(this)
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
@@ -236,12 +245,11 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure that the user was deleted
-        composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} == null } // wait for firebase
+        composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} != null } // wait for firebase
         composeTestRule.waitUntil{ user.name == "" } // wait for deleteUser
-        assertEquals("",user.name)
-        assertEquals("",user.email)
-        assertEquals("", user.phone)
-        assertEquals(UserPermission.ENTRANT, user.permission)
+
+        userRepo.deleteUserEntirely(user)
+        assertNull(userRepo.getUser(user.id))
     }
 
     /*
@@ -297,8 +305,11 @@ class SettingsMenuTests {
 
         // delete
         userRepo.deleteUser(user)
-        composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} == null } // wait for firebase
+        val deleted = userRepo.getUser(user.id)
+        assertEquals("", deleted?.name)
 
+        userRepo.deleteUserEntirely(user)
+        assertNull(userRepo.getUser(user.id))
 
     }
 }
