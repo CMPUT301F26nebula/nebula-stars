@@ -74,7 +74,8 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
           read: false,
           content: notifContent,
           navDestination: "", // TODO: Update this to take the user to the booking screen for the lottery if they won
-          sender: "SYSTEM"
+          sender: "SYSTEM",
+          timestamp: Date.now()
         };
 
         // Add to Firestore
