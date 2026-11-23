@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -182,7 +183,17 @@ fun CampsiteDetailsScreen(navController: NavController,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     )
+
+                    //reviews section (clickable and brings you to review page)
+                    StarRatingDisplay(
+                        average = shownCampsite.averageRating,
+                        count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
+                        modifier = Modifier.clickable(enabled = completedStay != null) { showRatingDialog = true },
+                        color = StarsColors.Yellow,
+                        numberColor = StarsColors.Black
+                    )
                 }
+
 
                 Row(modifier = Modifier.fillMaxWidth().padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween){
