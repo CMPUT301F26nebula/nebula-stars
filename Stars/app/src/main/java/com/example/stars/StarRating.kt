@@ -3,17 +3,23 @@ Contains composables for showing and entering star ratings
  */
 package com.example.stars
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -22,9 +28,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -37,6 +48,8 @@ import kotlin.math.roundToInt
  * @param count the number of ratings for this campsite. if it has no ratings, no stars are displayed and it says "Unrated"
  * @param modifier modifier for the row
  * @param color color of the filled stars (white)
+ * @param starSize font size of the filled stars (default 16.sp)
+ * @param numberSize font size of the number (default 16.sp)
  */
 
 @Composable
@@ -44,7 +57,10 @@ fun StarRatingDisplay(
     average: Double,
     count: Int?,
     modifier: Modifier = Modifier,
-    color: Color = StarsColors.White
+    color: Color = StarsColors.White,
+    starSize: TextUnit = 16.sp,
+    numberSize: TextUnit = 16.sp,
+    numberColor: Color = StarsColors.White
 ) {
     // the avg as text with one decimal place (4.6667 -> 4.7)
     val averageText = String.format(Locale.CANADA, "%.1f", average)
@@ -73,14 +89,19 @@ fun StarRatingDisplay(
             Text(
                 starsText,
                 color = color,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = starSize,
+                modifier = Modifier.alignByBaseline()
             )
             // avg rating (4.3)
             Spacer(Modifier.width(6.dp))
             Text(
                 averageText,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = numberSize,
+                color = numberColor,
+                modifier = Modifier.alignByBaseline()
             )
             // rating count (23)
             if (count != null) {
@@ -118,23 +139,57 @@ fun RatingDialog(
     // round to nearest factor of .5 (3.99998 -> 4.0, 3.5 -> 3.5, 3.0 -> 3.0)
     val stars = (sliderValue * 2).roundToInt() / 2.0
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Rate this campsite") },
-        text = {
-            Column {
+    val cardShape = RoundedCornerShape(
+        topStart = 10.dp,
+        topEnd = 30.dp,
+        bottomStart = 10.dp,
+        bottomEnd = 10.dp
+    )
+
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(cardShape)
+                .background(StarsColors.White)
+        ) {
+            //header
+            Text(
+                "Rate campsite",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Medium,
+                color = StarsColors.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(StarsColors.Purple)
+                    .padding(10.dp)
+            )
+
+            //body
+            Column(modifier = Modifier.padding(16.dp)) {
                 StarRatingDisplay(
                     average = stars,
                     count = null,
-                    color = StarsColors.Purple
+                    color = StarsColors.Yellow,
+                    starSize = 48.sp,
+                    numberSize = 40.sp,
+                    numberColor = StarsColors.Purple
                 )
                 Slider(
                     value = sliderValue,
                     onValueChange = { sliderValue = it },
                     valueRange = 1f..5f,
-                    steps = 7
+                    steps = 7,
+                    colors = SliderDefaults.colors(
+                        thumbColor = StarsColors.Purple,
+                        activeTrackColor = StarsColors.Purple,
+                        inactiveTrackColor = StarsColors.Purple.copy(alpha = 0.2f),
+                        activeTickColor = StarsColors.White,
+                        inactiveTickColor = StarsColors.Purple
+                    )
                 )
 
+                // comment box
                 OutlinedTextField(
                     value = comment,
                     onValueChange = { newText ->
@@ -142,19 +197,38 @@ fun RatingDialog(
                     },
                     label = { Text("Describe your experience (optional)") },
                     supportingText = { Text("${comment.length}/$MAX_COMMENT_LENGTH") },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = StarsColors.Cyan,
+                        focusedLabelColor = StarsColors.Cyan,
+                        cursorColor = StarsColors.Cyan
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        },
-        confirmButton = {
-            TextButton(onClick = { onSubmit(stars, comment) }) {
-                Text("Submit")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+
+            // buttons
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onDismiss,
+                    shape = RectangleShape,
+                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                ) {
+                    Text("Cancel", color = StarsColors.White)
+                }
+                Button(
+                    onClick = { onSubmit(stars, comment) },
+                    shape = RectangleShape,
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                ) {
+                    Text("Submit", color = StarsColors.White)
+                }
             }
         }
-    )
+    }
 }
