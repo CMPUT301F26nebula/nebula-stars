@@ -11,6 +11,7 @@ package com.example.stars
  * @param campsiteId unique ID of the campsite being rated
  * @param stars the rating from 1.0 to 5.0, increments of 0.5
  * @param comment optional comment from the user
+ * @param stayRange the start and end time the user  stayed at the campsite
  * @param timestamp when the rating was last made or edited
  */
 data class Rating (
@@ -18,6 +19,7 @@ data class Rating (
     val campsiteId: String = "",
     val stars: Double = 0.0,
     val comment: String = "",
+    val stayRange: EpochRange = EpochRange(),
     val timestamp: Long = 0
 )
 

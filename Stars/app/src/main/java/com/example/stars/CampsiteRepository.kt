@@ -83,8 +83,9 @@ class CampsiteRepository(private val scope: CoroutineScope){
      *
      * @param stars the rating from 1.0 to 5.0, in increments of 0.5
      * @param comment optional comment from the user
+     * @param stayRange the start and end time the user stayed at the campsite
      */
-    suspend fun setRating(campsiteId: String, userId: String, stars: Double, comment: String) {
+    suspend fun setRating(campsiteId: String, userId: String, stars: Double, comment: String, stayRange: EpochRange) {
         require (stars in 1.0..5.0) { "stars must be between 1.0 and 5.0, was $stars" }
 
         val campsiteDoc = campsitesRef.document(campsiteId)
@@ -99,11 +100,11 @@ class CampsiteRepository(private val scope: CoroutineScope){
             val newTotal: Double
             val newCount: Long
             if (oldStars == null) {
-                // new rating: add their stars and one more rating
+                // if its a new rating, add their stars rating and review count++
                 newTotal = oldTotal + stars
                 newCount = oldCount + 1
             } else {
-                // editing: swap their old stars for new ones, count stays the same
+                // if its editing an old rating, minus old stars, add new stars, and review count stays the same
                 newTotal = oldTotal - oldStars + stars
                 newCount = oldCount
             }
@@ -115,6 +116,7 @@ class CampsiteRepository(private val scope: CoroutineScope){
                     campsiteId = campsiteId,
                     stars = stars,
                     comment = comment.trim(),
+                    stayRange = stayRange,
                     timestamp = System.currentTimeMillis()
                 )
             )

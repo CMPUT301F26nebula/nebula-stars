@@ -155,7 +155,7 @@ fun RatingDialog(
         ) {
             //header
             Text(
-                "Rate campsite",
+                "Rate Campsite",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium,
                 color = StarsColors.White,
@@ -195,7 +195,7 @@ fun RatingDialog(
                     onValueChange = { newText ->
                         if (newText.length <= MAX_COMMENT_LENGTH) comment = newText
                     },
-                    label = { Text("Describe your experience (optional)") },
+                    label = { Text("How was your experience? (Optional)") },
                     supportingText = { Text("${comment.length}/$MAX_COMMENT_LENGTH") },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = StarsColors.Cyan,

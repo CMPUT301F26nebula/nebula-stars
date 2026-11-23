@@ -84,8 +84,8 @@ fun CampsiteDetailsScreen(navController: NavController,
     // campsite shown on this screen, reloaded after rating so the new average shows right away
     var shownCampsite by remember(campsite.id) { mutableStateOf(campsite) }
 
-    // true if the current user has a finished stay here , so they can rate it
-    var canRate by remember(campsite.id) { mutableStateOf(false) }
+    // the current user's most recent finished stay here , or null if they havent stayed
+    var completedStay: Reservation? by remember(campsite.id) { mutableStateOf(null) }
 
     // the current user's existing rating, or null if they havent rated this campsite
     var userRating: Rating? by remember(campsite.id) { mutableStateOf(null) }
@@ -98,12 +98,12 @@ fun CampsiteDetailsScreen(navController: NavController,
 
     //check if the user can rate, and load their old rating if they had one
     LaunchedEffect(campsite.id, currentUser.id) {
-        canRate = reservationRepository.hasCompletedStay(currentUser.id, campsite.id)
-        if (canRate) {
+        val stay = reservationRepository.getLatestCompletedStay(currentUser.id, campsite.id)
+        completedStay = stay
+        if (stay != null) {
             userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
         }
     }
-
 
     val currentLottery = lottery
 
@@ -155,7 +155,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                     Text(
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = StarsColors.White
                     )
 
                 }
@@ -181,14 +182,6 @@ fun CampsiteDetailsScreen(navController: NavController,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     )
-
-                    // rating
-                    StarRatingDisplay(
-                        average = shownCampsite.averageRating,
-                        count = shownCampsite.ratingCount,
-                        color = StarsColors.Purple
-                    )
-
                 }
 
                 Row(modifier = Modifier.fillMaxWidth().padding(10.dp),
@@ -215,7 +208,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                     item {Text(campsite.description)}
 
                     //rate button, only for users who have finished a stay here
-                    if (canRate) {
+                    if (completedStay != null) {
                         item {
                             Button(
                                 onClick = { showRatingDialog = true },
@@ -230,14 +223,20 @@ fun CampsiteDetailsScreen(navController: NavController,
                 }
                 if (showRatingDialog) {
                     RatingDialog(
-                        // when editing, start with the user's old rating
+                        // start with the user's old rating if they have one
                         initialStars = userRating?.stars ?: 1.0,
                         initialComment = userRating?.comment ?: "",
                         onDismiss = { showRatingDialog = false },
                         onSubmit = { stars, comment ->
                             showRatingDialog = false
                         scope.launch {
-                            campsiteRepository.setRating(campsite.id, currentUser.id, stars, comment)
+                            campsiteRepository.setRating(
+                                campsite.id,
+                                currentUser.id,
+                                stars,
+                                comment,
+                                completedStay?.timeRange ?: EpochRange()
+                            )
                             // reload so the new avg stars and the users rating shows straight away
                             userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
                             campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
