@@ -50,15 +50,21 @@ class UserRepository(private val scope: CoroutineScope) {
     suspend fun deleteUser(user: UserProfile) {
         // TODO: delete all reservations and waiting list positions associated with the user
         val campsiteRepository = CampsiteRepository(scope)
+        val imageRepository = ImageRepository(scope)
 
         for (campsite in campsiteRepository.getUserCampsites(user.id)) {
             campsiteRepository.deleteCampsite(campsite.id)
+        }
+
+        if (user.profilePic != ""){
+            imageRepository.deleteImage(user.profilePic)
         }
 
         user.name = ""
         user.email = ""
         user.phone = ""
         user.permission = UserPermission.ENTRANT
+        user.profilePic = ""
         addOrUpdateUser(user)
 
     }
