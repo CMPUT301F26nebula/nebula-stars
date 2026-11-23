@@ -152,6 +152,12 @@ fun StarsApp(notifs: Boolean = false) {
                         campsiteRepository
                     )
                 }
+                composable("notification log") {
+                    AdminViewNotifications(
+                        navController,
+                        notificationRepository
+                    )
+                }
                 composable(
                     route = "edit campsite {campsiteId}",
                     arguments = listOf(
