@@ -32,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -59,7 +61,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                           campsiteRepository: CampsiteRepository,
                           imageRepo: ImageRepository,
                           userRepository: UserRepository,
-                          lotteryRepository: LotteryRepository) {
+                          lotteryRepository: LotteryRepository,
+                          reservationRepository: ReservationRepository) {
 
     // get the name of the owner
     val ownerName = runBlocking { userRepository.getUser(campsite.ownerId)?.name }
@@ -77,6 +80,31 @@ fun CampsiteDetailsScreen(navController: NavController,
         }
 
     }
+
+    // campsite shown on this screen, reloaded after rating so the new average shows right away
+    var shownCampsite by remember(campsite.id) { mutableStateOf(campsite) }
+
+    // true if the current user has a finished stay here , so they can rate it
+    var canRate by remember(campsite.id) { mutableStateOf(false) }
+
+    // the current user's existing rating, or null if they havent rated this campsite
+    var userRating: Rating? by remember(campsite.id) { mutableStateOf(null) }
+
+    // true while the rating popup is open
+    var showRatingDialog by remember { mutableStateOf(false) }
+
+    // used to run the firestore save when the user presses Submit
+    val scope = rememberCoroutineScope()
+
+    //check if the user can rate, and load their old rating if they had one
+    LaunchedEffect(campsite.id, currentUser.id) {
+        canRate = reservationRepository.hasCompletedStay(currentUser.id, campsite.id)
+        if (canRate) {
+            userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+        }
+    }
+
+
     val currentLottery = lottery
 
     // this is so that the buttons can stack and still have rounded corners on the last button
@@ -154,15 +182,12 @@ fun CampsiteDetailsScreen(navController: NavController,
                         textAlign = TextAlign.Center
                     )
 
-                    // TODO: implement star system
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(Color(0x00000000), contentColor = Color.Black),
-                        shape = RoundedCornerShape(0.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ){
-                        Text("Rate: (stars)", style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium)
-                    }
+                    // rating
+                    StarRatingDisplay(
+                        average = shownCampsite.averageRating,
+                        count = shownCampsite.ratingCount,
+                        color = StarsColors.Purple
+                    )
 
                 }
 
@@ -189,10 +214,37 @@ fun CampsiteDetailsScreen(navController: NavController,
 
                     item {Text(campsite.description)}
 
+                    //rate button, only for users who have finished a stay here
+                    if (canRate) {
+                        item {
+                            Button(
+                                onClick = { showRatingDialog = true },
+                                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                                modifier = Modifier.padding(top = 8.dp)
+                            ) {
+                                Text(if (userRating == null) "Rate this campsite" else "Edit your rating")
+                            }
+                        }
+                    }
+                    //Todo: reviews section here
                 }
-
-
-
+                if (showRatingDialog) {
+                    RatingDialog(
+                        // when editing, start with the user's old rating
+                        initialStars = userRating?.stars ?: 1.0,
+                        initialComment = userRating?.comment ?: "",
+                        onDismiss = { showRatingDialog = false },
+                        onSubmit = { stars, comment ->
+                            showRatingDialog = false
+                        scope.launch {
+                            campsiteRepository.setRating(campsite.id, currentUser.id, stars, comment)
+                            // reload so the new avg stars and the users rating shows straight away
+                            userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+                            campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                            }
+                        }
+                    )
+                }
             }
         }
 
