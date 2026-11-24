@@ -252,7 +252,23 @@ fun CampsiteDetailsScreen(navController: NavController,
                         userRating = userRating,
                         canReview = completedStay != null,
                         onWriteReview = { showRatingDialog = true },
-                        onDismiss = { showReviewsDialog = false }
+                        onDismiss = { showReviewsDialog = false },
+                        isAdmin = currentUser.permission == UserPermission.ADMIN,
+                        onRemoveRating = { rating ->
+                            scope.launch {
+                                campsiteRepository.deleteRating(campsite.id, rating.userId)
+                                loadReviews()
+                                campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                                userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+                            }
+                        },
+                        onRemoveComment = { rating ->
+                            scope.launch {
+                                campsiteRepository.removeComment(campsite.id, rating.userId)
+                                loadReviews()
+                                userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+                            }
+                        }
                     )
                 }
 

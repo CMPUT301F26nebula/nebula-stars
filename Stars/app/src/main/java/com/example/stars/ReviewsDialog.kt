@@ -292,17 +292,17 @@ private fun ReviewItem(
                 horizontalArrangement = Arrangement.End
             ) {
                 if (rating.comment.isNotBlank()) {
-                    TextButton(onClick = onRemoveRating) {
+                    TextButton(onClick = onRemoveComment) {
                         Text(
-                            "Remove rating",
-                            color = Color.Red
+                            "Remove comment",
+                            color = StarsColors.Cyan
                         )
                     }
                 }
-                TextButton(onClick = onRemoveComment) {
+                TextButton(onClick = onRemoveRating) {
                     Text(
-                        "Remove comment",
-                        color = Color.Yellow
+                        "Remove rating",
+                        color =  StarsColors.Magenta
                     )
                 }
             }
