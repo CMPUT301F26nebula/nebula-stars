@@ -5,6 +5,7 @@ TODO: Fill out getFilteredCampsites signature
 package com.example.stars
 
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -76,6 +77,20 @@ class CampsiteRepository(private val scope: CoroutineScope){
             .get().await()
             .toObject(Rating::class.java)
     }
+
+    /**
+     * Gets every rating for the campsite with ID [campsiteId], newest first
+     *
+     * @return list of ratings, will be empty if none exist
+     */
+    suspend fun getRatings(campsiteId: String): List<Rating> {
+        return campsitesRef.document(campsiteId)
+            .collection("ratings")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get().await()
+            .toObjects(Rating::class.java)
+    }
+
 
     /**
      * Adds or replaces [userId]'s rating of the campsite with ID [campsiteId],

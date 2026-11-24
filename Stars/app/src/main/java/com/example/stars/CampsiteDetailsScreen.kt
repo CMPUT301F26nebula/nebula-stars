@@ -84,18 +84,35 @@ fun CampsiteDetailsScreen(navController: NavController,
 
     // campsite shown on this screen, reloaded after rating so the new average shows right away
     var shownCampsite by remember(campsite.id) { mutableStateOf(campsite) }
-
     // the current user's most recent finished stay here , or null if they havent stayed
     var completedStay: Reservation? by remember(campsite.id) { mutableStateOf(null) }
-
     // the current user's existing rating, or null if they havent rated this campsite
     var userRating: Rating? by remember(campsite.id) { mutableStateOf(null) }
-
     // true while the rating popup is open
     var showRatingDialog by remember { mutableStateOf(false) }
-
     // used to run the firestore save when the user presses Submit
     val scope = rememberCoroutineScope()
+    // true while the review popup is opne
+    var showReviewsDialog by remember { mutableStateOf(false) }
+    // every rating of the campsite, newest first
+    var ratings by remember(campsite.id) { mutableStateOf<List<Rating>>(emptyList()) }
+    // user id -> display name of every user who has written a review
+    var reviewerNames by remember(campsite.id) { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    //loads every review and the names fo the users
+    suspend fun loadReviews() {
+        val loaded = campsiteRepository.getRatings(campsite.id)
+        ratings = loaded
+        reviewerNames = loaded.associate { rating ->
+            rating.userId to (userRepository.getUser(rating.userId)?.name ?: "Unknown User")
+        }
+    }
+
+    // load thee reviews each time the popup opens
+    LaunchedEffect(showReviewsDialog) {
+        if (showReviewsDialog) loadReviews()
+    }
+
 
     //check if the user can rate, and load their old rating if they had one
     LaunchedEffect(campsite.id, currentUser.id) {
@@ -185,13 +202,21 @@ fun CampsiteDetailsScreen(navController: NavController,
                     )
 
                     //reviews section (clickable and brings you to review page)
-                    StarRatingDisplay(
-                        average = shownCampsite.averageRating,
-                        count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
-                        modifier = Modifier.clickable(enabled = completedStay != null) { showRatingDialog = true },
-                        color = StarsColors.Yellow,
-                        numberColor = StarsColors.Black
-                    )
+                    Row(
+                        modifier = Modifier.clickable { showReviewsDialog = true }
+                    ) {
+                        Text(
+                            "Rate: ",
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        StarRatingDisplay(
+                            average = shownCampsite.averageRating,
+                            count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
+                            color = StarsColors.Yellow,
+                            numberColor = StarsColors.Black
+                        )
+                    }
                 }
 
 
@@ -215,23 +240,22 @@ fun CampsiteDetailsScreen(navController: NavController,
                 )
 
                 LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)) {
-
                     item {Text(campsite.description)}
-
-                    //rate button, only for users who have finished a stay here
-                    if (completedStay != null) {
-                        item {
-                            Button(
-                                onClick = { showRatingDialog = true },
-                                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
-                                modifier = Modifier.padding(top = 8.dp)
-                            ) {
-                                Text(if (userRating == null) "Rate this campsite" else "Edit your rating")
-                            }
-                        }
-                    }
-                    //Todo: reviews section here
                 }
+
+                if (showReviewsDialog) {
+                    ReviewsDialog(
+                        average = shownCampsite.averageRating,
+                        count = shownCampsite.ratingCount,
+                        ratings = ratings,
+                        reviewerNames = reviewerNames,
+                        userRating = userRating,
+                        canReview = completedStay != null,
+                        onWriteReview = { showRatingDialog = true },
+                        onDismiss = { showReviewsDialog = false }
+                    )
+                }
+
                 if (showRatingDialog) {
                     RatingDialog(
                         // start with the user's old rating if they have one
@@ -251,6 +275,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             // reload so the new avg stars and the users rating shows straight away
                             userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
                             campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                            loadReviews()
                             }
                         }
                     )
