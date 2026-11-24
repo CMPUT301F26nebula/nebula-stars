@@ -16,14 +16,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,6 +52,9 @@ import java.util.Locale
  * @param canReview true if the current user has stayed here , so they can write or edit a review
  * @param onWriteReview called when the user presses Write a review/Edit your review
  * @param onDismiss called when the user presses the close button *
+ * @param isAdmin true if the current user is an admin
+ * @param onRemoveRating called when the admin confirms a review removal
+ * @param onRemoveComment called when the admin confirms a comment removal
  */
 
 @Composable
@@ -56,8 +66,14 @@ fun ReviewsDialog (
     userRating: Rating?,
     canReview: Boolean,
     onWriteReview: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    isAdmin: Boolean = false,
+    onRemoveRating: (Rating) -> Unit = {},
+    onRemoveComment: (Rating) -> Unit = {}
 ) {
+    var ratingToRemove: Rating? by remember { mutableStateOf(null) }
+    var commentToRemove: Rating? by remember { mutableStateOf(null) }
+
     val cardShape = RoundedCornerShape(
         topStart = 10.dp,
         topEnd = 30.dp,
@@ -150,7 +166,10 @@ fun ReviewsDialog (
                     items(ratings) { rating ->
                         ReviewItem(
                             rating = rating,
-                            reviewerName = reviewerNames[rating.userId] ?: "Unknown User"
+                            reviewerName = reviewerNames[rating.userId] ?: "Unknown User",
+                            isAdmin = isAdmin,
+                            onRemoveRating = { ratingToRemove = rating },
+                            onRemoveComment = { commentToRemove = rating }
                         )
                     }
                 }
@@ -170,6 +189,51 @@ fun ReviewsDialog (
             }
         }
     }
+
+    // admin confirmation for deleteing a whole rating
+    val pendingRating = ratingToRemove
+    if (pendingRating != null) {
+        AlertDialog(
+            onDismissRequest = { ratingToRemove = null },
+            title = { Text("Delete this review?") },
+            text = { Text("This deletes the review's stars and the comment. Cannot be undone.")},
+            confirmButton = {
+                TextButton(onClick = {
+                onRemoveRating(pendingRating)
+                ratingToRemove = null
+            }) {
+            Text("Remove")
+                }
+        },
+            dismissButton = {
+                TextButton(onClick = { ratingToRemove = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    val pendingComment = commentToRemove
+    if (pendingComment != null) {
+        AlertDialog(
+            onDismissRequest = { commentToRemove = null },
+            title = { Text("Delete this comment?") },
+            text = { Text("This deletes the comment, but keeps the star rating. Cannot be undone.")},
+            confirmButton = {
+                TextButton(onClick = {
+                    onRemoveComment(pendingComment)
+                    commentToRemove = null
+                }) {
+                    Text("Remove")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { commentToRemove = null }) {
+                        Text("Cancel")
+                    }
+                }
+        )
+    }
 }
 
 
@@ -181,7 +245,13 @@ fun ReviewsDialog (
  */
 
 @Composable
-private fun ReviewItem(rating: Rating, reviewerName: String) {
+private fun ReviewItem(
+   rating: Rating,
+   reviewerName: String,
+   isAdmin: Boolean = false,
+   onRemoveRating: () -> Unit = {},
+   onRemoveComment: () -> Unit = {}
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -214,6 +284,28 @@ private fun ReviewItem(rating: Rating, reviewerName: String) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 4.dp)
             )
+        }
+
+        if (isAdmin) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if (rating.comment.isNotBlank()) {
+                    TextButton(onClick = onRemoveRating) {
+                        Text(
+                            "Remove rating",
+                            color = Color.Red
+                        )
+                    }
+                }
+                TextButton(onClick = onRemoveComment) {
+                    Text(
+                        "Remove comment",
+                        color = Color.Yellow
+                    )
+                }
+            }
         }
     }
 }

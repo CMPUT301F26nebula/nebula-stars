@@ -141,4 +141,43 @@ class CampsiteRepository(private val scope: CoroutineScope){
             )
         }.await()
     }
+
+
+    /**
+     * deletes [userId]s rating of the campsite with ID [campsiteId] and removes it from the campsite's ratingTotal and ratingCount
+     */
+    suspend fun deleteRating(campsiteId: String, userId: String) {
+        val campsiteDoc = campsitesRef.document(campsiteId)
+        val ratingDoc = campsiteDoc.collection("ratings").document(userId)
+
+        db.runTransaction { transaction ->
+            val campsiteSnapshot = transaction.get(campsiteDoc)
+            val ratingSnapshot = transaction.get(ratingDoc)
+
+            val stars = ratingSnapshot.getDouble("stars") // will be null if rating doesnt exist
+            if (stars != null) {
+                val oldTotal = campsiteSnapshot.getDouble("ratingTotal") ?: 0.0
+                val oldCount = campsiteSnapshot.getLong("ratingCount") ?: 0L
+
+                transaction.delete(ratingDoc)
+                transaction.update(
+                    campsiteDoc,
+                    mapOf(
+                        "ratingTotal" to oldTotal - stars,
+                        "ratingCount" to oldCount - 1)
+                )
+            }
+        }.await()
+    }
+
+    /**
+     * Clears the comment on [userId]s rating, but keeps the star rating and review count the same
+     */
+    suspend fun removeComment(campsiteId: String, userId: String) {
+        campsitesRef.document(campsiteId)
+            .collection("ratings")
+            .document(userId)
+            .update("comment", "")
+            .await()
+    }
 }
