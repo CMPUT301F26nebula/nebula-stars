@@ -1,3 +1,6 @@
+/**
+ * Data class representing a campsite reservation in the database
+ */
 package com.example.stars
 
 /**
@@ -17,13 +20,20 @@ enum class ReservationStatus {
  * @param campsiteId the unique ID of the campsite the reservation is for
  */
 data class Reservation (
-    val id: String = "",
+    override val id: String = "",
     val timeRange: EpochRange = EpochRange(),
     val status: ReservationStatus = ReservationStatus.INVITED,
     val entrantId: String = "",
     val campsiteId: String = ""
-) {
+): UniqueIdentifier {
     companion object UniqueId {
+        /**
+         * Generate a unique document id
+         *
+         * @param entrantId id of reservation holder
+         * @param campsiteId id of reserved campsite
+         * @param timeRange start and end of reservation in epoch millis
+         */
         fun uniqueIdFrom(entrantId: String, campsiteId: String, timeRange: EpochRange): String {
             return "${entrantId}_${campsiteId}_${timeRange.start}_${timeRange.end}"
         }

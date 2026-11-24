@@ -6,12 +6,7 @@ TODO: Recalculate availability schedule for campsite after deleting user info (i
  */
 package com.example.stars
 
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -22,25 +17,25 @@ import kotlinx.coroutines.flow.callbackFlow
  *
  * @param scope the global coroutine scope used to run basic database operations
  */
-class UserRepository(private val scope: CoroutineScope) {
-    private val db = Firebase.firestore
-    private val usersRef = db.collection("users")
+class UserRepository(private val scope: CoroutineScope):
+    AbstractRepository<UserProfile>("users", scope, UserProfile::class.java) {
 
+    /*
     /**
      * Gets the UserProfile from Firestore associated with the given User ID
      */
-    suspend fun getUser(userId: String): UserProfile? {
-        return usersRef.document(userId).get().await().toObject(UserProfile::class.java)
+    suspend fun getFromId(userId: String): UserProfile? {
+        return collection.document(userId).get().await().toObject(dataClass)
     }
 
     /**
      * Adds or updates a [user] in the users list
      * If user.id matches an existing user, updates it, otherwise creates a new entry
      */
-    suspend fun addOrUpdateUser(user: UserProfile) {
-        usersRef.document(user.id).set(user).await()
-
+    suspend fun addOrUpdate(user: UserProfile) {
+        collection.document(user.id).set(user).await()
     }
+     */
 
     /**
      * Deletes the user [user] with ID [user.id] from the list of users
@@ -52,8 +47,8 @@ class UserRepository(private val scope: CoroutineScope) {
         val campsiteRepository = CampsiteRepository(scope)
         val imageRepository = ImageRepository(scope)
 
-        for (campsite in campsiteRepository.getUserCampsites(user.id)) {
-            campsiteRepository.deleteCampsite(campsite.id)
+        for (campsite in campsiteRepository.getWithUserId(user.id)) {
+            campsiteRepository.removeWithId(campsite.id)
         }
 
         if (user.profilePic != ""){
@@ -65,16 +60,17 @@ class UserRepository(private val scope: CoroutineScope) {
         user.phone = ""
         user.permission = UserPermission.ENTRANT
         user.profilePic = ""
-        addOrUpdateUser(user)
-
+        addOrUpdate(user)
     }
 
+    /*
     /**
      * returns the current list of users
      */
-    suspend fun getUsersList(): MutableList<UserProfile> {
-        return usersRef.get().await().toObjects(UserProfile::class.java)
+    suspend fun getAll(): MutableList<UserProfile> {
+        return collection.get().await().toObjects(dataClass)
     }
+     */
 
 
     /**
@@ -86,15 +82,14 @@ class UserRepository(private val scope: CoroutineScope) {
     suspend fun banOwner(ownerProfile: UserProfile) {
 
         val campsiteRepository = CampsiteRepository(scope)
-        val ownedCampsites = campsiteRepository.getUserCampsites(ownerProfile.id)
+        val ownedCampsites = campsiteRepository.getWithUserId(ownerProfile.id)
         for (camp in ownedCampsites) {
-            campsiteRepository.deleteCampsite(camp.id)
+            campsiteRepository.removeWithId(camp.id)
         }
 
         ownerProfile.banned = true
         ownerProfile.permission = UserPermission.ENTRANT
-        addOrUpdateUser(ownerProfile)
-
+        addOrUpdate(ownerProfile)
     }
 
     /**
@@ -107,22 +102,25 @@ class UserRepository(private val scope: CoroutineScope) {
      * instantly returned to make user profile if you get deleted.
      */
     fun observeUser(userId: String): Flow<UserProfile?> = callbackFlow {
-        val registration = usersRef.document(userId)
+        val registration = collection.document(userId)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)                  // ends the flow and reports the error
                     return@addSnapshotListener
                 }
                 // null means the document doesn't exist (or was deleted)
-                trySend(snapshot?.toObject(UserProfile::class.java))
+                trySend(snapshot?.toObject(dataClass))
             }
 
         // runs when the collector stops, so the listener never leaks
         awaitClose { registration.remove() }
     }
 
-    suspend fun deleteUserEntirely(user: UserProfile){
-        usersRef.document(user.id).delete().await()
+    /**
+     * Removes a [user] from the database
+     */
+    fun deleteUserEntirely(user: UserProfile) {
+        removeWithId(user.id)
     }
 
 }

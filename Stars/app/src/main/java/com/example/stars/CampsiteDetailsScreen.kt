@@ -2,7 +2,6 @@ package com.example.stars
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -67,13 +64,13 @@ fun CampsiteDetailsScreen(navController: NavController,
                           lotteryRepository: LotteryRepository) {
 
     // get the name of the owner
-    val ownerName = runBlocking { userRepository.getUser(campsite.ownerId)?.name }
+    val ownerName = runBlocking { userRepository.getWithId(campsite.ownerId)?.name }
 
     // get the existence of a lottery or it's object
     var lottery: Lottery? by remember { mutableStateOf(null) }
     LaunchedEffect(campsite.id) {
 
-        val lotteries = lotteryRepository.getUserLotteries(campsite.ownerId)
+        val lotteries = lotteryRepository.getWithUserId(campsite.ownerId)
 
         for (individualLottery in lotteries) {
             if (campsite.id in individualLottery.campsiteIDs) {
@@ -299,7 +296,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 if (currentUser.id !in enterList) {
                                     enterList.add(currentUser.id)
                                     currentLottery.entrantIDs = enterList
-                                    lotteryRepository.addOrUpdateLottery(currentLottery)
+                                    lotteryRepository.addOrUpdate(currentLottery)
                                 }
                             },
                             shape = RoundedCornerShape(
@@ -331,7 +328,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 if (currentUser.id in enterList) {
                                     enterList.remove(currentUser.id)
                                     currentLottery.entrantIDs = enterList
-                                    lotteryRepository.addOrUpdateLottery(currentLottery)
+                                    lotteryRepository.addOrUpdate(currentLottery)
                                 }
 
 
@@ -420,7 +417,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
         BackButton(navController)
 
         // get the lottery
-        val lottery = runBlocking {lotteryRepository.getLottery(lotteryID)}
+        val lottery = runBlocking {lotteryRepository.getWithId(lotteryID)}
 
         // if there is a lottery (there should always be one but kotlin wanted to make sure)
         if (lottery != null) {
@@ -430,7 +427,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
 
                 // for each entrant make a card
                 itemsIndexed(lottery.entrantIDs) { index, entrant ->
-                    val profile = runBlocking { userRepository.getUser(entrant) }
+                    val profile = runBlocking { userRepository.getWithId(entrant) }
 
                     if (profile != null) {
                         Spacer(modifier = Modifier.height(12.dp))

@@ -21,7 +21,7 @@ package com.example.stars
  * @param location geographic location of the campsite
  */
 data class Campsite (
-    val id: String = "",
+    override val id: String = "",
     val title: String = "",
     val price: Double = 0.0,
     val capacity: Int = 0,
@@ -32,4 +32,4 @@ data class Campsite (
     val reservationIds: List<String> = emptyList(),
     val availabilitySchedule: List<EpochRange> = emptyList(),
     val location: LocationCoordinates = LocationCoordinates(0.0, 0.0)
-)
+): UniqueIdentifier

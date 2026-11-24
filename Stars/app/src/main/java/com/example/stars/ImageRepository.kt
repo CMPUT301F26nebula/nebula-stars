@@ -4,14 +4,10 @@ Contains repository helper class to get and store ImageUpload objects from fires
 package com.example.stars
 import android.net.Uri
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import java.util.UUID
-import androidx.compose.runtime.mutableStateListOf
-import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -19,17 +15,18 @@ import kotlinx.coroutines.tasks.await
  *
  * @param scope the global coroutine scope used to run basic database operations
  */
-class ImageRepository(private val scope: CoroutineScope) {
+class ImageRepository(private val scope: CoroutineScope):
+    AbstractRepository<ImageUpload>("images", scope, ImageUpload::class.java) {
     private val storageRef = Firebase.storage.reference
-    private val db = Firebase.firestore
-    private val imageListRef = db.collection("images")
 
+    /*
     /**
-     * Gets the ImageUpload from Firestore associate with the given ID
+     * Gets the ImageUpload from Firestore associate with the given ID [imageId]
      */
-    suspend fun getImage(imageId: String): ImageUpload? {
-        return imageListRef.document(imageId).get().await().toObject(ImageUpload::class.java)
+    suspend fun getFromId(imageId: String): ImageUpload? {
+        return getFromId(imageId)
     }
+     */
 
     /**
      * Uploads an image to Firebase Cloud Storage and adds a reference in Firestore
@@ -50,7 +47,7 @@ class ImageRepository(private val scope: CoroutineScope) {
         val downloadUrl = imageRef.downloadUrl.await().toString()
 
         // At this point we know the upload succeeded so we can create our Firestore reference
-        imageListRef.document(imageId).set(ImageUpload(imageId, downloadUrl)).await()
+        addOrUpdateWithId(imageId, ImageUpload(imageId, downloadUrl))
 
         return imageId
     }
@@ -61,8 +58,10 @@ class ImageRepository(private val scope: CoroutineScope) {
     fun deleteImage(imageId: String) {
         scope.launch {
             storageRef.child("images/$imageId.jpg").delete().await()
-            imageListRef.document(imageId).delete().await()
+            collection.document(imageId).delete().await()
         }
+        // TODO not sure what the above double deletion is for, if its not needed use vvv instead since it updates listening threads
+        // removeFromId(imageId)
     }
 
     /**
@@ -70,7 +69,7 @@ class ImageRepository(private val scope: CoroutineScope) {
      * @return the download URI if the image ID is valid, or null otherwise
      */
     suspend fun getImageUri(imageId: String): String? {
-        val match: ImageUpload? = getImage(imageId)
+        val match: ImageUpload? = getWithId(imageId)
         if (match != null)
             return match.downloadUrl
         return null

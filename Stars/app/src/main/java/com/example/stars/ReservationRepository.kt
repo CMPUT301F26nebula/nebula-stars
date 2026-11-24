@@ -1,62 +1,33 @@
+/**
+ * Class for reservation related database access
+ */
 package com.example.stars
 
-import android.util.Log
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 /**
  * Database accessor for reservations
  *
- * @param externalScope CoroutineScope for running async functions that dont have a return value
+ * @param scope CoroutineScope for running async functions that dont have a return value
  */
-class ReservationRepository(private val externalScope: CoroutineScope) {
-    private val db = Firebase.firestore
-    private val reservationsRef = db.collection("reservations")
-
-    private val updates = Signaller<String>()
-
-    /**
-     * Suspends until this ReservationRepository updates the database
-     *
-     * @return unique Id of the reservation that was added/modified/deleted
-     */
-    suspend fun waitForUpdate(): String {
-        return updates.wait()
-    }
-
-    /**
-     * Notifies that the database has been updated
-     *
-     * @param reservationId unique ID of the reservation that was added/modified/deleted
-     */
-    private suspend fun sendUpdate(reservationId: String) {
-        updates.broadcast(reservationId)
-    }
+class ReservationRepository(private val scope: CoroutineScope):
+    AbstractUserDataRepository<Reservation>("reservations", scope, Reservation::class.java) {
 
     /**
      * Gets a list of all reservations made by [userId], including past and future reservations
      *
      * @return list of all reservations made by the user, which will be empty if they have none
      */
-    suspend fun getUserReservations(userId: String): List<Reservation> {
-        return reservationsRef
-            .whereEqualTo("entrantId", userId)
-            .get().await()
-            .toObjects(Reservation::class.java)
+    override suspend fun getWithUserId(userId: String): List<Reservation> {
+        return getWhereFieldEquals("entrantId", userId)
     }
 
+    /*
     /**
      * Deletes the user reservation with unique id [reservationId]
      */
-    fun removeUserReservation(reservationId: String) {
-        externalScope.launch {
-            reservationsRef.document(reservationId).delete()
-            sendUpdate(reservationId)
-        }
-        Log.d("ReservationRepository", "Deleted $reservationId")
+    fun removeFromId(reservationId: String) {
+        removeFromId(reservationId)
     }
 
     /**
@@ -74,21 +45,14 @@ class ReservationRepository(private val externalScope: CoroutineScope) {
         status: ReservationStatus = ReservationStatus.INVITED
     ) {
         val id = Reservation.uniqueIdFrom(entrantId, campsiteId, epochRange)
-        externalScope.launch {
-            reservationsRef
-                .document(id)
-                .set(
-                    Reservation(
-                        id = id,
-                        timeRange = epochRange,
-                        status = status,
-                        entrantId = entrantId,
-                        campsiteId = campsiteId
-                    )
-                )
-                .await()
-            sendUpdate(id)
-        }
+        addOrUpdateFromId(id, Reservation(
+            id = id,
+            timeRange = epochRange,
+            status = status,
+            entrantId = entrantId,
+            campsiteId = campsiteId
+        ))
         Log.d("ReservationRepository", "Added $id")
     }
+     */
 }
