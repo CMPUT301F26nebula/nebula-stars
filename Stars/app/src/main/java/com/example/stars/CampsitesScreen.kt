@@ -57,10 +57,14 @@ fun CampsitesScreen(
 ) {
     var search by remember { mutableStateOf("") }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
+    var filter by remember { mutableStateOf(CampsiteFilter()) }
+    var sort by remember { mutableStateOf(CampsiteFilter.CampsiteSort()) }
+    var showFilter by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         campsites = campsiteRepository.getFilteredCampsites()
     }
-    val results = searchCampsites(campsites, search)
+    val results = applySort(applyFilter(searchCampsites(campsites, search), filter), sort)
+    val filtersOn = filter.isActive || sort.field != null
 
     Column(
         modifier = Modifier
@@ -77,11 +81,9 @@ fun CampsitesScreen(
         ) {
             // Filter button
             Button(
-                onClick = {
-                    // for kaiwen todo : add filter
-                },
+                onClick = { showFilter = true },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = StarsColors.White,
+                    containerColor = if (filtersOn) StarsColors.Yellow else StarsColors.White,
                     contentColor = StarsColors.Purple
                 ),
                 contentPadding = PaddingValues(0.dp),
@@ -162,6 +164,19 @@ fun CampsitesScreen(
                     .testTag("searchField")
             )
         }
+    }
+    // filter popup
+    if (showFilter) {
+        FilterDialog(
+            currentFilter = filter,
+            currentSort = sort,
+            onApply = { newFilter, newSort ->
+                filter = newFilter
+                sort = newSort
+                showFilter = false
+            },
+            onDismiss = { showFilter = false }
+        )
     }
 }
 
