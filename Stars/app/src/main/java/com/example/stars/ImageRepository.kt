@@ -19,15 +19,6 @@ class ImageRepository(private val scope: CoroutineScope):
     AbstractRepository<ImageUpload>("images", scope, ImageUpload::class.java) {
     private val storageRef = Firebase.storage.reference
 
-    /*
-    /**
-     * Gets the ImageUpload from Firestore associate with the given ID [imageId]
-     */
-    suspend fun getFromId(imageId: String): ImageUpload? {
-        return getFromId(imageId)
-    }
-     */
-
     /**
      * Uploads an image to Firebase Cloud Storage and adds a reference in Firestore
      *

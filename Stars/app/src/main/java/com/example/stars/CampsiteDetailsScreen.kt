@@ -107,7 +107,7 @@ fun CampsiteDetailsScreen(navController: NavController,
         val loaded = campsiteRepository.getRatings(campsite.id)
         ratings = loaded
         reviewerNames = loaded.associate { rating ->
-            rating.userId to (userRepository.getUser(rating.userId)?.name ?: "Unknown User")
+            rating.userId to (userRepository.getWithId(rating.userId)?.name ?: "Unknown User")
         }
     }
 
@@ -261,7 +261,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             scope.launch {
                                 campsiteRepository.deleteRating(campsite.id, rating.userId)
                                 loadReviews()
-                                campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                                campsiteRepository.getWithId(campsite.id)?.let { shownCampsite = it }
                                 userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
                             }
                         },
@@ -293,7 +293,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             )
                             // reload so the new avg stars and the users rating shows straight away
                             userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
-                            campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                            campsiteRepository.getWithId(campsite.id)?.let { shownCampsite = it }
                             loadReviews()
                             }
                         }

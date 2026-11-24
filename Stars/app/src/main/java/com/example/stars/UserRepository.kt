@@ -20,23 +20,6 @@ import kotlinx.coroutines.flow.callbackFlow
 class UserRepository(private val scope: CoroutineScope):
     AbstractRepository<UserProfile>("users", scope, UserProfile::class.java) {
 
-    /*
-    /**
-     * Gets the UserProfile from Firestore associated with the given User ID
-     */
-    suspend fun getFromId(userId: String): UserProfile? {
-        return collection.document(userId).get().await().toObject(dataClass)
-    }
-
-    /**
-     * Adds or updates a [user] in the users list
-     * If user.id matches an existing user, updates it, otherwise creates a new entry
-     */
-    suspend fun addOrUpdate(user: UserProfile) {
-        collection.document(user.id).set(user).await()
-    }
-     */
-
     /**
      * Deletes the user [user] with ID [user.id] from the list of users
      * Also removes any campsites, reservations, and waiting list positions held by that user
@@ -62,16 +45,6 @@ class UserRepository(private val scope: CoroutineScope):
         user.profilePic = ""
         addOrUpdate(user)
     }
-
-    /*
-    /**
-     * returns the current list of users
-     */
-    suspend fun getAll(): MutableList<UserProfile> {
-        return collection.get().await().toObjects(dataClass)
-    }
-     */
-
 
     /**
      * receives [ownerProfile] and uses it to delete all campsites registered by the owner

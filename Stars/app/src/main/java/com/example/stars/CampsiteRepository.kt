@@ -4,9 +4,7 @@ TODO: Fill out getFilteredCampsites signature
  */
 package com.example.stars
 
-import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
 
@@ -37,39 +35,13 @@ class CampsiteRepository(private val scope: CoroutineScope):
         return getWhereFieldEquals("ownerId", userId)
     }
 
-    /*
-    /**
-     * Gets the Campsite from Firestore associated with the given ID
-     *
-     * @return the associated campsite, or null if it doesn't exist
-     */
-    suspend fun getFromId(campsiteId: String): Campsite? {
-        return getFromId(campsiteId)
-    }
-
-    /**
-     * Adds or updates a [campsite] in the campsite list
-     * If campsite Id matches an existing campsite, updates it, otherwise creates a new entry
-     */
-    fun addOrUpdate(campsite: Campsite) {
-        addOrUpdateFromId(campsite.id, campsite)
-    }
-
-    /**
-     * Deletes the campsite with ID [campsiteId] from the list of campsites
-     */
-    fun removeFromId(campsiteId: String) {
-        removeFromId(campsiteId)
-    }
-     */
-
     /**
      * Gets the rating [userId] gave the campsite with ID [campsiteId]
      *
      * @return the user's rating, or null if they haven't rated this campsite
      */
     suspend fun getUserRating(campsiteId: String, userId: String): Rating? {
-        return campsitesRef.document(campsiteId)
+        return collection.document(campsiteId)
             .collection("ratings")
             .document(userId)
             .get().await()
@@ -82,7 +54,7 @@ class CampsiteRepository(private val scope: CoroutineScope):
      * @return list of ratings, will be empty if none exist
      */
     suspend fun getRatings(campsiteId: String): List<Rating> {
-        return campsitesRef.document(campsiteId)
+        return collection.document(campsiteId)
             .collection("ratings")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get().await()
@@ -101,7 +73,7 @@ class CampsiteRepository(private val scope: CoroutineScope):
     suspend fun setRating(campsiteId: String, userId: String, stars: Double, comment: String, stayRange: EpochRange) {
         require (stars in 1.0..5.0) { "stars must be between 1.0 and 5.0, was $stars" }
 
-        val campsiteDoc = campsitesRef.document(campsiteId)
+        val campsiteDoc = collection.document(campsiteId)
         val ratingDoc = campsiteDoc.collection("ratings").document(userId)
 
         db.runTransaction { transaction ->
@@ -145,7 +117,7 @@ class CampsiteRepository(private val scope: CoroutineScope):
      * deletes [userId]s rating of the campsite with ID [campsiteId] and removes it from the campsite's ratingTotal and ratingCount
      */
     suspend fun deleteRating(campsiteId: String, userId: String) {
-        val campsiteDoc = campsitesRef.document(campsiteId)
+        val campsiteDoc = collection.document(campsiteId)
         val ratingDoc = campsiteDoc.collection("ratings").document(userId)
 
         db.runTransaction { transaction ->
@@ -172,7 +144,7 @@ class CampsiteRepository(private val scope: CoroutineScope):
      * Clears the comment on [userId]s rating, but keeps the star rating and review count the same
      */
     suspend fun removeComment(campsiteId: String, userId: String) {
-        campsitesRef.document(campsiteId)
+        collection.document(campsiteId)
             .collection("ratings")
             .document(userId)
             .update("comment", "")
