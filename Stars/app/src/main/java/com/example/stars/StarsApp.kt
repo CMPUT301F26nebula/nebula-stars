@@ -232,7 +232,8 @@ fun StarsApp(notifs: Boolean = false) {
                                 campsiteRepository = campsiteRepository,
                                 imageRepo = imageRepository,
                                 userRepository = userRepository,
-                                lotteryRepository = lotteryRepository
+                                lotteryRepository = lotteryRepository,
+                                reservationRepository = reservationRepository
                             )
                         }
                         )
