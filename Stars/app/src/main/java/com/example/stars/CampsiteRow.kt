@@ -91,11 +91,10 @@ fun CampsiteRow(
                         fontWeight = FontWeight.Medium
                     )
                 }
-                // Rating (TODO: Implement)
-                Text(
-                    text = "(star rating)",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
+                // Rating
+                StarRatingDisplay(
+                    average = campsite.averageRating,
+                    count = campsite.ratingCount
                 )
                 // Description
                 Text(
