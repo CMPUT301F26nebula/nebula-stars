@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,7 +22,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -108,7 +106,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         onClick = {
                             currentUser.permission = UserPermission.ADMIN
                             scope.launch {
-                                userRepository.addOrUpdateUser(currentUser)
+                                userRepository.addOrUpdate(currentUser)
                                 showAdminSignUp = false
                             }
                         },
@@ -152,7 +150,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         {
                             currentUser.permission = UserPermission.OWNER
                             scope.launch {
-                                userRepository.addOrUpdateUser(currentUser)
+                                userRepository.addOrUpdate(currentUser)
                             }
                             showAdminRemove = false
                         },
@@ -190,7 +188,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         onClick = {
                             currentUser.permission = UserPermission.OWNER
                             scope.launch {
-                                userRepository.addOrUpdateUser(currentUser)
+                                userRepository.addOrUpdate(currentUser)
                             }
                             showOwnerSignUp = false
 
@@ -242,7 +240,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         {
                             currentUser.permission = UserPermission.ENTRANT
                             scope.launch {
-                                userRepository.addOrUpdateUser(currentUser)
+                                userRepository.addOrUpdate(currentUser)
                             }
                             showOwnerRemove = false
                         },
