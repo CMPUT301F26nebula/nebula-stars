@@ -37,8 +37,17 @@ class FirebaseCRUDInstrumented {
         assertEquals("John Doe", user?.name)
         assertEquals("email@email.com", user?.email)
         assertEquals(UserPermission.OWNER, user?.permission)
-        // Delete, search again, and check that it's gone
+        // Ban, search again, and check that the user is banned
         userRepo.deleteUser(userProfile)
+        Thread.sleep(5000)
+        user = userRepo.getWithId("test1")
+        assertNotNull(user)
+        assertEquals("test1", user?.id)
+        assertEquals("", user?.name)
+        assertEquals("", user?.email)
+        assertEquals(UserPermission.ENTRANT, user?.permission)
+        // Delete, search again, and check that it's gone
+        userRepo.deleteUserEntirely(userProfile)
         Thread.sleep(5000)
         user = userRepo.getWithId("test1")
         assertNull(user)
@@ -108,7 +117,14 @@ class FirebaseCRUDInstrumented {
         assertEquals("testUO", campsite.ownerId)
         assertEquals(0, campsite.capacity)
 
-        reservationRepo.addUserReservation(userE.id, campsite.id, EpochRange(1,2))
+        val timeRange = EpochRange(1,2)
+        reservationRepo.addOrUpdate(Reservation(
+            id = Reservation.uniqueIdFrom(userE.id, campsite.id, timeRange),
+            entrantId = userE.id,
+            campsiteId = campsite.id,
+            timeRange = timeRange
+        ))
+
         // Make sure the reservation exists
         assertNotNull(reservationRepo.getWithUserId(userE.id))
         // Delete everything, including the test user

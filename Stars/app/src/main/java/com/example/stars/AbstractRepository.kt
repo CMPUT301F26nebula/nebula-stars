@@ -58,7 +58,7 @@ abstract class AbstractRepository<T: UniqueIdentifier>(
     }
 
     /**
-     * Deletes the document with unique id [id] and notifies waiting threads
+     * Deletes the document with unique id [id]
      */
     open fun removeWithId(id: String) {
         externalScope.launch {
@@ -74,7 +74,7 @@ abstract class AbstractRepository<T: UniqueIdentifier>(
     }
 
     /**
-     * Add or update a document by its unique [id] and notifies waiting threads
+     * Add or update a document by its unique [id]
      *
      * @param id documents unique id
      * @param data object to add

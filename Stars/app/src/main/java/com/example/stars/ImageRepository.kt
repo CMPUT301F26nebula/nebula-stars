@@ -49,10 +49,9 @@ class ImageRepository(private val scope: CoroutineScope):
     fun deleteImage(imageId: String) {
         scope.launch {
             storageRef.child("images/$imageId.jpg").delete().await()
-            collection.document(imageId).delete().await()
+            //collection.document(imageId).delete().await()
         }
-        // TODO not sure what the above double deletion is for, if its not needed use vvv instead since it updates listening threads
-        // removeFromId(imageId)
+        removeWithId(imageId)
     }
 
     /**
