@@ -96,6 +96,9 @@ fun UpdateCampsiteScreen(
     val reservations = remember { mutableStateListOf<String>() }
     val availabilitySchedule = remember { mutableStateListOf<EpochRange>() }
     var location by remember { mutableStateOf(LocationCoordinates(0.0, 0.0)) }
+    // not editable on this screen but kept so saving doesnt erase the campsite's ratings
+    var ratingTotal by remember { mutableDoubleStateOf(0.0) }
+    var ratingCount by remember { mutableIntStateOf(0) }
     var campsiteExists by remember(campsiteId) { mutableStateOf(false) }
 
     // Shapes matching theme
@@ -126,6 +129,8 @@ fun UpdateCampsiteScreen(
             reservations.addAll(oldCampsite.reservationIds)
             availabilitySchedule.addAll(oldCampsite.availabilitySchedule)
             location = oldCampsite.location
+            ratingTotal = oldCampsite.ratingTotal
+            ratingCount = oldCampsite.ratingCount
         }
     }
     
@@ -597,7 +602,9 @@ fun UpdateCampsiteScreen(
                                             imageIds = imageIds.toList(),
                                             reservationIds = reservations.toList(),
                                             availabilitySchedule = availabilitySchedule.toList(),
-                                            location = location
+                                            location = location,
+                                            ratingTotal = ratingTotal,
+                                            ratingCount = ratingCount
                                         )
                                     )
                                     Log.d("Campsite Update Submission", "Campsite Uploaded")
