@@ -29,6 +29,15 @@ class NotificationRepository (private val scope: CoroutineScope) {
     }
 
     /**
+     * Gets the list of all notifications sent globally
+     *
+     * @return list of all notifications, empty if not applicable
+     */
+    suspend fun getGlobalNotifications(): List<Notification> {
+        return notificationsRef.get().await().toObjects(Notification::class.java)
+    }
+
+    /**
      * Marks a notification [notification] as read
      */
     fun markAsRead(notification: Notification) {

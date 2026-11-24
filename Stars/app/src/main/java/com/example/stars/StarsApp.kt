@@ -128,12 +128,13 @@ fun StarsApp(notifs: Boolean = false) {
                         userRepository
                     )
                 }
-                composable("profile") { EditProfile(navController, currentUser, userRepository) }
+                composable("profile") { EditProfile(navController, currentUser, userRepository, imageRepository) }
                 composable("new profile") {
                     MakeNewProfile(
                         navController,
                         currentUser,
-                        userRepository
+                        userRepository,
+                        imageRepository
                     )
                 }
                 composable("upload campsite") {
@@ -149,6 +150,12 @@ fun StarsApp(notifs: Boolean = false) {
                         navController,
                         userRepository,
                         campsiteRepository
+                    )
+                }
+                composable("notification log") {
+                    AdminViewNotifications(
+                        navController,
+                        notificationRepository
                     )
                 }
                 composable(

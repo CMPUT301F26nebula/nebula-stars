@@ -2,6 +2,7 @@ package com.example.stars
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,14 +30,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -96,84 +104,105 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
     if (!deleted) {
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            colors = cardColors(StarsColors.White)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
 
-                // Name
-                Text(
-                    text = userProfile.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
+            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
 
-                )
+                Column() {
 
-                // permission level
-                Text(
-                    text = permissionLevel,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
+                    // Name
+                    Text(
+                        text = userProfile.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
 
-
-                Text(
-                    text = userProfile.email,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-
-                // used for phone number formating
-                val nanpVisualTransformation = NanpVisualTransformation()
-
-                // phone number
-                Text(
-                    text = nanpVisualTransformation.filter(AnnotatedString(userProfile.phone)).text,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-
-                // buttons to delete and ban
-                Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
-
-                    // if not trying to delete user, show the ban button
-                    if (!confirmBan) {
-                        AdminActionOnUser(
-                            confirmDeletion, "Delete User",
-                            onRequest = {
-                                confirmDeletion = true
-                                confirmBan = false
-                            },
-                            onConfirm = {
-                                runBlocking {
-                                    userRepository.deleteUser(userProfile)
-                                    confirmDeletion = false
-                                    deleted = true
-                                }
-                            },
-                            onCancel = { confirmDeletion = false }
                         )
-                    }
 
-                    // if neither button is expanded put a space between them
-                    if (!confirmBan && !confirmDeletion) {
-                        Spacer(modifier = Modifier.size(10.dp))
-                    }
+                    // permission level
+                    Text(
+                        text = permissionLevel,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
 
-                    // if not trying to ban user show the delete button
-                    if (!confirmDeletion  && userProfile.permission >= UserPermission.OWNER){
-                        AdminActionOnUser(confirmBan, "Ban Owner",
-                            onRequest = {
-                                confirmDeletion = false
-                                confirmBan = true
-                            },
-                            onConfirm = {
-                                runBlocking { userRepository.banOwner(userProfile) }
+
+                    Text(
+                        text = userProfile.email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    // used for phone number formating
+                    val nanpVisualTransformation = NanpVisualTransformation()
+
+
+                    // phone number
+                    Text(
+                        text = nanpVisualTransformation.filter(AnnotatedString(userProfile.phone)).text,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+
+                }
+
+                AsyncImage(
+                    model = userProfile.profilePic,
+                    contentDescription = "profile picture",
+                    modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
+                    contentScale = ContentScale.Crop,
+                    fallback = painterResource(R.drawable.default_pfp), // shown when model is null
+                    error = painterResource(R.drawable.default_pfp)
+                )
+            }
+
+            // buttons to delete and ban
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+
+                // if not trying to delete user, show the ban button
+                if (!confirmBan) {
+                    AdminActionOnUser(
+                        confirmDeletion, "Delete User",
+                        onRequest = {
+                            confirmDeletion = true
+                            confirmBan = false
+                        },
+                        onConfirm = {
+                            runBlocking {
+                                userRepository.deleteUser(userProfile)
                                 confirmDeletion = false
                                 deleted = true
-                            },
-                            onCancel = {confirmBan = false}
-                        )
-                    }
+                            }
+                        },
+                        onCancel = { confirmDeletion = false }
+                    )
+                }
+
+                // if neither button is expanded put a space between them
+                if (!confirmBan && !confirmDeletion) {
+                    Spacer(modifier = Modifier.size(10.dp))
+                }
+
+                // if not trying to ban user show the delete button
+                if (!confirmDeletion && userProfile.permission >= UserPermission.OWNER) {
+                    AdminActionOnUser(
+                        confirmBan, "Ban Owner",
+                        onRequest = {
+                            confirmDeletion = false
+                            confirmBan = true
+                        },
+                        onConfirm = {
+                            runBlocking { userRepository.banOwner(userProfile) }
+                            confirmDeletion = false
+                            deleted = true
+                        },
+                        onCancel = { confirmBan = false }
+                    )
                 }
             }
         }

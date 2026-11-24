@@ -26,6 +26,7 @@ enum class UserPermission {
  * @param permission the app permission level for the user
  * @param notifs true if the user has notifications enabled, false otherwise
  * @param firebaseId the user's cloud firebase messaging ID
+ * @param profilePic the users selected profile picture
  */
 data class UserProfile(
     val id: String = "",
@@ -36,5 +37,6 @@ data class UserProfile(
     var banned: Boolean = false,
     var permission: UserPermission = UserPermission.ENTRANT,
     var notifs: Boolean = false,
-    var firebaseId: String = ""
+    var firebaseId: String = "",
+    var profilePic: String = ""
 )

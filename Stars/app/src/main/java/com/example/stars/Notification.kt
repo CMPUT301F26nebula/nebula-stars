@@ -8,5 +8,7 @@ data class Notification (
     val userId: String = "",
     val read: Boolean = false,
     val content: String = "",
-    val navDestination: String = ""
+    val navDestination: String = "",
+    val sender: String = "SYSTEM",
+    val timestamp: Long = System.currentTimeMillis()
 )
