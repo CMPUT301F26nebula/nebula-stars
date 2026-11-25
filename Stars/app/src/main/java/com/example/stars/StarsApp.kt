@@ -1,7 +1,11 @@
+/**
+ * App toplevel composable that handles navigation and contains global values
+ */
 package com.example.stars
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.firestore.ListenerRegistration
 
 object StarsColors {
     val Purple = Color(0xFF4B0082)
@@ -37,6 +42,7 @@ object Databases {
     lateinit var imageRepository: ImageRepository
     lateinit var reservationRepository: ReservationRepository
     lateinit var notificationRepository: NotificationRepository
+    lateinit var chatRepository: ChatRepository
 }
 
 /**
@@ -53,6 +59,7 @@ fun StarsApp(notifs: Boolean = false) {
     val lotteryRepository = remember { LotteryRepository(scope) }
     val reservationRepository = remember { ReservationRepository(scope) }
     val notificationRepository = remember { NotificationRepository(scope) }
+    val chatRepository = remember { ChatRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
 
@@ -61,6 +68,7 @@ fun StarsApp(notifs: Boolean = false) {
     Databases.reservationRepository = reservationRepository
     Databases.imageRepository = imageRepository
     Databases.notificationRepository = notificationRepository
+    Databases.chatRepository = chatRepository
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -109,13 +117,9 @@ fun StarsApp(notifs: Boolean = false) {
                 composable("campsites") { CampsitesScreen(navController, campsiteRepository, imageRepository) }
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
-                    ReservationCalendarScreen(
-                        navController,
-                        currentUser,
-                        reservationRepository
-                    )
+                    ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
-                composable("messages") { PlaceholderScreen("MESSAGES", navController) }
+                composable("messages") { MessagesScreen(navController, currentUser) }
                 composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
                 composable("settings") {
                     SettingsScreen(
@@ -214,21 +218,34 @@ fun StarsApp(notifs: Boolean = false) {
 
                     var campsite by remember(campsiteId) { mutableStateOf<Campsite?>(null) }
 
-                    LaunchedEffect(campsiteId) {
-                        campsite = campsiteId?.let { campsiteRepository.getCampsite(it) }
+                    DisposableEffect(Unit) {
+                        var listener: ListenerRegistration? = null
+                        campsiteId?.let {
+                            listener = Databases.campsiteRepository.addListenerToId(it) { maybeCamp ->
+                                if (maybeCamp == null) {
+                                    // doesnt pop u back into the correct place for some reason
+                                    // TODO someone who knows more about the nav system can figure this out
+                                    navController.popBackStack()
+                                } else {
+                                    campsite = maybeCamp
+                                }
+                            }
+                        }
+
+                        onDispose { listener?.remove() }
                     }
 
-                    val loaded = campsite   // local copy, so Kotlin can smart cast it
-                    if (loaded != null) {
+                    if (campsite != null) {
                         StarsBackground(Modifier, {
                             CampsiteDetailsScreen(
                                 navController = navController,
                                 currentUser = currentUser,
-                                campsite = loaded,
+                                campsite = campsite ?: Campsite(),
                                 campsiteRepository = campsiteRepository,
                                 imageRepo = imageRepository,
                                 userRepository = userRepository,
-                                lotteryRepository = lotteryRepository
+                                lotteryRepository = lotteryRepository,
+                                reservationRepository = reservationRepository
                             )
                         }
                         )

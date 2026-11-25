@@ -9,4 +9,7 @@ package com.example.stars
  * @param id the unique ID assigned to the image
  * @param downloadUrl the embeddable download link to the image
  */
-data class ImageUpload (val id: String = "", val downloadUrl: String = "")
+data class ImageUpload (
+    override val id: String = "",
+    val downloadUrl: String = ""
+): UniqueIdentifier

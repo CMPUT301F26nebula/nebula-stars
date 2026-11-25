@@ -55,7 +55,7 @@ fun UserProfileScreen(
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
 
     LaunchedEffect(true) {
-        userProfile = userRepository.getUser(userID)
+        userProfile = userRepository.getWithId(userID)
     }
 
     Column(modifier = Modifier.fillMaxSize()){

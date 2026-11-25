@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,8 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import coil.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
@@ -64,16 +65,17 @@ fun CampsiteDetailsScreen(navController: NavController,
                           campsiteRepository: CampsiteRepository,
                           imageRepo: ImageRepository,
                           userRepository: UserRepository,
-                          lotteryRepository: LotteryRepository) {
+                          lotteryRepository: LotteryRepository,
+                          reservationRepository: ReservationRepository) {
 
     // get the name of the owner
-    val ownerName = runBlocking { userRepository.getUser(campsite.ownerId)?.name }
+    val ownerName = runBlocking { userRepository.getWithId(campsite.ownerId)?.name }
 
     // get the existence of a lottery or it's object
     var lottery: Lottery? by remember { mutableStateOf(null) }
     LaunchedEffect(campsite.id) {
 
-        val lotteries = lotteryRepository.getUserLotteries(campsite.ownerId)
+        val lotteries = lotteryRepository.getWithUserId(campsite.ownerId)
 
         for (individualLottery in lotteries) {
             if (campsite.id in individualLottery.campsiteIDs) {
@@ -82,6 +84,48 @@ fun CampsiteDetailsScreen(navController: NavController,
         }
 
     }
+
+    // campsite shown on this screen, reloaded after rating so the new average shows right away
+    var shownCampsite by remember(campsite.id) { mutableStateOf(campsite) }
+    // the current user's most recent finished stay here , or null if they havent stayed
+    var completedStay: Reservation? by remember(campsite.id) { mutableStateOf(null) }
+    // the current user's existing rating, or null if they havent rated this campsite
+    var userRating: Rating? by remember(campsite.id) { mutableStateOf(null) }
+    // true while the rating popup is open
+    var showRatingDialog by remember { mutableStateOf(false) }
+    // used to run the firestore save when the user presses Submit
+    val scope = rememberCoroutineScope()
+    // true while the review popup is opne
+    var showReviewsDialog by remember { mutableStateOf(false) }
+    // every rating of the campsite, newest first
+    var ratings by remember(campsite.id) { mutableStateOf<List<Rating>>(emptyList()) }
+    // user id -> display name of every user who has written a review
+    var reviewerNames by remember(campsite.id) { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    //loads every review and the names fo the users
+    suspend fun loadReviews() {
+        val loaded = campsiteRepository.getRatings(campsite.id)
+        ratings = loaded
+        reviewerNames = loaded.associate { rating ->
+            rating.userId to (userRepository.getWithId(rating.userId)?.name ?: "Unknown User")
+        }
+    }
+
+    // load thee reviews each time the popup opens
+    LaunchedEffect(showReviewsDialog) {
+        if (showReviewsDialog) loadReviews()
+    }
+
+
+    //check if the user can rate, and load their old rating if they had one
+    LaunchedEffect(campsite.id, currentUser.id) {
+        val stay = reservationRepository.getLatestCompletedStay(currentUser.id, campsite.id)
+        completedStay = stay
+        if (stay != null) {
+            userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+        }
+    }
+
     val currentLottery = lottery
 
     // this is so that the buttons can stack and still have rounded corners on the last button
@@ -132,7 +176,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                     Text(
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = StarsColors.White
                     )
 
                 }
@@ -159,17 +204,24 @@ fun CampsiteDetailsScreen(navController: NavController,
                         textAlign = TextAlign.Center
                     )
 
-                    // TODO: implement star system
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(StarsColors.White, contentColor = StarsColors.Black),
-                        shape = RoundedCornerShape(0.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ){
-                        Text("Rate: (stars)", style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium)
-                    }
+                    //reviews section (clickable and brings you to review page)
+                    Row(
+                        modifier = Modifier.clickable { showReviewsDialog = true }
+                    ) {
+                        Text(
+                            "Rate: ",
+                            fontWeight = FontWeight.Medium
+                        )
 
+                        StarRatingDisplay(
+                            average = shownCampsite.averageRating,
+                            count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
+                            color = StarsColors.Yellow,
+                            numberColor = StarsColors.Black
+                        )
+                    }
                 }
+
 
                 Row(modifier = Modifier.fillMaxWidth().padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween){
@@ -191,13 +243,62 @@ fun CampsiteDetailsScreen(navController: NavController,
                 )
 
                 LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)) {
-
                     item {Text(campsite.description)}
-
                 }
 
+                if (showReviewsDialog) {
+                    ReviewsDialog(
+                        average = shownCampsite.averageRating,
+                        count = shownCampsite.ratingCount,
+                        ratings = ratings,
+                        reviewerNames = reviewerNames,
+                        userRating = userRating,
+                        canReview = completedStay != null,
+                        onWriteReview = { showRatingDialog = true },
+                        onDismiss = { showReviewsDialog = false },
+                        isAdmin = currentUser.permission == UserPermission.ADMIN,
+                        onRemoveRating = { rating ->
+                            scope.launch {
+                                campsiteRepository.deleteRating(campsite.id, rating.userId)
+                                loadReviews()
+                                campsiteRepository.getWithId(campsite.id)?.let { shownCampsite = it }
+                                userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+                            }
+                        },
+                        onRemoveComment = { rating ->
+                            scope.launch {
+                                campsiteRepository.removeComment(campsite.id, rating.userId)
+                                loadReviews()
+                                userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+                            }
+                        }
+                    )
+                }
 
-
+                if (showRatingDialog) {
+                    RatingDialog(
+                        // start with the user's old rating if they have one
+                        initialStars = userRating?.stars ?: 1.0,
+                        initialComment = userRating?.comment ?: "",
+                        onDismiss = { showRatingDialog = false },
+                        onSubmit = { stars, comment ->
+                            showRatingDialog = false
+                        scope.launch {
+                            campsiteRepository.setRating(
+                                campsite.id,
+                                currentUser.id,
+                                stars,
+                                comment,
+                                completedStay?.timeRange ?: EpochRange()
+                            )
+                            // reload so the new avg stars and the users rating shows straight away
+                            userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
+                            campsiteRepository.getWithId(campsite.id)?.let { shownCampsite = it }
+                            loadReviews()
+                            }
+                        }
+                    )
+                }
             }
         }
 
@@ -299,7 +400,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 if (currentUser.id !in enterList) {
                                     enterList.add(currentUser.id)
                                     currentLottery.entrantIDs = enterList
-                                    lotteryRepository.addOrUpdateLottery(currentLottery)
+                                    lotteryRepository.addOrUpdate(currentLottery)
                                 }
                             },
                             shape = RoundedCornerShape(
@@ -331,7 +432,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 if (currentUser.id in enterList) {
                                     enterList.remove(currentUser.id)
                                     currentLottery.entrantIDs = enterList
-                                    lotteryRepository.addOrUpdateLottery(currentLottery)
+                                    lotteryRepository.addOrUpdate(currentLottery)
                                 }
 
 
@@ -420,7 +521,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
         BackButton(navController)
 
         // get the lottery
-        val lottery = runBlocking {lotteryRepository.getLottery(lotteryID)}
+        val lottery = runBlocking {lotteryRepository.getWithId(lotteryID)}
 
         // if there is a lottery (there should always be one but kotlin wanted to make sure)
         if (lottery != null) {
@@ -430,7 +531,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
 
                 // for each entrant make a card
                 itemsIndexed(lottery.entrantIDs) { index, entrant ->
-                    val profile = runBlocking { userRepository.getUser(entrant) }
+                    val profile = runBlocking { userRepository.getWithId(entrant) }
 
                     if (profile != null) {
                         Spacer(modifier = Modifier.height(12.dp))

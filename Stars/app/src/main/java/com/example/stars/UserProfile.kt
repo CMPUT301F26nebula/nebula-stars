@@ -29,7 +29,7 @@ enum class UserPermission {
  * @param profilePic the users selected profile picture
  */
 data class UserProfile(
-    val id: String = "",
+    override val id: String = "",
     var name: String = "",
     var email: String = "",
     var phone: String = "",
@@ -39,4 +39,4 @@ data class UserProfile(
     var notifs: Boolean = false,
     var firebaseId: String = "",
     var profilePic: String = ""
-)
+): UniqueIdentifier

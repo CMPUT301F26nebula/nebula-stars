@@ -1,3 +1,6 @@
+/**
+ * Screen for user reservations
+ */
 package com.example.stars
 
 import androidx.compose.foundation.background
@@ -16,12 +19,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -31,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -139,11 +139,18 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
     }
 
     val calendarManager by remember { mutableStateOf(CalendarManager(reservations)) }
-    // if reservations change a new calendarManager wont be created so we must update it if needed
-    calendarManager.updateReservations(reservations)
     var calendarDays by remember { mutableStateOf(calendarManager.getMonthDisplayDays().iterator()) }
     var currentMonth by remember { mutableStateOf(calendarManager.currentMonthName()) }
     var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
+
+    // if reservations change a new calendarManager wont be created so we must update it if needed
+    calendarManager.updateReservations(reservations)
+    val refreshCalender = {
+        calendarDays = calendarManager.getMonthDisplayDays().iterator()
+        currentMonth = calendarManager.currentMonthName()
+        currentYear = calendarManager.currentYear()
+    }
+    refreshCalender()
 
     val changeMonthButtonModifier = Modifier
         .border(1.dp, StarsColors.White, shape = RoundedCornerShape(24.dp))
@@ -183,9 +190,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
                 onClick = {
                     calendarManager.lastMonth()
                     // force text to recompose as well
-                    calendarDays = calendarManager.getMonthDisplayDays().iterator()
-                    currentMonth = calendarManager.currentMonthName()
-                    currentYear = calendarManager.currentYear()
+                    refreshCalender()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
@@ -203,9 +208,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
                 modifier = changeMonthButtonModifier,
                 onClick = {
                     calendarManager.nextMonth()
-                    calendarDays = calendarManager.getMonthDisplayDays().iterator()
-                    currentMonth = calendarManager.currentMonthName()
-                    currentYear = calendarManager.currentYear()
+                    refreshCalender()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
@@ -281,37 +284,35 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
  * Screen showing the reservations of the [currentUser]
  *
  * Displays reservations month by month and days can be clicked to view more info about the reservation
- *
- * @param autoRefresh if true, the calendar will automatically recompose when [reservationRepository] adds or deletes a reservation
  */
 @Composable
 fun ReservationCalendarScreen(
     navController: NavController,
     currentUser: UserProfile,
     reservationRepository: ReservationRepository,
-    autoRefresh: Boolean = true
 ) {
-    var userReservations by remember { mutableStateOf<List<Reservation>>(emptyList()) }
+    var userReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
     var calendarReady by remember { mutableStateOf(false) }
     var selectedReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
     var selectedReservation: Reservation? by remember { mutableStateOf(null) }
 
-    LaunchedEffect(Unit) {
-        // if the user cancels a reservation then it should update the calendar
-        // wont update if a reservation is cancelled externally tho
-        // TODO? maybe let one of the subviews signal the repository that something changed if it cant find a particular reservation in the db
-        while (autoRefresh) {
-            if (calendarReady) {
-                calendarReady = false
-            }
-            userReservations = reservationRepository
-                .getUserReservations(currentUser.id)
-                .sortedBy {
-                    it.timeRange.start
+    // if we dont call it async itll readd/restart the listener everytime this recomposes, which is everytime the listener fires...
+    DisposableEffect(Unit) {
+        // TERRIBLY inefficient but we dont store reservations with their user so :P TODO maybe change that later
+        val listener = reservationRepository.addListener {
+            calendarReady = false
+            userReservations = buildList {
+                for (reservation in it) {
+                    if (reservation != null && reservation.entrantId == currentUser.id) {
+                        add(reservation)
+                    }
                 }
+            }
             calendarReady = true
-            Databases.reservationRepository.waitForUpdate() // i miss pthreads...
         }
+
+        // should probably unregister the listener after we exit this screen
+        onDispose { listener.remove() }
     }
 
     // TODO remove at some point
@@ -322,11 +323,14 @@ fun ReservationCalendarScreen(
                 debugDialogState = false
             },
             onConfirm = {
-                reservationRepository.addUserReservation(
+                val id = Reservation.uniqueIdFrom(currentUser.id, "07359064-6222-427e-a491-a3e66e731fb3", it)
+                reservationRepository.addOrUpdate(Reservation(
+                    id = id,
+                    timeRange = it,
+                    status = ReservationStatus.INVITED,
                     entrantId = currentUser.id,
-                    campsiteId = "test3",
-                    epochRange = it
-                )
+                    campsiteId = "07359064-6222-427e-a491-a3e66e731fb3"
+                ))
             }
         )
     }

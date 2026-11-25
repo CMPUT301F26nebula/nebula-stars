@@ -3,7 +3,6 @@ Screen to add a new campsite, or update the details for an existing one
  */
 package com.example.stars
 
-import android.R.attr.end
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,10 +18,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +30,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -63,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -101,6 +96,9 @@ fun UpdateCampsiteScreen(
     val reservations = remember { mutableStateListOf<String>() }
     val availabilitySchedule = remember { mutableStateListOf<EpochRange>() }
     var location by remember { mutableStateOf(LocationCoordinates(0.0, 0.0)) }
+    // not editable on this screen but kept so saving doesnt erase the campsite's ratings
+    var ratingTotal by remember { mutableDoubleStateOf(0.0) }
+    var ratingCount by remember { mutableIntStateOf(0) }
     var campsiteExists by remember(campsiteId) { mutableStateOf(false) }
 
     // Shapes matching theme
@@ -120,7 +118,7 @@ fun UpdateCampsiteScreen(
 
     // If a campsite exists, get its info and fill in
     LaunchedEffect(Unit) {
-        val oldCampsite = campsiteRepo.getCampsite(campsiteId)
+        val oldCampsite = campsiteRepo.getWithId(campsiteId)
         if (oldCampsite != null) {
             title = oldCampsite.title
             price = oldCampsite.price
@@ -131,12 +129,14 @@ fun UpdateCampsiteScreen(
             reservations.addAll(oldCampsite.reservationIds)
             availabilitySchedule.addAll(oldCampsite.availabilitySchedule)
             location = oldCampsite.location
+            ratingTotal = oldCampsite.ratingTotal
+            ratingCount = oldCampsite.ratingCount
         }
     }
     
     // display QR code only for an existing, saved campsite
     LaunchedEffect(campsiteId) {
-        val savedCampsite = campsiteRepo.getCampsite(campsiteId)
+        val savedCampsite = campsiteRepo.getWithId(campsiteId)
         campsiteExists = savedCampsite != null &&
                 savedCampsite.ownerId == currentUser.id
 
@@ -590,7 +590,7 @@ fun UpdateCampsiteScreen(
                         Button(
                             onClick = {
                                 scope.launch {
-                                    campsiteRepo.addOrUpdateCampsite(
+                                    campsiteRepo.addOrUpdate(
                                         Campsite(
                                             id = campsiteId,
                                             title = title,
@@ -602,7 +602,9 @@ fun UpdateCampsiteScreen(
                                             imageIds = imageIds.toList(),
                                             reservationIds = reservations.toList(),
                                             availabilitySchedule = availabilitySchedule.toList(),
-                                            location = location
+                                            location = location,
+                                            ratingTotal = ratingTotal,
+                                            ratingCount = ratingCount
                                         )
                                     )
                                     Log.d("Campsite Update Submission", "Campsite Uploaded")

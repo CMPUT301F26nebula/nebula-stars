@@ -1,10 +1,8 @@
 package com.example.stars
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -121,7 +119,7 @@ fun ReservationListModal(
     LaunchedEffect(Unit) {
         campsites = buildMap {
             for (res in reservations) {
-                Databases.campsiteRepository.getCampsite(res.campsiteId)?.let {
+                Databases.campsiteRepository.getWithId(res.campsiteId)?.let {
                     put(res.id, it)
                 }
             }

@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -77,6 +78,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             ) {
                 if (currentUser.permission != UserPermission.ENTRANT) {
                     Button(
+                        modifier = Modifier.testTag("entrantHome"),
                         onClick = {
                             tab = UserPermission.ENTRANT
                         },
@@ -93,6 +95,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Button(
+                        modifier = Modifier.testTag("ownerHome"),
                         onClick = {
                             tab = UserPermission.OWNER
                         },
@@ -110,6 +113,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Button(
+                            modifier = Modifier.testTag("adminHome"),
                             onClick = {
                                 tab = UserPermission.ADMIN
                             },
