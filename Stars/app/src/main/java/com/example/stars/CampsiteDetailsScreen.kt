@@ -143,11 +143,14 @@ fun CampsiteDetailsScreen(navController: NavController,
         title = "CAMPSITE"
     )
 
+
+
     Column(modifier = Modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Spacer(modifier = Modifier.padding(12.dp))
 
         // white box in middle which holds all buttons
         Box(
@@ -217,7 +220,7 @@ fun CampsiteDetailsScreen(navController: NavController,
 
 
 
-                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 0.dp, horizontal = 10.dp),
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 0.dp, horizontal = 5.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
 
@@ -247,7 +250,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 }
 
 
-                Row(modifier = Modifier.fillMaxWidth().padding(10.dp),
+                Row(modifier = Modifier.fillMaxWidth().padding(5.dp),
                     horizontalArrangement = Arrangement.SpaceBetween){
 
 
@@ -263,7 +266,8 @@ fun CampsiteDetailsScreen(navController: NavController,
 
                 Text("Description:",  style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(5.dp)
                 )
 
                 LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)) {
