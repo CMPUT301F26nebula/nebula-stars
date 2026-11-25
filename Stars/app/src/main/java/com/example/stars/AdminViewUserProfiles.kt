@@ -345,7 +345,7 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
                 Button(
                     onClick = {
-                        runBlocking { campsiteRepository.removeWithId(campsite.id) }
+                        runBlocking { campsiteRepository.removeCampsite(campsite.id) }
                     },
                     modifier = Modifier.testTag("Remove Campsite")
                         .size(height = 40.dp, width = 155.dp),
