@@ -1,5 +1,6 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -45,16 +48,18 @@ fun UserProfileScreen(
     currentUser: UserProfile,
     userID: String,
     campsiteRepository: CampsiteRepository,
-    imageRepo: ImageRepository,
+    imageRepository: ImageRepository,
     userRepository: UserRepository
 ) {
 
     var confirmDeletion by remember { mutableStateOf(false) }
     var confirmBan by remember { mutableStateOf(false) }
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var ownedCampsites by remember { mutableStateOf<List<Campsite>>(emptyList<Campsite>()) }
 
     LaunchedEffect(true) {
         userProfile = userRepository.getWithId(userID)
+        ownedCampsites = campsiteRepository.getWhereFieldEquals("ownerId", userID)
     }
 
     Column(modifier = Modifier.fillMaxSize()){
@@ -95,7 +100,9 @@ fun UserProfileScreen(
                             AsyncImage(
                                 model = userProfile!!.profilePic,
                                 contentDescription = "profile picture",
-                                modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .size(100.dp, 100.dp),
                                 contentScale = ContentScale.Crop,
                                 fallback = painterResource(R.drawable.default_pfp), // shown when model is null
                                 error = painterResource(R.drawable.default_pfp)
@@ -158,25 +165,48 @@ fun UserProfileScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        //TODO: Display owned campsites
-                        /*
-                        if (results.isEmpty()) {
-                            Text("No campsites found", color = StarsColors.White)
-                        } else {
-                            // List of campsites
-                            LazyColumn {
-                                itemsIndexed(results) { index, campsite ->
-                                    CampsiteRow(
-                                        campsite = campsite,
-                                        color = campsiteCardColors[index % campsiteCardColors.size],
-                                        onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
-                                        imageRepository = imageRepository
-                                    )
-                                    Spacer(modifier = Modifier.height(12.dp))
+                        if ((userProfile?.permission
+                                ?: UserPermission.ENTRANT) >= UserPermission.OWNER
+                        ) {
+                            Text(
+                                text = "Owned Campsites:",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = StarsColors.Purple)
+                            if (ownedCampsites.isEmpty()) {
+                                Text(
+                                    text = "No campsites found",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = StarsColors.Purple
+                                )
+                            } else {
+                                // List of campsites
+                                LazyColumn (modifier = Modifier
+                                    .height(290.dp)
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .background(StarsColors.Purple)
+                                ) {
+                                    itemsIndexed(ownedCampsites) { index, campsite ->
+                                        CampsiteRow(
+                                            campsite = campsite,
+                                            color = campsiteCardColors[index % campsiteCardColors.size],
+                                            onClick = {
+                                                navController.navigate(
+                                                    "campsite/${
+                                                        Uri.encode(
+                                                            campsite.id
+                                                        )
+                                                    }"
+                                                )
+                                            },
+                                            imageRepository = imageRepository
+                                        )
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                    }
                                 }
                             }
                         }
-                         */
                     }
 
                     if (currentUser.permission == UserPermission.ADMIN) {

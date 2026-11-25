@@ -306,7 +306,7 @@ fun StarsApp(notifs: Boolean = false) {
                         currentUser = currentUser,
                         userID = userID,
                         campsiteRepository = campsiteRepository,
-                        imageRepo = imageRepository,
+                        imageRepository = imageRepository,
                         userRepository = userRepository
                     )
                 }
