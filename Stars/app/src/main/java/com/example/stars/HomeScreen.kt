@@ -1,5 +1,6 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -126,7 +127,6 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             }
         }
     ) { padding ->
-        // Change to fancier layout later
         // Contents
         Column(
             modifier = Modifier
@@ -144,7 +144,8 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         HomeButtonData("Messages", "MessagesButton", "messages"),
                         HomeButtonData("Notifications", "NotificationsButton", "notifications"),
                         HomeButtonData("Profile", "ProfileButton", "profile"),
-                        HomeButtonData("Settings", "SettingsButton", "settings")
+                        HomeButtonData("Settings", "SettingsButton", "settings"),
+                        HomeButtonData("Test", "test", "user profile/${Uri.encode(currentUser.id)}")
                     )
 
                     UserPermission.OWNER -> arrayOf(

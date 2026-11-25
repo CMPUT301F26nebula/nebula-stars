@@ -105,7 +105,7 @@ fun CampsiteDetailsScreen(navController: NavController,
         Box(
             modifier = Modifier
                 .background(
-                    Color(0xFFFFFFFF),
+                    StarsColors.White,
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 30.dp,
@@ -123,7 +123,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 bottomEnd = 10.dp
             ))) {
 
-                Row(modifier = Modifier.fillMaxWidth().background(color = Color(0xFF008B8B))
+                Row(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Cyan)
                     .padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
@@ -161,7 +161,7 @@ fun CampsiteDetailsScreen(navController: NavController,
 
                     // TODO: implement star system
                     Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(Color(0x00000000), contentColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(StarsColors.White, contentColor = StarsColors.Black),
                         shape = RoundedCornerShape(0.dp),
                         contentPadding = PaddingValues(0.dp)
                     ){
