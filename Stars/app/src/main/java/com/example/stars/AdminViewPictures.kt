@@ -178,7 +178,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                 else if (campsite.imageIds.size == 1){
                     Box(modifier = Modifier.fillMaxSize()){
                         AsyncImage(
-                            model = campsite.imageIds[0],
+                            model = runBlocking { imageRepository.getImageUri(campsite.imageIds[0]) },
                             contentDescription = "campsite Image",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
@@ -251,7 +251,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                 contentAlignment = Alignment.Center
             ) {
                         AsyncImage(
-                            model = user.profilePic,
+                            model = runBlocking { imageRepository.getImageUri(user.profilePic) },
                             contentDescription = "profile picture",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
