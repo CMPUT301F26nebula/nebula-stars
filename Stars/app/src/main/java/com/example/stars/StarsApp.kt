@@ -180,6 +180,9 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryRepository
                     )
                 }
+                composable("admin images"){ AdminViewPictures(navController, userRepository, campsiteRepository,imageRepository) }
+
+
                 composable(
                     route = "edit lottery {lotteryId}",
                     arguments = listOf(

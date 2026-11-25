@@ -177,7 +177,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = StarsColors.White
+                        color = StarsColors.White,
                     )
 
                 }

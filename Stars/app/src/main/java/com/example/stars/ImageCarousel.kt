@@ -4,6 +4,7 @@ Contains composable to display images in a scrollable carousel
 package com.example.stars
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
@@ -62,26 +64,30 @@ fun ImageCarousel(
 
         val carouselState = rememberCarouselState(itemCount = { imageUris.size })
 
-        HorizontalMultiBrowseCarousel(
+        HorizontalCenteredHeroCarousel(
             state = carouselState,
-            preferredItemWidth = 280.dp, // Sets target size for fully visible images
+            //preferredItemWidth = 280.dp, // Sets target size for fully visible images
             itemSpacing = 8.dp,
             contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = modifier
                 .fillMaxWidth()
                 .height(220.dp)
         ) { pageIndex ->
-            AsyncImage(
-                model = imageUris[pageIndex],
-                contentDescription = "Carousel Image Item",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-            if (editor) {
-                Button(
-                    onClick = { onDelete(imageIds[pageIndex]) },
-                    content = { Text("Delete Image") }
+
+            // button disappears
+            Column() {
+                AsyncImage(
+                    model = imageUris[pageIndex],
+                    contentDescription = "Carousel Image Item",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
                 )
+                if (editor) {
+                    Button(
+                        onClick = { onDelete(imageIds[pageIndex]) },
+                        content = { Text("Delete Image") }
+                    )
+                }
             }
         }
     }
