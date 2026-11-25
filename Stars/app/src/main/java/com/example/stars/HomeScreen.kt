@@ -148,8 +148,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         HomeButtonData("Messages", "MessagesButton", "messages"),
                         HomeButtonData("Notifications", "NotificationsButton", "notifications"),
                         HomeButtonData("Profile", "ProfileButton", "profile"),
-                        HomeButtonData("Settings", "SettingsButton", "settings"),
-                        HomeButtonData("Test", "test", "user profile/${Uri.encode(currentUser.id)}")
+                        HomeButtonData("Settings", "SettingsButton", "settings")
                     )
 
                     UserPermission.OWNER -> arrayOf(

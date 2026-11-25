@@ -257,11 +257,6 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 Text("Cancel", textAlign = TextAlign.Center)
             }
 
-
-
-
-
-
         }
 
     }
@@ -321,7 +316,6 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
             Row() {
 
-
                 Button(
                     onClick = {
                         val user = runBlocking { userRepository.getWithId(campsite.id) }
@@ -368,7 +362,5 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
             }
         }
-
-
     }
 }

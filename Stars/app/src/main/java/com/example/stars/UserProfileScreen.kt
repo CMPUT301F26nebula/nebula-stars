@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import kotlinx.coroutines.runBlocking
 
 /**
  * The expanded view of a user's profile
@@ -82,73 +83,128 @@ fun UserProfileScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(20.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                    Column(
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        AsyncImage(
-                            model = userProfile!!.profilePic,
-                            contentDescription = "profile picture",
-                            modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
-                            contentScale = ContentScale.Crop,
-                            fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                            error = painterResource(R.drawable.default_pfp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            AsyncImage(
+                                model = userProfile!!.profilePic,
+                                contentDescription = "profile picture",
+                                modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
+                                contentScale = ContentScale.Crop,
+                                fallback = painterResource(R.drawable.default_pfp), // shown when model is null
+                                error = painterResource(R.drawable.default_pfp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = userProfile?.name ?: "USER NOT FOUND",
+                            fontSize = 40.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = StarsColors.Purple
+                        )
+
+                        Text(
+                            text =
+                                when (userProfile?.permission ?: UserPermission.ENTRANT) {
+                                    UserPermission.ENTRANT -> "Entrant"
+                                    UserPermission.OWNER -> "Owner"
+                                    UserPermission.ADMIN -> "Admin"
+                                },
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = StarsColors.Purple
+                        )
+
+                        Text(
+                            text = userProfile?.id ?: "",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Light,
+                            color = StarsColors.Purple
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "Contact Info:",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = StarsColors.Purple
+                        )
+
+                        Text(
+                            text = userProfile?.email ?: "",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = StarsColors.Purple
+                        )
+
+                        Text(
+                            text = userProfile?.phone ?: "",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = StarsColors.Purple
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
 
-                    Text(
-                        text = userProfile?.name ?: "USER NOT FOUND",
-                        fontSize = 40.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = StarsColors.Purple
-                    )
+                        // if not trying to ban user, show the delete button
+                        if (!confirmBan) {
+                            AdminActionOnUser(
+                                confirmDeletion,
+                                action = "Delete User",
+                                onRequest = {
+                                    confirmDeletion = true
+                                    confirmBan = false
+                                },
+                                onConfirm = {
+                                    runBlocking {
+                                        userRepository.deleteUser(userProfile!!)
+                                        confirmDeletion = false
+                                        navController.popBackStack()
+                                    }
+                                },
+                                onCancel = { confirmDeletion = false }
+                            )
+                        }
 
-                    Text(
-                        text =
-                            when (userProfile?.permission ?: UserPermission.ENTRANT) {
-                                UserPermission.ENTRANT -> "Entrant"
-                                UserPermission.OWNER -> "Owner"
-                                UserPermission.ADMIN -> "Admin"
-                            },
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = StarsColors.Purple
-                    )
+                        // if neither button is expanded put a space between them
+                        if (!confirmBan && !confirmDeletion) {
+                            Spacer(modifier = Modifier.size(10.dp))
+                        }
 
-                    Text(
-                        text = userProfile?.id ?: "",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Light,
-                        color = StarsColors.Purple
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = "Contact Info:",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = StarsColors.Purple
-                    )
-
-                    Text(
-                        text = userProfile?.email ?: "",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = StarsColors.Purple
-                    )
-
-                    Text(
-                        text = userProfile?.phone ?: "",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = StarsColors.Purple
-                    )
+                        // if not trying to delete userProfile show the ban button
+                        if (!confirmDeletion && (userProfile?.permission
+                                ?: UserPermission.ENTRANT) >= UserPermission.OWNER
+                        ) {
+                            AdminActionOnUser(
+                                confirmBan, "Ban Owner",
+                                onRequest = {
+                                    confirmDeletion = false
+                                    confirmBan = true
+                                },
+                                onConfirm = {
+                                    runBlocking { userRepository.banOwner(userProfile!!) }
+                                    confirmDeletion = false
+                                    navController.popBackStack()
+                                },
+                                onCancel = { confirmBan = false }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -198,52 +254,7 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
             }
 
             // buttons to delete and ban
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
-            ) {
 
-                // if not trying to delete user, show the ban button
-                if (!confirmBan) {
-                    AdminActionOnUser(
-                        confirmDeletion, "Delete User",
-                        onRequest = {
-                            confirmDeletion = true
-                            confirmBan = false
-                        },
-                        onConfirm = {
-                            runBlocking {
-                                userRepository.deleteUser(userProfile)
-                                confirmDeletion = false
-                                deleted = true
-                            }
-                        },
-                        onCancel = { confirmDeletion = false }
-                    )
-                }
-
-                // if neither button is expanded put a space between them
-                if (!confirmBan && !confirmDeletion) {
-                    Spacer(modifier = Modifier.size(10.dp))
-                }
-
-                // if not trying to ban userProfileshow the delete button
-                if (!confirmDeletion && userProfile.permission >= UserPermission.OWNER) {
-                    AdminActionOnUser(
-                        confirmBan, "Ban Owner",
-                        onRequest = {
-                            confirmDeletion = false
-                            confirmBan = true
-                        },
-                        onConfirm = {
-                            runBlocking { userRepository.banOwner(userProfile) }
-                            confirmDeletion = false
-                            deleted = true
-                        },
-                        onCancel = { confirmBan = false }
-                    )
-                }
-            }
         }
     }
 }
