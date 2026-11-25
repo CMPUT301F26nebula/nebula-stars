@@ -5,6 +5,7 @@ package com.example.stars
 
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -90,8 +91,8 @@ abstract class AbstractRepository<T: UniqueIdentifier>(
      *
      * @param callback callback function that receives a list of [dataClass]
      */
-    fun addListener(callback: (List<T?>) -> Unit) {
-        collection.addSnapshotListener { snapshots, exception ->
+    fun addListener(callback: (List<T?>) -> Unit): ListenerRegistration {
+        return collection.addSnapshotListener { snapshots, exception ->
             if (exception != null) {
                 Log.d("Repository(${collection.path})", "Listener error: ", exception)
                 return@addSnapshotListener
@@ -108,8 +109,8 @@ abstract class AbstractRepository<T: UniqueIdentifier>(
      * @param id document id to listen on
      * @param callback callback function that receives the document cast to a [dataClass]
      */
-    fun addListenerToId(id: String, callback: (T?) -> Unit) {
-        collection.document(id).addSnapshotListener { snapshot, exception ->
+    fun addListenerToId(id: String, callback: (T?) -> Unit): ListenerRegistration {
+        return collection.document(id).addSnapshotListener { snapshot, exception ->
             if (exception != null) {
                 Log.d("Repository(${collection.path})", "ListenerToId error: ", exception)
                 return@addSnapshotListener

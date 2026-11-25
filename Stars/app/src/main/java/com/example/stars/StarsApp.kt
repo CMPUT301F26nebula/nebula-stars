@@ -5,6 +5,7 @@ package com.example.stars
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.firestore.ListenerRegistration
 
 object StarsColors {
     val Purple = Color(0xFF4B0082)
@@ -117,7 +119,7 @@ fun StarsApp(notifs: Boolean = false) {
                 composable("reservations") {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
-                composable("messages") { PlaceholderScreen("MESSAGES", navController) }
+                composable("messages") { MessagesScreen(navController, currentUser) }
                 composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
                 composable("settings") {
                     SettingsScreen(
@@ -216,9 +218,10 @@ fun StarsApp(notifs: Boolean = false) {
 
                     var campsite by remember(campsiteId) { mutableStateOf<Campsite?>(null) }
 
-                    LaunchedEffect(campsiteId) {
+                    DisposableEffect(Unit) {
+                        var listener: ListenerRegistration? = null
                         campsiteId?.let {
-                            Databases.campsiteRepository.addListenerToId(it) { maybeCamp ->
+                            listener = Databases.campsiteRepository.addListenerToId(it) { maybeCamp ->
                                 if (maybeCamp == null) {
                                     // doesnt pop u back into the correct place for some reason
                                     // TODO someone who knows more about the nav system can figure this out
@@ -228,6 +231,8 @@ fun StarsApp(notifs: Boolean = false) {
                                 }
                             }
                         }
+
+                        onDispose { listener?.remove() }
                     }
 
                     if (campsite != null) {
