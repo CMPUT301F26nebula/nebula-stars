@@ -4,6 +4,7 @@ Contains the location picker composable for campsites and its associated types
 package com.example.stars
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -73,7 +74,8 @@ fun OpenStreetLocationPicker(
         config.load(context, prefs)
 
         // 2. Set a real, non-placeholder User-Agent for OSM tile policy compliance
-        config.userAgentValue = "STARS/1.1 (com.nebula.stars)"
+        config.userAgentValue = "nebula-stars/1.0 (franchuk.amy@ualberta.ca)"
+        Log.d("map user agent", config.userAgentValue)
 
         // 3. Separate base path and tile cache subdirectories to prevent SQLite lock errors
         val basePath = File(context.cacheDir, "osmdroid").apply { mkdirs() }
