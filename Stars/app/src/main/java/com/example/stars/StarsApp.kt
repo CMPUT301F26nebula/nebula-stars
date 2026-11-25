@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.savedstate.SavedState
 import com.google.firebase.firestore.ListenerRegistration
 
 object StarsColors {
@@ -120,6 +121,17 @@ fun StarsApp(notifs: Boolean = false) {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
+                composable(
+                    route = "messages/{chatId}",
+                    arguments = listOf(navArgument("chatId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
+                    ChatScreen(
+                        navController,
+                        currentUser,
+                        chatId
+                    )
+                }
                 composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
                 composable("settings") {
                     SettingsScreen(

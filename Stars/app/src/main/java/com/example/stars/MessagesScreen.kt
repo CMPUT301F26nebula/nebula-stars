@@ -71,8 +71,8 @@ fun MessagesScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(userChats) {
-                    ChatCard(it) {
-                        // TODO nav to dms screen
+                    ChatCard(it) { chat ->
+                        navController.navigate("messages/${chat.id}")
                     }
                 }
             }
