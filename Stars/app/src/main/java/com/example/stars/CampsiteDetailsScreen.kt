@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -71,13 +69,13 @@ fun CampsiteDetailsScreen(navController: NavController,
                           reservationRepository: ReservationRepository) {
 
     // get the name of the owner
-    val ownerName = runBlocking { userRepository.getUser(campsite.ownerId)?.name }
+    val ownerName = runBlocking { userRepository.getWithId(campsite.ownerId)?.name }
 
     // get the existence of a lottery or it's object
     var lottery: Lottery? by remember { mutableStateOf(null) }
     LaunchedEffect(campsite.id) {
 
-        val lotteries = lotteryRepository.getUserLotteries(campsite.ownerId)
+        val lotteries = lotteryRepository.getWithUserId(campsite.ownerId)
 
         for (individualLottery in lotteries) {
             if (campsite.id in individualLottery.campsiteIDs) {
@@ -109,7 +107,7 @@ fun CampsiteDetailsScreen(navController: NavController,
         val loaded = campsiteRepository.getRatings(campsite.id)
         ratings = loaded
         reviewerNames = loaded.associate { rating ->
-            rating.userId to (userRepository.getUser(rating.userId)?.name ?: "Unknown User")
+            rating.userId to (userRepository.getWithId(rating.userId)?.name ?: "Unknown User")
         }
     }
 
@@ -263,7 +261,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             scope.launch {
                                 campsiteRepository.deleteRating(campsite.id, rating.userId)
                                 loadReviews()
-                                campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                                campsiteRepository.getWithId(campsite.id)?.let { shownCampsite = it }
                                 userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
                             }
                         },
@@ -295,7 +293,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             )
                             // reload so the new avg stars and the users rating shows straight away
                             userRating = campsiteRepository.getUserRating(campsite.id, currentUser.id)
-                            campsiteRepository.getCampsite(campsite.id)?.let { shownCampsite = it }
+                            campsiteRepository.getWithId(campsite.id)?.let { shownCampsite = it }
                             loadReviews()
                             }
                         }
@@ -402,7 +400,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 if (currentUser.id !in enterList) {
                                     enterList.add(currentUser.id)
                                     currentLottery.entrantIDs = enterList
-                                    lotteryRepository.addOrUpdateLottery(currentLottery)
+                                    lotteryRepository.addOrUpdate(currentLottery)
                                 }
                             },
                             shape = RoundedCornerShape(
@@ -434,7 +432,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 if (currentUser.id in enterList) {
                                     enterList.remove(currentUser.id)
                                     currentLottery.entrantIDs = enterList
-                                    lotteryRepository.addOrUpdateLottery(currentLottery)
+                                    lotteryRepository.addOrUpdate(currentLottery)
                                 }
 
 
@@ -523,7 +521,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
         BackButton(navController)
 
         // get the lottery
-        val lottery = runBlocking {lotteryRepository.getLottery(lotteryID)}
+        val lottery = runBlocking {lotteryRepository.getWithId(lotteryID)}
 
         // if there is a lottery (there should always be one but kotlin wanted to make sure)
         if (lottery != null) {
@@ -533,7 +531,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
 
                 // for each entrant make a card
                 itemsIndexed(lottery.entrantIDs) { index, entrant ->
-                    val profile = runBlocking { userRepository.getUser(entrant) }
+                    val profile = runBlocking { userRepository.getWithId(entrant) }
 
                     if (profile != null) {
                         Spacer(modifier = Modifier.height(12.dp))

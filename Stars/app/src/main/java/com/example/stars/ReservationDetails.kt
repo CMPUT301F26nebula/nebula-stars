@@ -92,15 +92,15 @@ fun ReservationDetailsModal(reservation: Reservation, onClose: () -> Unit) {
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
 
     LaunchedEffect(Unit) {
-        campsite = Databases.campsiteRepository.getCampsite(reservation.campsiteId)
-        campsite?.let { campOwner = Databases.userRepository.getUser(it.ownerId) }
+        campsite = Databases.campsiteRepository.getWithId(reservation.campsiteId)
+        campsite?.let { campOwner = Databases.userRepository.getWithId(it.ownerId) }
     }
 
     // confirm before leaving a reservation
     if (confirmLeaveDialogState) {
         ConfirmOrDenyModal(
             onConfirm = {
-                Databases.reservationRepository.removeUserReservation(reservation.id)
+                Databases.reservationRepository.removeWithId(reservation.id)
                 confirmLeaveDialogState = false
                 onClose()
             },

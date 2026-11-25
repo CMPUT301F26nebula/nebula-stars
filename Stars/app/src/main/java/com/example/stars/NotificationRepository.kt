@@ -4,7 +4,6 @@ Contains repository helper class to get and store Notification objects from fire
 package com.example.stars
 
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import com.google.firebase.functions.functions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -15,17 +14,16 @@ import kotlinx.coroutines.tasks.await
  *
  * @param scope the global coroutine scope used to run basic database operations
  */
-class NotificationRepository (private val scope: CoroutineScope) {
-    private val db = Firebase.firestore
-    private val notificationsRef = db.collection("notifications")
+class NotificationRepository (private val scope: CoroutineScope):
+    AbstractUserDataRepository<Notification>("notifications", scope, Notification::class.java) {
 
     /**
      * Gets a list of all notifications sent to [userId]
      *
      * @return list of all notifications for the user, which will be empty if not applicable
      */
-    suspend fun getUserNotifications(userId: String): List<Notification> {
-        return notificationsRef.whereEqualTo("userId", userId).get().await().toObjects(Notification::class.java)
+    override suspend fun getWithUserId(userId: String): List<Notification> {
+        return getWhereFieldEquals("userId", userId)
     }
 
     /**
@@ -34,17 +32,15 @@ class NotificationRepository (private val scope: CoroutineScope) {
      * @return list of all notifications, empty if not applicable
      */
     suspend fun getGlobalNotifications(): List<Notification> {
-        return notificationsRef.get().await().toObjects(Notification::class.java)
+        return getAll()
     }
 
     /**
      * Marks a notification [notification] as read
      */
     fun markAsRead(notification: Notification) {
-        scope.launch {
-            val newNotification = Notification(notification.id, notification.userId, true, notification.content)
-            notificationsRef.document(newNotification.id).set(newNotification).await()
-        }
+        val newNotification = Notification(notification.id, notification.userId, true, notification.content)
+        addOrUpdateWithId(newNotification.id, newNotification)
     }
 
     /**
@@ -52,7 +48,8 @@ class NotificationRepository (private val scope: CoroutineScope) {
      */
     fun sendNotification(notification: Notification) {
         scope.launch {
-            notificationsRef.document(notification.id).set(notification).await()
+            // collection.document(notification.id).set(notification).await()
+            addOrUpdate(notification)
             val data = mapOf(
                 "userId" to notification.userId,
                 "content" to notification.content

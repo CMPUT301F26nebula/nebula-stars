@@ -12,12 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -40,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -54,7 +50,6 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import androidx.core.net.toUri
-import com.google.apps.card.v1.Widget
 
 
 /**
@@ -478,7 +473,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                                     // if a change actually happened then update the firebase UserProfile
                                     if (changeOccurred) {
                                         scope.launch {
-                                            userRepository.addOrUpdateUser(currentUser)
+                                            userRepository.addOrUpdate(currentUser)
                                         }
                                     }
 
@@ -861,7 +856,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                             // if a change actually happened then update the firebase UserProfile
                             if (changeOccurred) {
                                 scope.launch {
-                                    userRepository.addOrUpdateUser(currentUser)
+                                    userRepository.addOrUpdate(currentUser)
                                 }
                             }
 

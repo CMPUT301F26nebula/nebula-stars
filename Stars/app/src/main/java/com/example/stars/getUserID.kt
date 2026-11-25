@@ -32,7 +32,7 @@ suspend fun getUserID(navController: NavController, context: Context, userReposi
     // find the user in the repo
     // if the local device ID is the same as the ID of the current repo user profile
     // then set the local user profile to be the repo user profile
-    val storedUser = userRepository.getUser(deviceId)
+    val storedUser = userRepository.getWithId(deviceId)
     if (storedUser != null) {
         // show in log that a match was found
         Log.d("User ID Check", "user match found")
@@ -51,7 +51,7 @@ suspend fun getUserID(navController: NavController, context: Context, userReposi
         val fid = FirebaseInstallations.getInstance().id.await()
         // create a new UserProfile and add it to the firebase repo
         val currentUser = UserProfile(id = deviceId, notifs = notifs, firebaseId = fid)
-        userRepository.addOrUpdateUser(currentUser)
+        userRepository.addOrUpdate(currentUser)
 
         return currentUser
     }
