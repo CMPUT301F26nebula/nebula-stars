@@ -198,7 +198,9 @@ fun CampsiteDetailsScreen(navController: NavController,
                     verticalAlignment = Alignment.CenterVertically) {
 
                     //name of the owner
-                    Text("Owner: $ownerName",
+                    Text(
+                        text = "Owner: $ownerName",
+                        modifier = Modifier.clickable(onClick = { navController.navigate("user profile/${Uri.encode(campsite.ownerId)}") }),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center

@@ -1,6 +1,5 @@
 package com.example.stars
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,9 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -31,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -128,12 +123,15 @@ fun UserProfileScreen(
                             color = StarsColors.Purple
                         )
 
-                        Text(
-                            text = userProfile?.id ?: "",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Light,
-                            color = StarsColors.Purple
-                        )
+                        //ID
+                        if (currentUser.permission == UserPermission.ADMIN) {
+                            Text(
+                                text = userProfile?.id ?: "",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Light,
+                                color = StarsColors.Purple
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(10.dp))
 
@@ -181,53 +179,55 @@ fun UserProfileScreen(
                          */
                     }
 
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    if (currentUser.permission == UserPermission.ADMIN) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
 
-                        // if not trying to ban user, show the delete button
-                        if (!confirmBan) {
-                            AdminActionOnUser(
-                                confirmDeletion,
-                                action = "Delete User",
-                                onRequest = {
-                                    confirmDeletion = true
-                                    confirmBan = false
-                                },
-                                onConfirm = {
-                                    runBlocking {
-                                        userRepository.deleteUser(userProfile!!)
+                            // if not trying to ban user, show the delete button
+                            if (!confirmBan) {
+                                AdminActionOnUser(
+                                    confirmDeletion,
+                                    action = "Delete User",
+                                    onRequest = {
+                                        confirmDeletion = true
+                                        confirmBan = false
+                                    },
+                                    onConfirm = {
+                                        runBlocking {
+                                            userRepository.deleteUser(userProfile!!)
+                                            confirmDeletion = false
+                                            navController.popBackStack()
+                                        }
+                                    },
+                                    onCancel = { confirmDeletion = false }
+                                )
+                            }
+
+                            // if neither button is expanded put a space between them
+                            if (!confirmBan && !confirmDeletion) {
+                                Spacer(modifier = Modifier.size(10.dp))
+                            }
+
+                            // if not trying to delete userProfile show the ban button
+                            if (!confirmDeletion && (userProfile?.permission
+                                    ?: UserPermission.ENTRANT) >= UserPermission.OWNER
+                            ) {
+                                AdminActionOnUser(
+                                    confirmBan, "Ban Owner",
+                                    onRequest = {
+                                        confirmDeletion = false
+                                        confirmBan = true
+                                    },
+                                    onConfirm = {
+                                        runBlocking { userRepository.banOwner(userProfile!!) }
                                         confirmDeletion = false
                                         navController.popBackStack()
-                                    }
-                                },
-                                onCancel = { confirmDeletion = false }
-                            )
-                        }
-
-                        // if neither button is expanded put a space between them
-                        if (!confirmBan && !confirmDeletion) {
-                            Spacer(modifier = Modifier.size(10.dp))
-                        }
-
-                        // if not trying to delete userProfile show the ban button
-                        if (!confirmDeletion && (userProfile?.permission
-                                ?: UserPermission.ENTRANT) >= UserPermission.OWNER
-                        ) {
-                            AdminActionOnUser(
-                                confirmBan, "Ban Owner",
-                                onRequest = {
-                                    confirmDeletion = false
-                                    confirmBan = true
-                                },
-                                onConfirm = {
-                                    runBlocking { userRepository.banOwner(userProfile!!) }
-                                    confirmDeletion = false
-                                    navController.popBackStack()
-                                },
-                                onCancel = { confirmBan = false }
-                            )
+                                    },
+                                    onCancel = { confirmBan = false }
+                                )
+                            }
                         }
                     }
                 }
@@ -235,52 +235,3 @@ fun UserProfileScreen(
         }
     }
 }
-
-
-/*
-@Composable
-fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
-
-                    // permission level
-                    Text(
-                        text = permissionLevel,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
-
-
-                    Text(
-                        text = userProfile.email,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-
-                    // used for phone number formating
-                    val nanpVisualTransformation = NanpVisualTransformation()
-
-
-                    // phone number
-                    Text(
-                        text = nanpVisualTransformation.filter(AnnotatedString(userProfile.phone)).text,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-
-                }
-
-                AsyncImage(
-                    model = userProfile.profilePic,
-                    contentDescription = "profile picture",
-                    modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
-                    contentScale = ContentScale.Crop,
-                    fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                    error = painterResource(R.drawable.default_pfp)
-                )
-            }
-
-            // buttons to delete and ban
-
-        }
-    }
-}
- */
