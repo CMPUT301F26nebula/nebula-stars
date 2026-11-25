@@ -48,7 +48,7 @@ import kotlinx.coroutines.runBlocking
  * Shows a list of all users
  */
 @Composable
-fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository){
+fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository, currentUser: UserProfile){
 
     var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
 
@@ -75,8 +75,12 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
 
             itemsIndexed(users) { index, user ->
-                Spacer(modifier = Modifier.height(12.dp))
-                AdminUserRow(user, userRepository)
+
+                // so that you can't ban or delete yourself from here
+                if (user != currentUser) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    AdminUserRow(user, userRepository)
+                }
             }
         }
     }

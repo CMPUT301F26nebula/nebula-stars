@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,20 +49,20 @@ import kotlinx.coroutines.runBlocking
 
 
 /**
- * the list screen of the pictures
+ * the list screen of the pictures does not show pictures of unowned campsites
+ * which isn't a problem since those should not exist.
+ * shows the Owner of the campsites above their campsites if the owner has a pfp.
+ * clicking on the name will bring you to the page associated with the user or campsite.
  */
 @Composable
 fun AdminViewPictures(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository, imageRepository: ImageRepository){
 
+    // lists users and campsites to show
     var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList()) }
-    var pictures by remember { mutableStateOf<List<ImageUpload>>(emptyList()) }
+
 
     LaunchedEffect(Unit) {
-
-        imageRepository.addListener { updated ->
-            pictures = updated.filterNotNull()
-        }
 
         campsiteRepository.addListener { updated ->
             campsites = updated.filterNotNull()
@@ -73,9 +74,11 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
 
     }
 
-    Column(modifier = Modifier.statusBarsPadding()) {
 
-        BackButton(navController)
+
+    Column() {
+
+        ScreenHeader(navController = navController, title = "IMAGES")
 
         Spacer(modifier = Modifier.padding(12.dp))
 
@@ -86,6 +89,7 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
                 if (user.profilePic != "") {
                     item() {
                         AdminViewProfilePicturesRow(user, imageRepository, userRepository)
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
 
@@ -113,6 +117,7 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
 @Composable
 fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsite, imageRepository: ImageRepository, campsiteRepository: CampsiteRepository){
 
+
     Card(
         colors  = CardDefaults.cardColors(
             contentColor = StarsColors.White,
@@ -139,11 +144,12 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
 
                 // title
                 Text(
-                    campsite.title,
+                    text = campsite.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
                     color = StarsColors.White,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
             }
@@ -152,21 +158,18 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
             // Image placeholder
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
 
+                // if there is more than one image show the corousel
                 if (campsite.imageIds.size > 1) {
                     // images
                     ImageCarousel(
                         imageIds = campsite.imageIds,
                         imageRepo = imageRepository,
                         editor = true,
-                        onDelete = {
-
-                                image ->
+                        onDelete = { image ->
                             imageRepository.deleteImage(image)
                             val newImages = campsite.imageIds.filter { it != image }
                             val newCampsite = campsite.copy(imageIds = newImages)
@@ -175,15 +178,17 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                         }
                     )
                 }
+
+                // if there is only one image show only that image
                 else if (campsite.imageIds.size == 1){
-                    Box(modifier = Modifier.fillMaxSize()){
+                    Column(verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally) {
                         AsyncImage(
                             model = runBlocking { imageRepository.getImageUri(campsite.imageIds[0]) },
                             contentDescription = "campsite Image",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
                         )
-
                         Button(
                             onClick = {
                                 imageRepository.deleteImage(campsite.imageIds[0])
@@ -191,7 +196,18 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                                 val newCampsite = campsite.copy(imageIds = newImages)
                                 campsiteRepository.addOrUpdateWithId(campsite.id, newCampsite)
                             },
-                            content = { Text("Delete Image") }
+                            content = { Text("Delete Image",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = StarsColors.White,) },
+                            modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete image " + campsite.title),
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 10.dp,
+                                bottomEnd = 10.dp
+                            ),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
                         )
                     }
 
@@ -226,45 +242,53 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
                 modifier = Modifier.fillMaxWidth()
             ) {
 
                 // user name
                 Text(
-                    user.name,
+                    text = user.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
                     color = StarsColors.White,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
             }
 
 
             // Image placeholder
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-
-                contentAlignment = Alignment.Center
-            ) {
+            Column(verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
                         AsyncImage(
                             model = runBlocking { imageRepository.getImageUri(user.profilePic) },
                             contentDescription = "profile picture",
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxWidth(),
                             contentScale = ContentScale.Fit
                         )
 
-                        Button(
-                            onClick = {
-                                imageRepository.deleteImage(user.profilePic)
-                                val newCampsite = user.copy(profilePic = "")
-                                userRepository.addOrUpdateWithId(user.id, newCampsite)
-                            },
-                            content = { Text("Delete Image") }
-                        )
+
+                    Button(
+                        onClick = {
+                            imageRepository.deleteImage(user.profilePic)
+                            val newCampsite = user.copy(profilePic = "")
+                            userRepository.addOrUpdateWithId(user.id, newCampsite)
+                        },
+                        content = { Text("Delete Image",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Medium,
+                            color = StarsColors.White,) },
+                        modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete image " + user.name),
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomStart = 10.dp,
+                            bottomEnd = 10.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                    )
             }
 
         }
