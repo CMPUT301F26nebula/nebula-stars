@@ -4,6 +4,19 @@
 package com.example.stars
 
 /**
+ * Consts for chats and messages
+ *
+ * If i put this in the data class it gets added to firebase which we dont want
+ */
+object ChatLimits {
+    // a new message past this number should remove the oldest message from the database
+    val MAX_HISTORY_LIMIT: Int get() = 1000
+
+    // largest number of chars in a message allowed
+    val MAX_CHAR_LIMIT: Int get() = 255
+}
+
+/**
  * Representation of a chat between an entrant and an owner
  *
  * @param id unique firebase document id
@@ -17,9 +30,6 @@ data class Chat (
     val ownerId: String = "",
     val messages: List<Message> = emptyList()
 ): UniqueIdentifier {
-    // a new message past this number should remove the oldest message from the database
-    val MAX_HISTORY_LIMIT: Int get() = 1000
-
     companion object UniqueId {
         /**
          * Generates a unique document id from [entrantId] and [ownerId]
@@ -27,6 +37,37 @@ data class Chat (
         fun uniqueIdFrom(entrantId: String, ownerId: String): String {
             return "${entrantId}_${ownerId}"
         }
+
+        /*
+        // TODO for testing, plz remove later
+        fun addDummyChat(entrantId: String, ownerId: String) {
+            val dummyChat = Chat(
+                id = uniqueIdFrom(entrantId, ownerId),
+                entrantId = entrantId,
+                ownerId = ownerId,
+                messages = buildList {
+                    for (i in 1..5) {
+                        val senderId = if (i % 2 == 0) entrantId else ownerId
+                        val msg = "H${"i".repeat(i * 2)}"
+                        val timestamp = 1794441600000 + 10000 * i
+                        add(
+                            Message(
+                                id = Message.uniqueIdFrom(
+                                    senderId,
+                                    msg,
+                                    timestamp
+                                ),
+                                senderId,
+                                msg,
+                                timestamp
+                            )
+                        )
+                    }
+                }
+            )
+            Databases.chatRepository.addOrUpdate(dummyChat)
+        }
+         */
     }
 }
 
@@ -44,6 +85,7 @@ data class Message (
     val text: String = "",
     val timestamp: Long = 0L
 ): UniqueIdentifier {
+
     companion object UniqueId {
         /**
          * Generates a unique document id from [senderId], [text], and [timestamp]

@@ -36,9 +36,11 @@ class SettingsMenuTests {
     @Test
     fun createNewProfileWithoutPhoneNumber() = runTest {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
 
         // create ID
         val user = UserProfile("Unit Test")
+
 
         /*
         created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
@@ -54,7 +56,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { MakeNewProfile(navController, user, userRepo) }
+                composable("new profile") { MakeNewProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -84,6 +86,7 @@ class SettingsMenuTests {
     @Test
     fun createNewProfileWithBadPhoneAndEmail() = runTest {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
         val user = UserProfile("Unit Test")
 
         /*
@@ -100,7 +103,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { MakeNewProfile(navController, user, userRepo) }
+                composable("new profile") { MakeNewProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -146,6 +149,7 @@ class SettingsMenuTests {
     @Test
     fun editProfileCorrectlyAndDelete() = runTest {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test")
 
         userRepo.addOrUpdate(user)
@@ -163,7 +167,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { EditProfile(navController, user, userRepo) }
+                composable("new profile") { EditProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -197,6 +201,8 @@ class SettingsMenuTests {
     @Test
     fun failEditAndDeleteProfile() = runBlocking {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
+
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
             listOf(),false,UserPermission.ADMIN)
@@ -218,7 +224,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { EditProfile(navController, user, userRepo) }
+                composable("new profile") { EditProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }

@@ -30,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -296,9 +297,9 @@ fun ReservationCalendarScreen(
     var selectedReservation: Reservation? by remember { mutableStateOf(null) }
 
     // if we dont call it async itll readd/restart the listener everytime this recomposes, which is everytime the listener fires...
-    LaunchedEffect(null) {
+    DisposableEffect(Unit) {
         // TERRIBLY inefficient but we dont store reservations with their user so :P TODO maybe change that later
-        reservationRepository.addListener {
+        val listener = reservationRepository.addListener {
             calendarReady = false
             userReservations = buildList {
                 for (reservation in it) {
@@ -309,6 +310,9 @@ fun ReservationCalendarScreen(
             }
             calendarReady = true
         }
+
+        // should probably unregister the listener after we exit this screen
+        onDispose { listener.remove() }
     }
 
     // TODO remove at some point
