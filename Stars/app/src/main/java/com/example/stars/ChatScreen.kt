@@ -3,6 +3,7 @@
  */
 package com.example.stars
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -76,13 +79,22 @@ fun ChatScreen(
     // cache some values so we dont make a db access for every individual chat message
     var participants: ChatParticipants? by remember { mutableStateOf(null) }
 
+    DisposableEffect(chatId) {
+        val chatUpdateListener = Databases.chatRepository.addListenerToId(chatId) { newChat ->
+            if (newChat != null && newChat != currentChat) {
+                currentChat = newChat
+            }
+        }
+
+        onDispose {
+            chatUpdateListener.remove()
+        }
+    }
+
     // ownerId and entrantId of a chat should not change after it is created
-    LaunchedEffect(Unit) {
-        Log.d("chats", chatId)
+    LaunchedEffect(chatId) {
         // if for whatever reason it cant get from db, loading forever
         Databases.chatRepository.getWithId(chatId)?.let { chat ->
-            Log.d("chats", "$chat")
-
             currentChat = chat
 
             val entrant = Databases.userRepository.getWithId(chat.entrantId)
@@ -104,57 +116,47 @@ fun ChatScreen(
                 localUser,
                 remoteUser,
                 localUser?.let { user ->
-                    Databases.imageRepository.getImageUri(user.profilePic)?.toUri()?.let { uri ->
-                        @Composable {
-                            AsyncImage(
-                                model = uri,
-                                contentDescription = "users profile picture",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .size(PFPSize.width, PFPSize.height),
-                                contentScale = ContentScale.Crop,
-                                fallback = painterResource(R.drawable.default_pfp),
-                                error = painterResource(R.drawable.default_pfp)
-                            )
-                        }
+                    var uri: Uri? = null
+                    if (user.profilePic != "") {
+                        uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
+                    }
+                    @Composable {
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = "users profile picture",
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(PFPSize.width, PFPSize.height),
+                            contentScale = ContentScale.Crop,
+                            fallback = painterResource(R.drawable.default_pfp),
+                            error = painterResource(R.drawable.default_pfp)
+                        )
                     }
                 } ?: {},
-                localUser?.let { user ->
-                    Databases.imageRepository.getImageUri(user.profilePic)?.toUri()?.let { uri ->
-                        @Composable {
-                            AsyncImage(
-                                model = uri,
-                                contentDescription = "other users profile picture",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .size(PFPSize.width, PFPSize.height),
-                                contentScale = ContentScale.Crop,
-                                fallback = painterResource(R.drawable.default_pfp),
-                                error = painterResource(R.drawable.default_pfp)
-                            )
-                        }
+                remoteUser?.let { user ->
+                    var uri: Uri? = null
+                    if (user.profilePic != "") {
+                        uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
+                    }
+                    @Composable {
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = "users profile picture",
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(PFPSize.width, PFPSize.height),
+                            contentScale = ContentScale.Crop,
+                            fallback = painterResource(R.drawable.default_pfp),
+                            error = painterResource(R.drawable.default_pfp)
+                        )
                     }
                 } ?: {}
             )
         }
     }
 
-    DisposableEffect(Unit) {
-        val chatUpdateListener = Databases.chatRepository.addListenerToId(currentChat.id) { newChat ->
-            if (newChat != null && newChat != currentChat) {
-                currentChat = newChat
-            }
-        }
-
-        onDispose {
-            chatUpdateListener.remove()
-        }
-    }
-
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -168,6 +170,7 @@ fun ChatScreen(
 
         // show loading screen until users have been fetched from db
         if (participants != null) {
+            Spacer(Modifier.weight(1.0f))
             ChatLog(participants!!, currentChat.messages)
             ChatInput { msg ->
                 participants?.local?.let { sender ->
@@ -247,11 +250,12 @@ fun ChatInput(onSend: (String) -> Unit) {
                 shape = RoundedCornerShape(10.dp, 0.dp, 0.dp, 0.dp),
                 colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                 modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
+                    .width(80.dp)
+                    .height(80.dp)
             ) {
                 Text(
                     text = ">",
+                    fontSize = 32.sp,
                     color = StarsColors.White,
                     fontWeight = FontWeight.Bold
                 )
@@ -260,8 +264,8 @@ fun ChatInput(onSend: (String) -> Unit) {
             // if the message is too long, still fill the space the button would have occupied
             Box(
                 modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
+                    .width(80.dp)
+                    .height(80.dp)
                     .background(StarsColors.Transparent)
             ) {}
         }
@@ -280,11 +284,11 @@ fun ChatLog(participants: ChatParticipants, messages: List<Message>) {
     val listState = rememberLazyListState()
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         state = listState,
         reverseLayout = true
     ) {
-        items(messages) {
+        items(messages.reversed()) {
             ChatMessage(participants, it, dateFormat)
         }
     }
@@ -308,7 +312,7 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: Fu
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(12.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = if (senderIsCurrentUser) Arrangement.End else Arrangement.Start,
     ) {
@@ -316,8 +320,8 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: Fu
         if (!senderIsCurrentUser) {
             Box(
                 modifier = Modifier
-                    .width(PFPSize.width)
-                    .height(PFPSize.height)
+                    .requiredWidth(PFPSize.width)
+                    .requiredHeight(PFPSize.height)
             ) {
                 participants.remotePFP
             }
@@ -331,14 +335,13 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: Fu
 
         Card(
             modifier = Modifier
-                .padding(12.dp)
                 .background(
                     StarsColors.White,
                     textCardShape
                 )
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.padding(12.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -356,8 +359,8 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: Fu
         if (senderIsCurrentUser) {
             Box(
                 modifier = Modifier
-                    .width(PFPSize.width)
-                    .height(PFPSize.height)
+                    .requiredWidth(PFPSize.width)
+                    .requiredHeight(PFPSize.height)
             ) {
                 participants.localPFP
             }
