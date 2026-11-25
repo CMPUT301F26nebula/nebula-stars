@@ -61,7 +61,7 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
     var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList()) }
 
-
+    // watch for changes in fire base
     LaunchedEffect(Unit) {
 
         campsiteRepository.addListener { updated ->
@@ -75,17 +75,20 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
     }
 
 
-
+    // the whole screen
     Column() {
 
         ScreenHeader(navController = navController, title = "IMAGES")
 
         Spacer(modifier = Modifier.padding(12.dp))
 
+        // the column of cards that you see
         LazyColumn() {
 
+            // for each user, get their profile pic and show that, then show their campsites
             users.forEach { user ->
 
+                // if they don't have a profile pic show nothing
                 if (user.profilePic != "") {
                     item() {
                         AdminViewProfilePicturesRow(user, imageRepository, userRepository)
@@ -93,9 +96,11 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
                     }
                 }
 
+                // if they are an owner show their campsites after their profile pic if they have one
                 if (user.permission >= UserPermission.OWNER) {
                     itemsIndexed(campsites) { index, campsite ->
 
+                        // go over all campsites and pick only theirs
                         if (user.id == campsite.ownerId && campsite.imageIds.isNotEmpty()) {
                             AdminViewCampsitePicturesRow(
                                 navController,
@@ -113,10 +118,13 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
     }
 }
 
+/**
+ * this shows the card for the campsite pictures. The delete button works for the current center picture
+ * and if you only have one then it fills the screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsite, imageRepository: ImageRepository, campsiteRepository: CampsiteRepository){
-
 
     Card(
         colors  = CardDefaults.cardColors(
@@ -128,9 +136,11 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
             .padding(horizontal = 16.dp)
     ) {
 
+        // offset by -3 since that covers the top of the card
         Column(modifier = Modifier.fillMaxWidth().offset(y = -3.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
 
+            // go to the campsite details page
             Button(onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
                 shape = RoundedCornerShape(
                     topStart = 12.dp,
@@ -142,7 +152,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                // title
+                // campsite name
                 Text(
                     text = campsite.title,
                     style = MaterialTheme.typography.titleLarge,
@@ -155,14 +165,14 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
             }
 
 
-            // Image placeholder
+            // image or images with delete button
             Box(
                 modifier = Modifier
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
 
-                // if there is more than one image show the corousel
+                // if there is more than one image show the carousel
                 if (campsite.imageIds.size > 1) {
                     // images
                     ImageCarousel(
@@ -219,6 +229,9 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
 
 }
 
+/**
+ * this shows the profile pictures of the users. delete deletes
+ */
 @Composable
 fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageRepository, userRepository: UserRepository){
 
@@ -232,9 +245,10 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
             .padding(horizontal = 16.dp)
     ) {
 
+        // offset by -3 since that covers the top of the card
         Column(modifier = Modifier.fillMaxWidth().offset(y = -3.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
-
+            // TODO: send click to users details
             Button(onClick = {},
                 shape = RoundedCornerShape(
                     topStart = 12.dp,
@@ -246,7 +260,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                // user name
+                // users name
                 Text(
                     text = user.name,
                     style = MaterialTheme.typography.titleLarge,
@@ -259,7 +273,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
             }
 
 
-            // Image placeholder
+            // Image and delete button
             Column(verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally) {
                         AsyncImage(
