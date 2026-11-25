@@ -59,7 +59,7 @@ fun UserProfileScreen(
 
     LaunchedEffect(true) {
         userProfile = userRepository.getWithId(userID)
-        ownedCampsites = campsiteRepository.getWhereFieldEquals("ownerId", userID)
+        ownedCampsites = campsiteRepository.getWithUserId(userID)
     }
 
     Column(modifier = Modifier.fillMaxSize()){
