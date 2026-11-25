@@ -1,6 +1,8 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -61,7 +63,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
 
             itemsIndexed(users) { index, user ->
                 Spacer(modifier = Modifier.height(12.dp))
-                AdminUserRow(user, userRepository)
+                AdminUserRow(navController, user, userRepository)
             }
         }
     }
@@ -73,7 +75,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
  * TODO: expand cards to show more info
  */
 @Composable
-fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
+fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository){
 
 
 
@@ -99,7 +101,9 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
     if (!deleted) {
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth().padding(horizontal = 16.dp)
+                .clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
             colors = cardColors(StarsColors.White)
         ) {
 
