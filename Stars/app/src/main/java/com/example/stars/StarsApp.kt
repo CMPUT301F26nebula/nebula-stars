@@ -170,6 +170,14 @@ fun StarsApp(notifs: Boolean = false) {
                         notificationRepository
                     )
                 }
+                composable("owned campsites"){
+                    OwnerViewCampsites(navController,
+                        campsiteRepository,
+                        imageRepository,
+                        currentUser
+                    )
+                }
+
                 composable(
                     route = "edit campsite {campsiteId}",
                     arguments = listOf(

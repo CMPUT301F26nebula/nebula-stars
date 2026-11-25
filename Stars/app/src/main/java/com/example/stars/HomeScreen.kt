@@ -153,7 +153,8 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
                     UserPermission.OWNER -> arrayOf(
                         HomeButtonData("Add a Campsite", "uploadCampsiteButton", "upload campsite"),
-                        HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery")
+                        HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery"),
+                        HomeButtonData("My Campsites", "ownedCampsitesButton", "owned campsites")
                     )
 
                     UserPermission.ADMIN -> arrayOf(
