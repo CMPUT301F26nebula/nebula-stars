@@ -21,9 +21,11 @@ import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -44,9 +48,20 @@ import kotlinx.coroutines.runBlocking
  * Shows a list of all users
  */
 @Composable
-fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository){
+fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository, currentUser: UserProfile){
 
-    val users = runBlocking { userRepository.getAll() }
+    var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
+
+    /*
+    different code simplified by claude prompt: "how do I fix out of order updates"
+    claude sonnet 5.5 2026-11-23
+    https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+     */
+    LaunchedEffect(Unit) {
+        userRepository.addListener { updated ->
+            users = updated.filterNotNull()
+        }
+    }
 
     // column to hold things and make background purple
     Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple)) {
@@ -60,8 +75,12 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
 
             itemsIndexed(users) { index, user ->
-                Spacer(modifier = Modifier.height(12.dp))
-                AdminUserRow(user, userRepository)
+
+                // so that you can't ban or delete yourself from here
+                if (user != currentUser) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    AdminUserRow(user, userRepository)
+                }
             }
         }
     }

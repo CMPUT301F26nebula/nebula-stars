@@ -40,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -135,8 +137,10 @@ fun CampsiteDetailsScreen(navController: NavController,
 
     }
 
+
     ScreenHeader(
-        navController = navController
+        navController = navController,
+        title = "CAMPSITE"
     )
 
     Column(modifier = Modifier
@@ -164,8 +168,8 @@ fun CampsiteDetailsScreen(navController: NavController,
                 topStart = 10.dp,
                 topEnd = 30.dp,
                 bottomStart = 10.dp,
-                bottomEnd = 10.dp
-            ))) {
+                bottomEnd = 10.dp,
+            )).fillMaxWidth()) {
 
                 Row(modifier = Modifier.fillMaxWidth().background(color = Color(0xFF008B8B))
                     .padding(10.dp),
@@ -177,19 +181,39 @@ fun CampsiteDetailsScreen(navController: NavController,
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = StarsColors.White
+                        color = StarsColors.White,
                     )
 
                 }
 
 
-                    // images
-                    ImageCarousel(
-                        imageIds = campsite.imageIds,
-                        imageRepo = imageRepo,
-                        editor = false,
-                        onDelete = {}
-                    )
+                Box(Modifier.fillMaxWidth()) {
+                    // if there is more than one image show the carousel
+                    if (campsite.imageIds.size > 1) {
+                        // images
+                        ImageCarousel(
+                            imageIds = campsite.imageIds,
+                            imageRepo = imageRepo,
+                            editor = false,
+                        )
+                    }
+
+                    // if there is only one image show only that image
+                    else if (campsite.imageIds.size == 1) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            AsyncImage(
+                                model = runBlocking { imageRepo.getImageUri(campsite.imageIds[0]) },
+                                contentDescription = "campsite Image",
+                                modifier = Modifier,
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+
+                    }
+                }
 
 
 

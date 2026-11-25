@@ -83,9 +83,9 @@ fun StarsApp(notifs: Boolean = false) {
 
     /**
      * to end of launchEffect generated bty claude conversation starting at:
-     * "write me the code to make a listener for changes in user profile"
-     * Claude sonnet 5.5, 2026-11-21
-     * https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+     * "exlpain to me what this does" followed by code
+     * Claude sonnet 5.5, 2026-11-24
+     * https://claude.ai/share/cb76f5e1-a64f-46e9-9f5b-2c6f793ea551
      */
     val deviceId = remember {
         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -97,12 +97,23 @@ fun StarsApp(notifs: Boolean = false) {
 
     val user = updatedUser   // local copy, so the smart cast works
 
-    // the one fact we care about: a loaded profile that is missing its name or email
+    // a loaded profile that is missing its name or email
     val needsProfile = user != null && (user.name.isEmpty() || user.email.isEmpty())
     val navHostReady = currentUser.id.isNotBlank()
-    LaunchedEffect(needsProfile, navHostReady) {
-        if (needsProfile && navController.currentDestination?.route != "new profile" && navHostReady) {
+
+    // runs only when Firestore emits a new value, never because currentUser changed
+    LaunchedEffect(user) {
+        if (user != null) {
             currentUser = user
+        }
+    }
+
+    // only navigates, never touches currentUser
+    LaunchedEffect(needsProfile, navHostReady) {
+        if (needsProfile
+            && navHostReady
+            && navController.currentDestination?.route != "new profile"
+        ) {
             navController.navigate("new profile") {
                 popUpTo(navController.graph.id) { inclusive = true }
                 launchSingleTop = true
@@ -149,7 +160,8 @@ fun StarsApp(notifs: Boolean = false) {
                     AdminViewUserProfiles(
                         navController,
                         userRepository,
-                        campsiteRepository
+                        campsiteRepository,
+                        currentUser
                     )
                 }
                 composable("notification log") {
@@ -182,6 +194,9 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryRepository
                     )
                 }
+                composable("admin images"){ AdminViewPictures(navController, userRepository, campsiteRepository,imageRepository) }
+
+
                 composable(
                     route = "edit lottery {lotteryId}",
                     arguments = listOf(
