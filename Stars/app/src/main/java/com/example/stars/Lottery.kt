@@ -1,7 +1,7 @@
 package com.example.stars
 
 data class Lottery (
-    val id: String = "",
+    override val id: String = "",
     val ownerID: String = "",
     val campsiteIDs: List<String> = emptyList(),
     val timePeriod: EpochRange = EpochRange(),
@@ -11,4 +11,4 @@ data class Lottery (
     val waitlistCapacity: Int = 0,
     val pendingWinnerIDs: List<String> = emptyList(),
     val confirmedIDs: List<String> = emptyList()
-)
+): UniqueIdentifier

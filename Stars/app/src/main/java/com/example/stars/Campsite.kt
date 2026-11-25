@@ -23,7 +23,7 @@ import com.google.firebase.firestore.Exclude
  * @param ratingCount number of ratings for this campsite
  */
 data class Campsite (
-    val id: String = "",
+    override val id: String = "",
     val title: String = "",
     val price: Double = 0.0,
     val capacity: Int = 0,
@@ -36,7 +36,7 @@ data class Campsite (
     val location: LocationCoordinates = LocationCoordinates(0.0, 0.0),
     val ratingTotal: Double = 0.0,
     val ratingCount: Int = 0
-) {
+): UniqueIdentifier {
     /**
      * Calculates the average rating of this campsite, or 0.0 if no ratings have been made
      */

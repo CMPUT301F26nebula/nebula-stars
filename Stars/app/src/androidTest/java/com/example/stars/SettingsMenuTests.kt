@@ -36,9 +36,11 @@ class SettingsMenuTests {
     @Test
     fun createNewProfileWithoutPhoneNumber() = runTest {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
 
         // create ID
         val user = UserProfile("Unit Test")
+
 
         /*
         created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
@@ -54,7 +56,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { MakeNewProfile(navController, user, userRepo) }
+                composable("new profile") { MakeNewProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -65,16 +67,16 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure creation
-        val fireUser = userRepo.getUser(user.id)
+        val fireUser = userRepo.getWithId(user.id)
         assertEquals(user, fireUser)
 
         // delete user
         userRepo.deleteUser(user)
-        val deleted = userRepo.getUser(user.id)
+        val deleted = userRepo.getWithId(user.id)
         assertEquals("", deleted?.name)
 
         userRepo.deleteUserEntirely(user)
-        assertNull(userRepo.getUser(user.id))
+        assertNull(userRepo.getWithId(user.id))
     }
 
     /*
@@ -84,6 +86,7 @@ class SettingsMenuTests {
     @Test
     fun createNewProfileWithBadPhoneAndEmail() = runTest {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
         val user = UserProfile("Unit Test")
 
         /*
@@ -100,7 +103,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { MakeNewProfile(navController, user, userRepo) }
+                composable("new profile") { MakeNewProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -127,17 +130,17 @@ class SettingsMenuTests {
 
 
         // confirm creation
-        val fireUser = userRepo.getUser(user.id)
+        val fireUser = userRepo.getWithId(user.id)
         assertEquals("1419029828", fireUser?.phone)
         assertEquals("Unit@test.test", fireUser?.email)
 
         // delete
         userRepo.deleteUser(user)
-        val deleted = userRepo.getUser(user.id)
+        val deleted = userRepo.getWithId(user.id)
         assertEquals("", deleted?.name)
 
         userRepo.deleteUserEntirely(user)
-        assertNull(userRepo.getUser(user.id))
+        assertNull(userRepo.getWithId(user.id))
     }
 
     /*
@@ -146,9 +149,10 @@ class SettingsMenuTests {
     @Test
     fun editProfileCorrectlyAndDelete() = runTest {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test")
 
-        userRepo.addOrUpdateUser(user)
+        userRepo.addOrUpdate(user)
         /*
        created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
        "it is required in the code for MakeNewProfile. how do I fix this in the test?", and "write the recomended code"
@@ -163,7 +167,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { EditProfile(navController, user, userRepo) }
+                composable("new profile") { EditProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -175,20 +179,20 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Phone Field").performTextInput("9999999999")
         composeTestRule.onNodeWithTag("Save Edits").performClick()
 
-        val fireUser = userRepo.getUser(user.id)
+        val fireUser = userRepo.getWithId(user.id)
         assertEquals("Addition Unit Test", fireUser?.name)
         assertEquals("t@t.ca", fireUser?.email)
         assertEquals("9999999999", fireUser?.phone)
 
         val deleted = run {
             userRepo.deleteUser(user)
-            userRepo.getUser("Unit Test")
+            userRepo.getWithId("Unit Test")
         }
 
         assertEquals("", deleted?.name)
 
         userRepo.deleteUserEntirely(user)
-        assertNull(userRepo.getUser(user.id))
+        assertNull(userRepo.getWithId(user.id))
     }
 
     /*
@@ -197,12 +201,14 @@ class SettingsMenuTests {
     @Test
     fun failEditAndDeleteProfile() = runBlocking {
         val userRepo = UserRepository(this)
+        val imageRepo = ImageRepository(this)
+
         // set up the user
         val user = UserProfile("Unit Test", "Unit Test", "Unit@test.test", phone = "1111111111",
             listOf(),false,UserPermission.ADMIN)
 
         // add the user to the repo
-        userRepo.addOrUpdateUser(user)
+        userRepo.addOrUpdate(user)
 
         /*
        created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
@@ -218,7 +224,7 @@ class SettingsMenuTests {
                 }
             }
             NavHost(navController, startDestination = "new profile") {
-                composable("new profile") { EditProfile(navController, user, userRepo) }
+                composable("new profile") { EditProfile(navController, user, userRepo, imageRepo) }
                 composable("home") { }
             }
         }
@@ -232,7 +238,7 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Cancel Edits").performClick()
 
         // check that the current user, FireBaseUser and original user are still the same
-        val fireUser = userRepo.getUser(user.id)
+        val fireUser = userRepo.getWithId(user.id)
         assertEquals(fireUser, user)
         assertEquals("Unit Test",user.name)
         assertEquals("Unit@test.test",user.email)
@@ -245,11 +251,11 @@ class SettingsMenuTests {
         composeTestRule.onNodeWithTag("Confirm").performClick()
 
         // ensure that the user was deleted
-        composeTestRule.waitUntil { runBlocking {userRepo.getUser(user.id)} != null } // wait for firebase
+        composeTestRule.waitUntil { runBlocking {userRepo.getWithId(user.id)} != null } // wait for firebase
         composeTestRule.waitUntil{ user.name == "" } // wait for deleteUser
 
         userRepo.deleteUserEntirely(user)
-        assertNull(userRepo.getUser(user.id))
+        assertNull(userRepo.getWithId(user.id))
     }
 
     /*
@@ -264,7 +270,7 @@ class SettingsMenuTests {
             listOf(), false,UserPermission.ENTRANT)
 
         // add the user to the repo
-        userRepo.addOrUpdateUser(user)
+        userRepo.addOrUpdate(user)
 
         /*
        created by claude with earlier version of the function and: "You must call setGraph() before calling getGraph()"
@@ -291,7 +297,7 @@ class SettingsMenuTests {
 
         // ensure local and remote owner status
         assertEquals(UserPermission.OWNER, user.permission)
-        val fireOwner = userRepo.getUser(user.id)
+        val fireOwner = userRepo.getWithId(user.id)
         assertEquals(UserPermission.OWNER, fireOwner?.permission)
 
         // hit the remove owner status buttons
@@ -300,16 +306,16 @@ class SettingsMenuTests {
 
         // ensure local and remote entrant status
         assertEquals(UserPermission.ENTRANT, user.permission)
-        val fireUser = userRepo.getUser(user.id)
+        val fireUser = userRepo.getWithId(user.id)
         assertEquals(UserPermission.ENTRANT, fireUser?.permission)
 
         // delete
         userRepo.deleteUser(user)
-        val deleted = userRepo.getUser(user.id)
+        val deleted = userRepo.getWithId(user.id)
         assertEquals("", deleted?.name)
 
         userRepo.deleteUserEntirely(user)
-        assertNull(userRepo.getUser(user.id))
+        assertNull(userRepo.getWithId(user.id))
 
     }
 }

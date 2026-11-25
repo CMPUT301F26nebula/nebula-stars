@@ -3,13 +3,9 @@ package com.example.stars
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * testing class for admin abilities
@@ -33,18 +29,18 @@ class AdminAbilityTests {
         val campsite = Campsite("Admin Campsite Test", "Test Campsite", 10.0, 5,
             "does not need description","Don't die when deleted", "Admin Power Test")
 
-        userRepo.addOrUpdateUser(owner)
-        campsiteRepo.addOrUpdateCampsite(campsite)
+        userRepo.addOrUpdate(owner)
+        campsiteRepo.addOrUpdate(campsite)
         userRepo.banOwner(owner)
 
-        val deletedCampsite = campsiteRepo.getCampsite(campsite.id)
+        val deletedCampsite = campsiteRepo.getWithId(campsite.id)
         assertEquals(null, deletedCampsite)
         assertEquals(true, owner.banned)
 
         userRepo.deleteUser(owner)
-        assertEquals("", userRepo.getUser(owner.id)?.name)
+        assertEquals("", userRepo.getWithId(owner.id)?.name)
         userRepo.deleteUserEntirely(owner)
-        assertNull(userRepo.getUser(owner.id))
+        assertNull(userRepo.getWithId(owner.id))
 
     }
 
@@ -63,17 +59,17 @@ class AdminAbilityTests {
         val campsite = Campsite("Admin Campsite Test", "Test Campsite", 10.0, 5,
             "does not need description","Don't die when deleted", "Admin Power Test")
 
-        userRepo.addOrUpdateUser(owner)
-        campsiteRepo.addOrUpdateCampsite(campsite)
+        userRepo.addOrUpdate(owner)
+        campsiteRepo.addOrUpdate(campsite)
         userRepo.deleteUser(owner)
-        val deletedCampsite = campsiteRepo.getCampsite(campsite.id)
+        val deletedCampsite = campsiteRepo.getWithId(campsite.id)
         assertEquals(null, deletedCampsite)
         assertEquals("", owner.name)
 
         userRepo.deleteUser(owner)
-        val deletedOwner = userRepo.getUser(owner.id)
+        val deletedOwner = userRepo.getWithId(owner.id)
         assertEquals("", deletedOwner?.name)
         userRepo.deleteUserEntirely(owner)
-        assertNull(userRepo.getUser(owner.id))
+        assertNull(userRepo.getWithId(owner.id))
     }
 }

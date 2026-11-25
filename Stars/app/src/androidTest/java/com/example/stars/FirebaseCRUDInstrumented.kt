@@ -29,18 +29,27 @@ class FirebaseCRUDInstrumented {
         val userRepo = UserRepository(this)
         val userProfile = UserProfile("test1", "John Doe", "email@email.com", "555-555-5555",
             listOf(), false,UserPermission.OWNER)
-        userRepo.addOrUpdateUser(userProfile)
-        var user = userRepo.getUser("test1")
+        userRepo.addOrUpdate(userProfile)
+        var user = userRepo.getWithId("test1")
         assertNotNull(user)
         // Match all attributes
         assertEquals("test1", user?.id)
         assertEquals("John Doe", user?.name)
         assertEquals("email@email.com", user?.email)
         assertEquals(UserPermission.OWNER, user?.permission)
-        // Delete, search again, and check that it's gone
+        // Ban, search again, and check that the user is banned
         userRepo.deleteUser(userProfile)
         Thread.sleep(5000)
-        user = userRepo.getUser("test1")
+        user = userRepo.getWithId("test1")
+        assertNotNull(user)
+        assertEquals("test1", user?.id)
+        assertEquals("", user?.name)
+        assertEquals("", user?.email)
+        assertEquals(UserPermission.ENTRANT, user?.permission)
+        // Delete, search again, and check that it's gone
+        userRepo.deleteUserEntirely(userProfile)
+        Thread.sleep(5000)
+        user = userRepo.getWithId("test1")
         assertNull(user)
     }
 
@@ -62,13 +71,13 @@ class FirebaseCRUDInstrumented {
         // Note that uploadImage returns the UUID of the new image
         val imageId = imageRepo.uploadImage(Uri.fromFile(file))
         // Use the returned UUID to check that the image exists and is downloadable
-        var image = imageRepo.getImage(imageId)
+        var image = imageRepo.getWithId(imageId)
         assertNotNull(image)
         assertNotEquals(0, image?.downloadUrl?.length)
         // Delete and confirm it's gone
         imageRepo.deleteImage(imageId)
         Thread.sleep(5000)
-        image = imageRepo.getImage(imageId)
+        image = imageRepo.getWithId(imageId)
         assertNull(image)
     }
 
@@ -86,35 +95,42 @@ class FirebaseCRUDInstrumented {
         val userO = UserProfile("testUO", "John Doe", "email@email.com", "555-555-5555",
             listOf(),
             false, UserPermission.OWNER)
-        userRepo.addOrUpdateUser(userO)
+        userRepo.addOrUpdate(userO)
         assertNotNull(userO)
-        assertEquals(userO, userRepo.getUser(userO.id))
+        assertEquals(userO, userRepo.getWithId(userO.id))
 
         // Create a user to reserve the campsite
         val userE = UserProfile("testUE", "Jenny Calender", "email@email.com", "555-555-5555",
             listOf(),
             false, UserPermission.ENTRANT)
-        userRepo.addOrUpdateUser(userE)
+        userRepo.addOrUpdate(userE)
         assertNotNull(userE)
-        assertEquals(userE, userRepo.getUser(userE.id))
+        assertEquals(userE, userRepo.getWithId(userE.id))
 
         // Add a partial campsite and give it a reservation
         val campsite = Campsite(id = "testC", ownerId = "testUO")
-        campsiteRepo.addOrUpdateCampsite(campsite)
+        campsiteRepo.addOrUpdate(campsite)
 
         // Campsite should exist and have matching attributes
         assertNotNull(campsite)
-        assertEquals(campsite, campsiteRepo.getCampsite(campsite.id))
+        assertEquals(campsite, campsiteRepo.getWithId(campsite.id))
         assertEquals("testUO", campsite.ownerId)
         assertEquals(0, campsite.capacity)
 
-        reservationRepo.addUserReservation(userE.id, campsite.id, EpochRange(1,2))
+        val timeRange = EpochRange(1,2)
+        reservationRepo.addOrUpdate(Reservation(
+            id = Reservation.uniqueIdFrom(userE.id, campsite.id, timeRange),
+            entrantId = userE.id,
+            campsiteId = campsite.id,
+            timeRange = timeRange
+        ))
+
         // Make sure the reservation exists
-        assertNotNull(reservationRepo.getUserReservations(userE.id))
+        assertNotNull(reservationRepo.getWithUserId(userE.id))
         // Delete everything, including the test user
-        campsiteRepo.deleteCampsite("testC")
+        campsiteRepo.removeWithId("testC")
         Thread.sleep(5000)
-        assertNull(campsiteRepo.getCampsite("testC"))
+        assertNull(campsiteRepo.getWithId("testC"))
 
         userRepo.deleteUser(userO)
         userRepo.deleteUser(userE)
