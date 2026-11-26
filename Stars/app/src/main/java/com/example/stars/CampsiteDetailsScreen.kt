@@ -156,7 +156,7 @@ fun CampsiteDetailsScreen(navController: NavController,
         Box(
             modifier = Modifier
                 .background(
-                    Color(0xFFFFFFFF),
+                    StarsColors.White,
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 30.dp,
@@ -174,7 +174,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 bottomEnd = 10.dp,
             )).fillMaxWidth()) {
 
-                Row(modifier = Modifier.fillMaxWidth().background(color = Color(0xFF008B8B))
+                Row(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Cyan)
                     .padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
@@ -225,7 +225,9 @@ fun CampsiteDetailsScreen(navController: NavController,
                     verticalAlignment = Alignment.CenterVertically) {
 
                     //name of the owner
-                    Text("Owner: $ownerName",
+                    Text(
+                        text = "Owner: $ownerName",
+                        modifier = Modifier.clickable(onClick = { navController.navigate("user profile/${Uri.encode(campsite.ownerId)}") }),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
