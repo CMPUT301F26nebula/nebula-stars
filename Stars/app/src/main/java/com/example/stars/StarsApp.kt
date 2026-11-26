@@ -62,6 +62,8 @@ fun StarsApp(notifs: Boolean = false) {
     val chatRepository = remember { ChatRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
+    var campsiteFilter by remember { mutableStateOf(CampsiteFilter()) }
+    var campsiteSort by remember { mutableStateOf(CampsiteSort()) }
 
     Databases.userRepository = userRepository
     Databases.campsiteRepository = campsiteRepository
@@ -125,7 +127,19 @@ fun StarsApp(notifs: Boolean = false) {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
                 composable("home") { HomeScreen(navController, currentUser) }
-                composable("campsites") { CampsitesScreen(navController, campsiteRepository, imageRepository) }
+                composable("campsites") {
+                    CampsitesScreen(
+                        navController,
+                        campsiteRepository,
+                        imageRepository,
+                        filter = campsiteFilter,
+                        sort = campsiteSort,
+                        onFilterChange = { newFilter, newSort ->
+                            campsiteFilter = newFilter
+                            campsiteSort = newSort
+                        }
+                    )
+                }
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
