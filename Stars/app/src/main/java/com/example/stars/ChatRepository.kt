@@ -4,7 +4,6 @@
 package com.example.stars
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +22,9 @@ class ChatRepository(private val scope: CoroutineScope):
      * Get a [List] of [Chat]s the user with [userId] is part of
      */
     override suspend fun getWithUserId(userId: String): List<Chat> {
-        return collection.whereArrayContains("users", userId).get().await().toObjects(dataClass)
+        return collection
+            .whereArrayContains("users", userId)
+            .get().await().toObjects(dataClass)
     }
 
     /**

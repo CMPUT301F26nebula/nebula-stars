@@ -75,7 +75,7 @@ fun MessagesScreen(
                 userChats = newChats.fastFilterNotNull()
             } else {
                 val newUserChats = newChats.fastFilterNotNull().filter {
-                    it.users.contains(userProfile.id)
+                    it.users.contains(userProfile.id) && it.messages.isNotEmpty()
                 }
                 if (userChats != newUserChats) {
                     userChats = newUserChats
@@ -92,7 +92,7 @@ fun MessagesScreen(
         userChats = if (adminView) {
             Databases.chatRepository.getAll()
         } else {
-            Databases.chatRepository.getWithUserId(userProfile.id)
+            Databases.chatRepository.getWithUserId(userProfile.id).filter { it.messages.isNotEmpty() }
         }
         chatsReady = true
     }

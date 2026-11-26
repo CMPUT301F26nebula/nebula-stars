@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,7 +49,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import java.util.Arrays
 
 // profile picture image consts
 private object PFPSize {
@@ -94,6 +94,9 @@ fun ChatScreen(
         // if for whatever reason it cant get from db, loading forever
         Databases.chatRepository.getWithId(chatId)?.let { chat ->
             currentChat = chat
+            canSendMessage = readOnly?.let {
+                !it
+            } ?: (userProfile.id in chat.users)
             participants = Databases.chatRepository.getChatParticipants(
                 userProfile,
                 currentChat,
@@ -104,7 +107,6 @@ fun ChatScreen(
                         user?.name ?: "chatter")
                 }
             )
-            canSendMessage = readOnly ?: (userProfile.id in chat.users)
         }
     }
 
@@ -115,7 +117,11 @@ fun ChatScreen(
         topBar = {
             ScreenHeader(
                 navController = navController,
-                title = participants?.remote?.name ?: "CHATTING"
+                title = if (readOnly == true) {
+                    "CHAT LOG"
+                } else {
+                    participants?.remote?.name ?: "CHATTING"
+                }
             )
         },
         bottomBar = {
@@ -145,12 +151,10 @@ fun ChatScreen(
             verticalArrangement = Arrangement.Top
         ) {
             // show loading screen until users have been fetched from db
-            if (participants != null) {
+            participants?.let {
                 Spacer(Modifier.weight(1.0f))
-                ChatLog(participants!!, currentChat.messages)
-            } else {
-                LoadingText()
-            }
+                ChatLog(it, currentChat.messages)
+            } ?: LoadingText()
         }
     }
 }
@@ -377,9 +381,18 @@ fun ChatCard(participants: ChatParticipants, chat: Chat, adminView: Boolean = fa
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        colors = participants.remote?.let { remote ->
-            RandomStarsColor.cardColorsFromId(remote.id)
-        } ?: CardDefaults.cardColors()
+        colors = if (adminView) {
+            CardColors(
+                StarsColors.White,
+                StarsColors.Purple,
+                StarsColors.White,
+                StarsColors.Purple
+            )
+        } else {
+            participants.remote?.let { remote ->
+                RandomStarsColor.cardColorsFromId(remote.id)
+            } ?: CardDefaults.cardColors()
+        }
     ) {
         val lastMessage = chat.messages.lastOrNull()
         val fuzzyDate = FuzzyDateFormat(LocalLocale.current.platformLocale)
@@ -412,6 +425,9 @@ fun ChatCard(participants: ChatParticipants, chat: Chat, adminView: Boolean = fa
                             )
                         }
                     }
+
+                    Spacer(Modifier.height(8.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
