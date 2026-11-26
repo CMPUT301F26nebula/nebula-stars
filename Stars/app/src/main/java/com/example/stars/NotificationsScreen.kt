@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,7 +68,14 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile, 
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
             if (notifications.isEmpty()) {
-                Text("No notifications found", color = StarsColors.White)
+                Text(
+                    "No notifications found",
+                    modifier = Modifier.fillMaxWidth(),
+                    color = StarsColors.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center
+                )
             } else {
                 // List of notifications
                 LazyColumn {

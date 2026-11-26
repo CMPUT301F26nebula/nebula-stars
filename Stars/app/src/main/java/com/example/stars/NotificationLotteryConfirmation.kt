@@ -1,6 +1,7 @@
 package com.example.stars
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.ExperimentalGridApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -110,7 +112,7 @@ fun NotificationLotteryConfirmation(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -243,7 +245,7 @@ fun NotificationLotteryConfirmation(
                         todayContentColor = StarsColors.BrightPurple,
                         todayDateBorderColor = StarsColors.Yellow,
                         dayInSelectionRangeContainerColor = StarsColors.Transparent,
-                        dayInSelectionRangeContentColor = StarsColors.Cyan,
+                        dayInSelectionRangeContentColor = StarsColors.White,
                         dividerColor = StarsColors.DullPurple,
                         dateTextFieldColors = TextFieldDefaults.colors(
                             focusedTextColor = StarsColors.White,
@@ -293,7 +295,8 @@ fun NotificationLotteryConfirmation(
                             contentColor = StarsColors.White,
                             disabledContainerColor = StarsColors.DullPurple,
                             disabledContentColor = StarsColors.Grey,
-                        )
+                        ),
+                        border = BorderStroke(2.dp, StarsColors.White)
                     ) {
                         Text("Accept")
                     }
@@ -308,7 +311,8 @@ fun NotificationLotteryConfirmation(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Cyan,
                             contentColor = StarsColors.White
-                        )
+                        ),
+                        border = BorderStroke(2.dp, StarsColors.White)
                     ) {
                         Text("Decline")
                     }
@@ -371,7 +375,8 @@ fun NotificationLotteryConfirmation(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Magenta,
                             contentColor = StarsColors.White
-                        )
+                        ),
+                        border = BorderStroke(2.dp, StarsColors.White)
                     ) {
                         Text("Confirm")
                     }
@@ -387,7 +392,8 @@ fun NotificationLotteryConfirmation(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Cyan,
                             contentColor = StarsColors.White
-                        )
+                        ),
+                        border = BorderStroke(2.dp, StarsColors.White)
                     ) {
                         Text("Cancel")
                     }
