@@ -15,6 +15,25 @@ import kotlinx.coroutines.tasks.await
  */
 class CampsiteRepository(private val scope: CoroutineScope):
     AbstractUserDataRepository<Campsite>("campsites", scope, Campsite::class.java){
+    
+    suspend fun removeCampsite(id: String) {
+        val lotteryRepository = LotteryRepository(scope)
+        val imageRepository = ImageRepository(scope)
+
+        for (lottery in lotteryRepository.getWithCampsiteId(id)) {
+            lottery.campsiteIDs = lottery.campsiteIDs.filter { it != id }
+            lotteryRepository.addOrUpdate(lottery)
+            if (lottery.campsiteIDs.isEmpty()) {
+                lotteryRepository.removeWithId(lottery.id)
+            }
+        }
+
+        for (imageId in getWithId(id)?.imageIds ?: emptyList()){
+            imageRepository.deleteImage(imageId)
+        }
+
+        removeWithId(id)
+    }
 
     /**
      * Gets a list of campsites matching the passed filters

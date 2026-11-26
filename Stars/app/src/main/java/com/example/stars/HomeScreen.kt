@@ -1,5 +1,6 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -130,7 +131,6 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             }
         }
     ) { padding ->
-        // Change to fancier layout later
         // Contents
         Column(
             modifier = Modifier

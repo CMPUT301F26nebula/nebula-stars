@@ -1,6 +1,8 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,7 +81,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
                 // so that you can't ban or delete yourself from here
                 if (user != currentUser) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    AdminUserRow(user, userRepository)
+                    AdminUserRow(navController, user, userRepository)
                 }
             }
         }
@@ -92,7 +94,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
  * TODO: expand cards to show more info
  */
 @Composable
-fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
+fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository){
 
 
 
@@ -118,7 +120,9 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
     if (!deleted) {
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth().padding(horizontal = 16.dp)
+                .clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
             colors = cardColors(StarsColors.White)
         ) {
 
@@ -276,11 +280,6 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 Text("Cancel", textAlign = TextAlign.Center)
             }
 
-
-
-
-
-
         }
 
     }
@@ -340,7 +339,6 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
             Row() {
 
-
                 Button(
                     onClick = {
                         val user = runBlocking { userRepository.getWithId(campsite.id) }
@@ -366,7 +364,7 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
                 Button(
                     onClick = {
-                        runBlocking { campsiteRepository.removeWithId(campsite.id) }
+                        runBlocking { campsiteRepository.removeCampsite(campsite.id) }
                     },
                     modifier = Modifier.testTag("Remove Campsite")
                         .size(height = 40.dp, width = 155.dp),
@@ -387,7 +385,5 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
             }
         }
-
-
     }
 }
