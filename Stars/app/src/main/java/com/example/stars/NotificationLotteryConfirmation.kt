@@ -153,6 +153,7 @@ fun NotificationLotteryConfirmation(
 
                 Text(
                     campsites.getOrNull(selectedCampsiteIndex)?.title ?: "No Campsites Found",
+                    modifier = Modifier.fillMaxWidth().weight(1.0f),
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
