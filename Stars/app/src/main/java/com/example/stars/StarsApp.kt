@@ -217,7 +217,7 @@ fun StarsApp(notifs: Boolean = false) {
                 }
 
                 /*
-                composable from claude qeustion: "I have CampsiteDetailsScreen(navController: NavController,
+                composable from claude question: "I have CampsiteDetailsScreen(navController: NavController,
                               currentUser: UserProfile,
                               campsite: Campsite,
                               campsiteRepository: CampsiteRepository,
@@ -303,6 +303,28 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryID = lotteryID,
                         userRepository = userRepository,
                         lotteryRepository = lotteryRepository
+                    )
+                }
+
+                composable(
+                    route = "user profile/{userID}",
+                    arguments = listOf(
+                        navArgument("userID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val userID = backStackEntry.arguments
+                        ?.getString("userID")
+                        .orEmpty()
+
+                    UserProfileScreen(
+                        navController = navController,
+                        currentUser = currentUser,
+                        userID = userID,
+                        campsiteRepository = campsiteRepository,
+                        imageRepository = imageRepository,
+                        userRepository = userRepository
                     )
                 }
 

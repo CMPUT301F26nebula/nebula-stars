@@ -4,6 +4,7 @@
 package com.example.stars
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.tasks.await
 
 /**
  * A container of lotteries stored in Firestore
@@ -20,6 +21,18 @@ class LotteryRepository(private val scope: CoroutineScope):
      */
     override suspend fun getWithUserId(userId: String): List<Lottery> {
         return getWhereFieldEquals("ownerID", userId)
+    }
+
+    /**
+     * Gets a list of all lotteries for campsite [campsiteId]]
+     *
+     * @return list of all lotteries run by the user, which will be empty if not applicable
+     */
+    suspend fun getWithCampsiteId(campsiteId: String): List<Lottery> {
+        return collection
+            .whereArrayContains("campsiteIDs", campsiteId)
+            .get().await()
+            .toObjects(dataClass)
     }
 
     /*
