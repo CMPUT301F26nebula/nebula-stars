@@ -9,6 +9,6 @@ data class Notification (
     val read: Boolean = false,
     val content: String = "",
     val navDestination: String = "",
-    val sender: String = "SYSTEM",
+    val sender: String = "Unknown",
     val timestamp: Long = System.currentTimeMillis()
 ): UniqueIdentifier
