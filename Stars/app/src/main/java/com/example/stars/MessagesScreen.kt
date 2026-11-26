@@ -96,8 +96,8 @@ fun ChatCard(userProfile: UserProfile, chat: Chat, onClick: (Chat) -> Unit) {
     var cardColour: Color by remember { mutableStateOf(StarsColors.White) }
 
     LaunchedEffect(Unit) {
-        val entrant = Databases.userRepository.getWithId(chat.entrantId)
-        val owner = Databases.userRepository.getWithId(chat.ownerId)
+        val entrant = Databases.userRepository.getWithId(chat.userIdA())
+        val owner = Databases.userRepository.getWithId(chat.userIdB())
         if (entrant?.id == userProfile.id) {
             localUser = entrant
             remoteUser = owner

@@ -61,7 +61,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
 
             itemsIndexed(users) { index, user ->
                 Spacer(modifier = Modifier.height(12.dp))
-                AdminUserRow(user, userRepository)
+                AdminUserRow(navController, user, userRepository)
             }
         }
     }
@@ -73,9 +73,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
  * TODO: expand cards to show more info
  */
 @Composable
-fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
-
-
+fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository) {
 
     // show actual buttons if true
     var confirmDeletion by remember { mutableStateOf(false) }
@@ -109,12 +107,14 @@ fun AdminUserRow(userProfile: UserProfile, userRepository: UserRepository){
                 Column() {
 
                     // Name
+                    /*
                     Text(
                         text = userProfile.name,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-
-                        )
+                    )
+                    */
+                    NameTag(userProfile)
 
                     // permission level
                     Text(

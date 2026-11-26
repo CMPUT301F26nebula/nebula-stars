@@ -3,10 +3,14 @@
  */
 package com.example.stars
 
+import android.annotation.SuppressLint
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,6 +54,11 @@ object Databases {
     lateinit var chatRepository: ChatRepository
 }
 
+object App {
+    lateinit var currentUser: UserProfile
+    lateinit var navController: ProvidableCompositionLocal<NavController>
+}
+
 /**
  * Contains the NavHost
  * @param notifs true if we have permission to send push notifications
@@ -73,6 +83,10 @@ fun StarsApp(notifs: Boolean = false) {
     Databases.imageRepository = imageRepository
     Databases.notificationRepository = notificationRepository
     Databases.chatRepository = chatRepository
+
+    App.currentUser = currentUser
+    App.navController = compositionLocalOf { navController }
+    CompositionLocalProvider(App.navController provides navController) { }
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {

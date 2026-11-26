@@ -21,17 +21,37 @@ object ChatLimits {
 /**
  * Representation of a chat between an entrant and an owner
  *
+ * The [id] parameter exists so firebase can create it from a db query, but all new chats should be
+ * created with [Chat.new] to ensure the id format is consistent and replicatable for any pair of
+ * users
+ *
  * @param id unique firebase document id
- * @param entrantId id of the user in the chat
- * @param ownerId id of the entrant in the chat
+ * @param users the chat participants
  * @param messages list of messages sent in the chat
  */
 data class Chat (
     override val id: String = "",
-    val entrantId: String = "",
-    val ownerId: String = "",
+    val users: List<String> = emptyList(),  // firebase array is more searchable than map,
     val messages: List<Message> = emptyList()
 ): UniqueIdentifier {
+
+    /**
+     * Gets the of unique id [String] of one of the chat participants
+     *
+     * If both users have different ids, [userIdA] and [userIdB] will return different values
+     */
+    fun userIdA(): String {
+        return users.getOrElse(0) { "" }
+    }
+
+    /**
+     * Gets the of unique id [String] of the other chat participant
+     *
+     * If both users have different ids, [userIdA] and [userIdB] will return different values
+     */
+    fun userIdB(): String {
+        return users.getOrElse(1) { "" }
+    }
 
     /**
      * Add a [message] to the chat history
@@ -42,18 +62,23 @@ data class Chat (
     fun addMessage(message: Message): Chat {
         return Chat(
             id,
-            entrantId,
-            ownerId,
+            users,
             messages.takeLast(ChatLimits.MAX_HISTORY_LIMIT - 1) + listOf(message)
         )
     }
 
     companion object UniqueId {
         /**
-         * Generates a unique document id from [entrantId] and [ownerId]
+         * Generates a unique document id from its [users]
          */
-        fun uniqueIdFrom(entrantId: String, ownerId: String): String {
-            return "${entrantId}_${ownerId}"
+        fun uniqueIdFrom(users: Pair<UserProfile, UserProfile>): String {
+            // chat id should be consistent so any given pair of users should have at most 1 chat
+            val ordered = if (users.first.id > users.second.id) {
+                users.second to users.first
+            } else {
+                users
+            }
+            return "${ordered.first.id}_${ordered.second.id}"
         }
 
         /**
@@ -62,15 +87,13 @@ data class Chat (
          * Since [uniqueIdFrom] uses parameters from [Chat] to generate a value, this avoids
          * having to write arguments twice
          *
-         * @param entrantId id of the user in the chat
-         * @param ownerId id of the entrant in the chat
+         * @param users the chat participants
          * @param messages list of messages sent in the chat, empty by default
          */
-        fun new(entrantId: String, ownerId: String, messages: List<Message> = emptyList()): Chat {
+        fun new(users: Pair<UserProfile, UserProfile>, messages: List<Message> = emptyList()): Chat {
             return Chat(
-                uniqueIdFrom(entrantId, ownerId),
-                entrantId,
-                ownerId,
+                uniqueIdFrom(users),
+                listOf(users.first.id, users.second.id),
                 messages
             )
         }

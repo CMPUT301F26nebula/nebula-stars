@@ -100,8 +100,9 @@ fun ChatScreen(
         Databases.chatRepository.getWithId(chatId)?.let { chat ->
             currentChat = chat
 
-            val entrant = Databases.userRepository.getWithId(chat.entrantId)
-            val owner = Databases.userRepository.getWithId(chat.ownerId)
+            // was written before both users got merged into a Pair so thats why theyre named that
+            val entrant = Databases.userRepository.getWithId(chat.userIdA())
+            val owner = Databases.userRepository.getWithId(chat.userIdB())
             var localUser: UserProfile? = null
             var remoteUser: UserProfile? = null
 
