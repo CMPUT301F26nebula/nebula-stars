@@ -62,7 +62,8 @@ fun ReservationCard(
         },
         shape = RoundedCornerShape(
             10.dp
-        )
+        ),
+        colors = CardDefaults.cardColors(StarsColors.Cyan)
     ) {
         Row(
             modifier = Modifier
@@ -79,7 +80,8 @@ fun ReservationCard(
                     maxFontSize = 24.sp,
                     stepSize = 1.sp
                 ),
-                modifier = Modifier.weight(0.7f).padding(4.dp)
+                modifier = Modifier.weight(0.7f).padding(4.dp),
+                color = StarsColors.White
             )
 
             Text(
@@ -92,6 +94,7 @@ fun ReservationCard(
                 ),
                 modifier = Modifier.weight(0.3f).padding(4.dp),
                 style = MaterialTheme.typography.bodyMedium,
+                color = StarsColors.White
             )
         }
         Text(
@@ -102,6 +105,7 @@ fun ReservationCard(
             }",
             modifier = Modifier.padding(4.dp),
             style = MaterialTheme.typography.bodyMedium,
+            color = StarsColors.White
 
         )
     }

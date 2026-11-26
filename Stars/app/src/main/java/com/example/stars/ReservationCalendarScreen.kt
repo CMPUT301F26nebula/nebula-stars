@@ -361,7 +361,7 @@ fun ReservationCalendarScreen(
                 selectedReservation = null
             },
             onClickOtherPerson = {user, owner -> navController.navigate("user profile/${owner}")},
-            otherPersonText = {user, owner -> "Campsite Owner: $owner"},
+            otherPersonText = {user, owner -> "Owner: $owner"},
         )
     }
 
