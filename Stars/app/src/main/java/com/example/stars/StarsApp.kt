@@ -151,13 +151,30 @@ fun StarsApp(notifs: Boolean = false) {
                 composable("messages") { MessagesScreen(navController, currentUser) }
                 composable(
                     route = "messages/{chatId}",
-                    arguments = listOf(navArgument("chatId") { type = NavType.StringType })
+                    arguments = listOf(
+                        navArgument("chatId") { type = NavType.StringType }
+                    )
                 ) { backStackEntry ->
                     val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
                     ChatScreen(
                         navController,
                         currentUser,
                         chatId
+                    )
+                }
+                composable("admin messages") { MessagesScreen(navController, currentUser, true) }
+                composable(
+                    route = "admin messages/{chatId}",
+                    arguments = listOf(
+                        navArgument("chatId") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
+                    ChatScreen(
+                        navController,
+                        currentUser,
+                        chatId,
+                        true
                     )
                 }
                 composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }

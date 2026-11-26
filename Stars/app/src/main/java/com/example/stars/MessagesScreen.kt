@@ -3,8 +3,10 @@
  */
 package com.example.stars
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,8 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,13 +38,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastFilterNotNull
+import androidx.compose.ui.util.fastLastOrNull
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.runBlocking
+import kotlin.to
 
 /**
  * Shows a list of chats the user is in
@@ -49,74 +61,146 @@ import coil3.compose.AsyncImage
 @Composable
 fun MessagesScreen(
     navController: NavController,
-    userProfile: UserProfile
+    userProfile: UserProfile,
+    adminView: Boolean = false
 ) {
-    var userChats: List<Pair<Chat, ChatParticipants>> by remember { mutableStateOf(emptyList()) }
+    var userChats: List<Chat> by remember { mutableStateOf(emptyList()) }
+    var filter by remember { mutableStateOf("") }
     var chatsReady by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        val chats = Databases.chatRepository.getWithUserId(userProfile.id)
-        userChats = buildList {
-            for (chat in chats) {
-                add(
-                    chat to
-                    Databases.chatRepository.getChatParticipants(
-                        userProfile,
-                        chat,
-                        { user, uri ->
-                            UserProfilePicture(
-                                uri,
-                                60.dp,
-                                user?.name ?: "chatter"
-                            )
-                            /*
-                            AsyncImage(
-                                model = uri,
-                                contentDescription = "${user?.name ?: "chatter"} profile picture",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .size(60.dp, 60.dp),
-                                contentScale = ContentScale.Crop,
-                                fallback = painterResource(R.drawable.default_pfp),
-                                error = painterResource(R.drawable.default_pfp)
-                            )
-                             */
-                        }
-                    )
-                )
+    DisposableEffect(userProfile) {
+        // punished for not storing info in the user profile...
+        val chatUpdateListener = Databases.chatRepository.addListener { newChats ->
+            if (adminView) {
+                userChats = newChats.fastFilterNotNull()
+            } else {
+                val newUserChats = newChats.fastFilterNotNull().filter {
+                    it.users.contains(userProfile.id)
+                }
+                if (userChats != newUserChats) {
+                    userChats = newUserChats
+                }
             }
+        }
+
+        onDispose {
+            chatUpdateListener.remove()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        userChats = if (adminView) {
+            Databases.chatRepository.getAll()
+        } else {
+            Databases.chatRepository.getWithUserId(userProfile.id)
         }
         chatsReady = true
     }
 
-    Column(
+    Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        // Header
-        ScreenHeader(
-            navController = navController,
-            title = "MESSAGES"
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        // show loading screen until chats have been fetched from db
-        if (chatsReady) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
+            .fillMaxSize(),
+        topBar = {
+            // Header
+            ScreenHeader(
+                navController = navController,
+                title = "MESSAGES"
+            )
+        },
+        bottomBar = {
+            // search bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .background(StarsColors.White),
+                verticalAlignment = Alignment.Bottom
             ) {
-                items(userChats) { chatInfo ->
-                    ChatCard(chatInfo.second, chatInfo.first) { chat ->
-                        navController.navigate("messages/${chat.id}")
+                TextField(
+                    value = filter,
+                    onValueChange = {
+                        filter = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Search Users",
+                            color = StarsColors.Purple,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Thin
+                        )
+                    },
+                    textStyle = TextStyle(
+                        color = StarsColors.Purple,
+                        fontSize = 16.sp
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = StarsColors.Purple,
+                        unfocusedIndicatorColor = StarsColors.Purple.copy(alpha = 0.6f),
+                        cursorColor = StarsColors.Purple
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .navigationBarsPadding()
+                        .testTag("chatSearchTextField")
+                )
+            }
+        }
+    ) { innerPadding ->
+        StarsBackground(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Spacer(Modifier.height(12.dp))
+
+                // show loading screen until chats have been fetched from db
+                if (chatsReady) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // most recent chats first
+                        items(userChats.sortedByDescending { it.messages.lastOrNull()?.timestamp ?: 0L }) { chat ->
+                            val participants = runBlocking {
+                                Databases.chatRepository.getChatParticipants(
+                                    userProfile,
+                                    chat,
+                                    { user, uri ->
+                                        UserProfilePicture(
+                                            uri,
+                                            60.dp,
+                                            user?.name ?: "chatter"
+                                        )
+                                    }
+                                )
+                            }
+                            if ((participants.local?.name?.contains(filter, true) ?: false) ||
+                                (participants.remote?.name?.contains(filter, true) ?: false)
+                            ) {
+                                ChatCard(participants, chat, adminView) { chatInfo ->
+                                    navController.navigate(
+                                        if (adminView) {
+                                            "admin messages/${chatInfo.id}"
+                                        } else {
+                                            "messages/${chatInfo.id}"
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
+                } else {
+                    LoadingText()
                 }
             }
-        } else {
-            LoadingText()
         }
     }
 }

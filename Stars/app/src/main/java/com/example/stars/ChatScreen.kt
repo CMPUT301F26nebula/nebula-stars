@@ -3,7 +3,6 @@
  */
 package com.example.stars
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,17 +16,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,21 +38,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
+import java.util.Arrays
 
 // profile picture image consts
 private object PFPSize {
@@ -64,24 +56,23 @@ private object PFPSize {
     val height = 52.dp
 }
 
-
-
 /**
  * Screen for sending and viewing messages
  *
  * @param navController navigation controller
  * @param userProfile current device user
  * @param chatId unique id of the chat to display
- * @param readOnly if true, the input bar will be hidden
+ * @param readOnly if true the input bar will be hidden, by default it decides based on whether the current user is a chat participant
  */
 @Composable
 fun ChatScreen(
     navController: NavController,
     userProfile: UserProfile,
     chatId: String,
-    readOnly: Boolean = false
+    readOnly: Boolean? = null
 ) {
     var currentChat: Chat by remember { mutableStateOf(Chat()) }
+    var canSendMessage by remember { mutableStateOf(false) }
 
     // cache some values so we dont make a db access for every individual chat message
     var participants: ChatParticipants? by remember { mutableStateOf(null) }
@@ -113,78 +104,7 @@ fun ChatScreen(
                         user?.name ?: "chatter")
                 }
             )
-            /*
-            // was written before both users got merged into a Pair so thats why theyre named that
-            val entrant = Databases.userRepository.getWithId(chat.userIdA())
-            val owner = Databases.userRepository.getWithId(chat.userIdB())
-            var localUser: UserProfile? = null
-            var remoteUser: UserProfile? = null
-
-            // figure out who should go on what side
-            if (entrant?.id == userProfile.id) {
-                localUser = entrant
-                remoteUser = owner
-            } else if (owner?.id == userProfile.id) {
-                localUser = owner
-                remoteUser = entrant
-            }
-
-            // feels like some real code abuse here lol
-            participants = ChatParticipants(
-                localUser,
-                remoteUser,
-                localUser?.let { user ->
-                    var uri: Uri? = null
-                    if (user.profilePic != "") {
-                        uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
-                    }
-                    @Composable {
-                        UserProfilePicture(
-                            uri,
-                            PFPSize.width,
-                            user.name
-                        )
-                        /*
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = "users profile picture",
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(PFPSize.width, PFPSize.height),
-                            contentScale = ContentScale.Crop,
-                            fallback = painterResource(R.drawable.default_pfp),
-                            error = painterResource(R.drawable.default_pfp)
-                        )
-                         */
-                    }
-                } ?: {},
-                remoteUser?.let { user ->
-                    var uri: Uri? = null
-                    if (user.profilePic != "") {
-                        uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
-                    }
-                    @Composable {
-                        UserProfilePicture(
-                            uri,
-                            PFPSize.width,
-                            user.name
-                        )
-                        /*
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = "users profile picture",
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(PFPSize.width, PFPSize.height),
-                            contentScale = ContentScale.Crop,
-                            fallback = painterResource(R.drawable.default_pfp),
-                            error = painterResource(R.drawable.default_pfp)
-                        )
-                         */
-                    }
-                } ?: {}
-            )
-             */
+            canSendMessage = readOnly ?: (userProfile.id in chat.users)
         }
     }
 
@@ -199,7 +119,7 @@ fun ChatScreen(
             )
         },
         bottomBar = {
-            if (!readOnly) {
+            if (canSendMessage) {
                 ChatInput { msg ->
                     participants?.local?.let { sender ->
                         val currentTime = System.currentTimeMillis()
@@ -445,10 +365,11 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (L
  *
  * @param participants the [ChatParticipants]
  * @param chat the [Chat]
+ * @param adminView if the admin buttons should be visible
  * @param onClick click callback that receives this cards [chat] instance as an argument
  */
 @Composable
-fun ChatCard(participants: ChatParticipants, chat: Chat, onClick: (Chat) -> Unit) {
+fun ChatCard(participants: ChatParticipants, chat: Chat, adminView: Boolean = false, onClick: (Chat) -> Unit) {
     Card(
         onClick = {
             onClick(chat)
@@ -468,21 +389,66 @@ fun ChatCard(participants: ChatParticipants, chat: Chat, onClick: (Chat) -> Unit
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                participants.remotePFP()
+            if (adminView) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        participants.localPFP()
 
-                Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(8.dp))
 
-                Text(
-                    participants.remote?.name ?: "",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                        participants.local?.let {
+                            NameTag(
+                                it.name,
+                                it.id,
+                                style = TextStyle(
+                                    fontSize = 32.sp,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        participants.remotePFP()
+
+                        Spacer(Modifier.width(8.dp))
+
+                        participants.remote?.let {
+                            NameTag(
+                                it.name,
+                                it.id,
+                                style = TextStyle(
+                                    fontSize = 32.sp,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            )
+                        }
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    participants.remotePFP()
+
+                    Spacer(Modifier.width(8.dp))
+
+                    Text(
+                        participants.remote?.name ?: "Unknown",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
             Spacer(Modifier.height(8.dp))
@@ -518,6 +484,13 @@ fun ChatCard(participants: ChatParticipants, chat: Chat, onClick: (Chat) -> Unit
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+
+            if (adminView) {
+                Spacer(Modifier.height(8.dp))
+                AdminActionOnChat("Delete Chat") {
+                    Databases.chatRepository.removeWithId(chat.id)
+                }
+            }
         }
     }
 }

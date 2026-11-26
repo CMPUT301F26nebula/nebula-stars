@@ -47,28 +47,24 @@ fun ReservationDetails(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center
     ) {
-        // TODO these should bring u to their respective details pages
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Campsite:")
-            Spacer(Modifier.width(8.dp))
-            TextButton(
-                onClick = {}
-            ) {
-                Text(text = campsite.title)
-            }
+            NameTag(
+                campsite.title,
+                campsite.id,
+                label = "Campsite: ",
+                navRoute = "campsite"
+            )
         }
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Campsite Owner:")
-            Spacer(Modifier.width(8.dp))
-            TextButton(
-                onClick = {}
-            ) {
-                Text(campOwner.name)
-            }
+            NameTag(
+                campOwner.name,
+                campOwner.id,
+                label = "Campsite Owner: "
+            )
         }
         Text("Status: ${reservation.status}")
         Text(

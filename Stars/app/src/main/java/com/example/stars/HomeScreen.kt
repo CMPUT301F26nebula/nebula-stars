@@ -158,6 +158,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
                     UserPermission.ADMIN -> arrayOf(
                         HomeButtonData("Users List", "UsersButton", "users list"),
+                        HomeButtonData("Messages Log", "MessageLogButton", "admin messages"),
                         HomeButtonData("Notification Log", "NotificationLogButton", "notification log"),
                         HomeButtonData("Images", "images view", "admin images")
                     )

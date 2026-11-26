@@ -113,7 +113,6 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
     // until screen change (I think)
     var deleted by remember { mutableStateOf(false) }
 
-
     // default permission level string since it is not a string in the class
     var permissionLevel by remember { mutableStateOf("Entrant") }
     if (userProfile.permission == UserPermission.ADMIN){
@@ -179,16 +178,6 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                     100.dp,
                     userProfile.name
                 )
-                /*
-                AsyncImage(
-                    model = pfpUri,
-                    contentDescription = "profile picture",
-                    modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
-                    contentScale = ContentScale.Crop,
-                    fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                    error = painterResource(R.drawable.default_pfp)
-                )
-                 */
             }
 
             // buttons to delete and ban
@@ -401,6 +390,78 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                         color = StarsColors.White
                     )
                 }
+            }
+        }
+    }
+}
+
+
+/**
+ * Admin button to delete a [Chat], only admins should see this
+ *
+ * @param action button label
+ * @param onConfirm callback for confirming the action
+ */
+@Composable
+fun AdminActionOnChat(action: String, onConfirm: () -> Unit) {
+    var confirm by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // show the delete button if not AlreadyPressed
+        if (!confirm) {
+            Button(
+                {
+                    confirm = true
+                },
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                modifier = Modifier.height(40.dp).weight(1f).testTag("get options")
+            ) {
+                Text(action, textAlign = TextAlign.Center)
+            }
+        }
+
+        // show the confirm and cancel buttons
+        if (confirm) {
+            Button(
+                onClick = {
+                    onConfirm()
+                    confirm = false
+                },
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                modifier = Modifier.height(40.dp).weight(1f).testTag("Confirm")
+            ) {
+                Text("Confirm", textAlign = TextAlign.Center)
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Button(
+                onClick = {
+                    confirm = false
+                },
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                modifier = Modifier.height(40.dp).weight(1f).testTag("Cancel")
+            ) {
+                Text("Cancel", textAlign = TextAlign.Center)
             }
         }
     }
