@@ -43,6 +43,7 @@ object Databases {
     lateinit var reservationRepository: ReservationRepository
     lateinit var notificationRepository: NotificationRepository
     lateinit var chatRepository: ChatRepository
+    lateinit var lotteryRepository: LotteryRepository
 }
 
 /**
@@ -69,6 +70,7 @@ fun StarsApp(notifs: Boolean = false) {
     Databases.imageRepository = imageRepository
     Databases.notificationRepository = notificationRepository
     Databases.chatRepository = chatRepository
+    Databases.lotteryRepository = lotteryRepository
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -131,7 +133,7 @@ fun StarsApp(notifs: Boolean = false) {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
-                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
+                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
                 composable("settings") {
                     SettingsScreen(
                         navController,
@@ -303,8 +305,43 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryRepository = lotteryRepository
                     )
                 }
+
+                composable(
+                    route = "lottery confirm/{lotteryID}",
+                    arguments = listOf(
+                        navArgument("lotteryID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val lotteryId = backStackEntry.arguments
+                        ?.getString("lotteryID")
+
+                    var lottery by remember(lotteryId) { mutableStateOf<Lottery?>(null) }
+
+                    DisposableEffect(Unit) {
+                        var listener: ListenerRegistration? = null
+                        lotteryId?.let {
+                            listener = Databases.lotteryRepository.addListenerToId(it) { maybeLottery ->
+                                lottery = maybeLottery
+                            }
+                        }
+
+                        onDispose { listener?.remove() }
+                    }
+
+                    if (lottery != null ) {
+                        NotificationLotteryConfirmation(
+                            navController = navController,
+                            currentUser = currentUser,
+                            lottery = lottery!!,
+                            campsiteRepository = campsiteRepository,
+                            imageRepository = imageRepository,
+                            userRepository = userRepository
+                        )
+                    }
+                }
             }
         }
     }
-
 }
