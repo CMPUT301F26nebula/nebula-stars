@@ -31,6 +31,7 @@ object StarsColors {
     val Magenta = Color(0xFFFF1493)
     val Yellow = Color(0xFFEFC700)
     val White = Color(0xFFFFFFFF)
+    val Grey = Color(0xBBBBBBFF)
     val Black = Color(0xFF000000)
     val Transparent = Color(0x00FFFFFF)
 }
@@ -337,31 +338,15 @@ fun StarsApp(notifs: Boolean = false) {
                     )
                 ) { backStackEntry ->
                     val lotteryId = backStackEntry.arguments
-                        ?.getString("lotteryID")
-
-                    var lottery by remember(lotteryId) { mutableStateOf<Lottery?>(null) }
-
-                    DisposableEffect(Unit) {
-                        var listener: ListenerRegistration? = null
-                        lotteryId?.let {
-                            listener = Databases.lotteryRepository.addListenerToId(it) { maybeLottery ->
-                                lottery = maybeLottery
-                            }
-                        }
-
-                        onDispose { listener?.remove() }
-                    }
-
-                    if (lottery != null ) {
-                        NotificationLotteryConfirmation(
-                            navController = navController,
-                            currentUser = currentUser,
-                            lottery = lottery!!,
-                            campsiteRepository = campsiteRepository,
-                            imageRepository = imageRepository,
-                            userRepository = userRepository
-                        )
-                    }
+                        ?.getString("lotteryID").orEmpty()
+                    NotificationLotteryConfirmation(
+                        navController = navController,
+                        currentUser = currentUser,
+                        lotteryId = lotteryId,
+                        lotteryRepository = lotteryRepository,
+                        reservationRepository = reservationRepository,
+                        campsiteRepository = campsiteRepository
+                    )
                 }
             }
         }
