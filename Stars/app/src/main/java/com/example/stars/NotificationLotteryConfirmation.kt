@@ -82,7 +82,7 @@ fun NotificationLotteryConfirmation(
             campsiteRepository.getWithId(it)?.let { element -> campsites.add(element) }
         }
 
-        startDate.timeInMillis = 0
+        startDate.timeInMillis = Long.MAX_VALUE
         endDate.timeInMillis = 0
     }
 
@@ -95,162 +95,33 @@ fun NotificationLotteryConfirmation(
         ScreenHeader(Modifier, navController, "Confirm Reservation")
 
         if (lottery.pendingWinnerIDs.contains(currentUser.id)) {
+            // Campsite Selector
+            // TODO
+
             // Calendar
-            val colors = listOf(StarsColors.Cyan, StarsColors.Magenta, StarsColors.Yellow)
-            val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-
-            val lotteryReservation = Reservation(timeRange = lottery.timePeriod)
-            val reservations = mutableListOf(lotteryReservation)
-
-            // make sure reservation colour if consistent for all days
-            val reservationColors = buildMap {
-                var i = 0
-                for (res in reservations) {
-                    put(res.id, colors[i])
-                    i = (i + 1) % colors.size
-                }
-            }
-
-            val calendarManager by remember { mutableStateOf(CalendarManager(reservations)) }
-            var calendarDays by remember { mutableStateOf(calendarManager.getMonthDisplayDays().iterator()) }
-            var currentMonth by remember { mutableStateOf(calendarManager.currentMonthName()) }
-            var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
-
-            // if reservations change a new calendarManager wont be created so we must update it if needed
-            LaunchedEffect(reservations, currentMonth) {
-                calendarManager.updateReservations(reservations)
-                val refreshCalender = {
-                    calendarDays = calendarManager.getMonthDisplayDays().iterator()
-                    currentMonth = calendarManager.currentMonthName()
-                    currentYear = calendarManager.currentYear()
-                }
-                refreshCalender()
-            }
-
-            val changeMonthButtonModifier = Modifier
-                .border(1.dp, StarsColors.White, shape = RoundedCornerShape(24.dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(6.dp)
-                        .fillMaxWidth()
-                ) {
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        text = currentYear.toString(),
-                        fontSize = 32.sp,
-                        color = StarsColors.White
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(6.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        text = currentMonth,
-                        fontSize = 38.sp,
-                        color = StarsColors.White
-                    )
-                    Spacer(Modifier.weight(1.0f))
-                    // change month buttons
-                    Button(
-                        modifier = changeMonthButtonModifier,
-                        onClick = {
-                            currentMonth = calendarManager.lastMonth()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = StarsColors.Transparent,
-                            contentColor = StarsColors.White
-                        )
-                    ) {
-                        Text(
-                            text = "<",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+            // TODO: make calender open at the lottery date, prevent scrolling past month of lottery
+            ReservationCalendar(listOf(
+                Reservation(timeRange = lottery.timePeriod),
+                Reservation(
+                    id = "1",
+                    timeRange =
+                     if (startDate.timeInMillis < lottery.timePeriod.end && endDate.timeInMillis > lottery.timePeriod.start) {
+                        EpochRange(startDate.timeInMillis, endDate.timeInMillis)
+                    } else {
+                        EpochRange(0, 0)
                     }
-                    Spacer(Modifier.width(12.dp))
-                    Button(
-                        modifier = changeMonthButtonModifier,
-                        onClick = {
-                            currentMonth = calendarManager.nextMonth()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = StarsColors.Transparent,
-                            contentColor = StarsColors.White
-                        )
-                    ) {
-                        Text(
-                            text = ">",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(7),
-                    modifier = Modifier.background(StarsColors.White)
-                ) {
-                    items(dayNames) { dayName ->
-                        Box(
-                            modifier = Modifier
-                                .background(color = StarsColors.White)
-                                .height(40.dp)
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = dayName,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = StarsColors.Purple
-                            )
-                        }
-                    }
-                }
-                Grid(
-                    config = {
-                        for (week in 1..5) {
-                            row(1.fr)
-                        }
-                        for (day in 1..7) {
-                            column(1.fr)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.0f)
-                ) {
-                    for (week in 1..5) {
-                        for (day in 1..7) {
-                            Box(
-                                modifier = Modifier
-                                    .gridItem(row = week, column = day)
-                                    .fillMaxSize()
-                                    .background(StarsColors.White)
-                            ) {
-                                Box(modifier = Modifier
-                                    .padding(1.dp)
-                                    .background(StarsColors.Purple)) {
-                                    if (calendarDays.hasNext()) {
-                                        ReservationCalendarDay(
-                                            calendarDays.next(),
-                                            eventColors = reservationColors,
-                                            onClick = {
-
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                )
+            )) {
+                val dateClicked = it.date
+                if (startDate > dateClicked) {
+                    startDate = dateClicked
+                } else if (endDate < dateClicked) {
+                    endDate = dateClicked
+                } else {
+                    if (dateClicked.timeInMillis-startDate.timeInMillis  > endDate.timeInMillis-dateClicked.timeInMillis) {
+                        startDate = dateClicked
+                    } else {
+                        endDate = dateClicked
                     }
                 }
             }
