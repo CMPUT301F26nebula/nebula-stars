@@ -3,9 +3,6 @@
  */
 package com.example.stars
 
-import android.R.attr.onClick
-import android.R.attr.text
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

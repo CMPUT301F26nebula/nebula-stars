@@ -328,7 +328,8 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
         Column() {
 
-            Button(onClick = {showButtons = false},
+            Button(
+                onClick = { showButtons = false },
                 modifier = Modifier.testTag("Admin Actions").size(height = 40.dp, width = 310.dp),
                 shape = RoundedCornerShape(
                     topStart = 0.dp,
@@ -336,11 +337,14 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Yellow)){
-                Text("Hide Admin Actions",
+                colors = ButtonDefaults.buttonColors(StarsColors.Yellow)
+            ) {
+                Text(
+                    "Hide Admin Actions",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = StarsColors.White)
+                    color = StarsColors.White
+                )
             }
 
             Row() {
@@ -361,10 +365,12 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     ),
                     colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
                 ) {
-                    Text("Ban Owner",
+                    Text(
+                        "Ban Owner",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White)
+                        color = StarsColors.White
+                    )
                 }
 
                 Button(
@@ -382,10 +388,12 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
 
                 ) {
-                    Text("Remove Listing",
+                    Text(
+                        "Remove Listing",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White)
+                        color = StarsColors.White
+                    )
                 }
             }
         }

@@ -3,7 +3,6 @@
  */
 package com.example.stars
 
-import android.R.attr.textColor
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

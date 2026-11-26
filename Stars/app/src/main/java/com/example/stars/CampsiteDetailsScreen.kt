@@ -174,7 +174,7 @@ fun CampsiteDetailsScreen(
                         bottomEnd = 10.dp
                     )
                 )
-                .size(height = 500.dp, width = 310.dp),
+                .size(height = 500.dp, width = 310.dp), // TODO should prob do something about these hardcoded values since image carousel depends on it a bit
             topBar = {
                 val titleColor = RandomStarsColor.fromId(campsite.id)
                 Row(

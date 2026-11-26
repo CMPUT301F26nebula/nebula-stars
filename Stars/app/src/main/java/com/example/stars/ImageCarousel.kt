@@ -5,12 +5,19 @@ package com.example.stars
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,22 +29,17 @@ import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import kotlin.collections.emptyList
-import kotlin.emptyArray
 
 /**
  * Displays a horizontally scrollable gallery of images
@@ -69,8 +71,7 @@ fun ImageCarousel(
                 if (imageUri != null) {
                     updatedList.add(imageUri)
                 }
-            }
-            catch (e:Exception){
+            } catch (e: Exception) {
                 Log.e("Invalid Image", "ImageID Removed From Carousel: $imageId")
             }
         }
@@ -81,44 +82,47 @@ fun ImageCarousel(
 
         val carouselState = rememberCarouselState(itemCount = { imageUris.size })
 
-        Column(verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            HorizontalCenteredHeroCarousel(
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            HorizontalMultiBrowseCarousel(
                 state = carouselState,
-                //preferredItemWidth = 280.dp, // Sets target size for fully visible images
+                preferredItemWidth = 280.dp, // Sets target size for fully visible images
                 itemSpacing = 8.dp,
-                contentPadding = PaddingValues(horizontal = 16.dp),
+                //contentPadding = PaddingValues(horizontal = 16.dp),
                 modifier = modifier
                     .fillMaxWidth()
                     .height(220.dp)
             ) { pageIndex ->
-
-                // button disappears
                 AsyncImage(
                     model = imageUris[pageIndex],
                     contentDescription = "Carousel Image Item",
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Fit
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
-
-            }
-            if (editor) {
-                Button(
-                    onClick = { onDelete(imageIds[carouselState.currentItem]) },
-                    content = { Text("Delete Image",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium,
-                        color = StarsColors.White,)
-                    },
-                    modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete Image"),
-                    shape = RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomStart = 10.dp,
-                        bottomEnd = 10.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
-                )
+                if (editor) {
+                    Button(
+                        onClick = { onDelete(imageIds[carouselState.currentItem]) },
+                        content = {
+                            Text(
+                                "Delete Image",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = StarsColors.White,
+                            )
+                        },
+                        modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp)
+                            .testTag("Delete Image"),
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomStart = 10.dp,
+                            bottomEnd = 10.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                    )
+                }
             }
         }
     }
