@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import java.util.Calendar
 
 /**
  * A single calendar day that will change its background colour if there is a campsite reservation on that day
@@ -57,7 +58,7 @@ import androidx.navigation.NavController
 fun ReservationCalendarDay(
     day: CalendarDay,
     eventColors: Map<String, Color> = emptyMap(),
-    onClick: (List<Reservation>) -> Unit = {}
+    onClick: (CalendarDay) -> Unit = {}
 ) {
     var fg = StarsColors.White
     var circleColor = StarsColors.Transparent
@@ -89,7 +90,7 @@ fun ReservationCalendarDay(
             .background(Brush.verticalGradient(colorStops = colorStops))
             .clickable(onClick = {
                 if (day.events.isNotEmpty()) {
-                    onClick(day.events)
+                    onClick(day)
                 }
             }
         )
@@ -125,7 +126,7 @@ fun ReservationCalendarDay(
  */
 @OptIn(ExperimentalGridApi::class)
 @Composable
-fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reservation>) -> Unit = {}) {
+fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDay) -> Unit = {}) {
     val colors = listOf(StarsColors.Cyan, StarsColors.Magenta, StarsColors.Yellow)
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
@@ -144,13 +145,15 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
     var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
 
     // if reservations change a new calendarManager wont be created so we must update it if needed
-    calendarManager.updateReservations(reservations)
-    val refreshCalender = {
-        calendarDays = calendarManager.getMonthDisplayDays().iterator()
-        currentMonth = calendarManager.currentMonthName()
-        currentYear = calendarManager.currentYear()
+    LaunchedEffect(reservations, currentMonth) {
+        calendarManager.updateReservations(reservations)
+        val refreshCalender = {
+            calendarDays = calendarManager.getMonthDisplayDays().iterator()
+            currentMonth = calendarManager.currentMonthName()
+            currentYear = calendarManager.currentYear()
+        }
+        refreshCalender()
     }
-    refreshCalender()
 
     val changeMonthButtonModifier = Modifier
         .border(1.dp, StarsColors.White, shape = RoundedCornerShape(24.dp))
@@ -188,9 +191,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
             Button(
                 modifier = changeMonthButtonModifier,
                 onClick = {
-                    calendarManager.lastMonth()
-                    // force text to recompose as well
-                    refreshCalender()
+                    currentMonth = calendarManager.lastMonth()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
@@ -207,8 +208,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reser
             Button(
                 modifier = changeMonthButtonModifier,
                 onClick = {
-                    calendarManager.nextMonth()
-                    refreshCalender()
+                    currentMonth = calendarManager.nextMonth()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
@@ -394,7 +394,7 @@ fun ReservationCalendarScreen(
         // the thingy doesnt like to recompose properly after the reservations are found so loading screen it is :P
         if (calendarReady) {
             ReservationCalendar(userReservations) {
-                selectedReservations = it
+                selectedReservations = it.events
             }
         } else {
             LoadingText()

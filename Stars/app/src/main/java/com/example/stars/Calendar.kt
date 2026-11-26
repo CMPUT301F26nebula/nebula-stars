@@ -68,15 +68,17 @@ class CalendarManager(val reservations: List<Reservation>) {
     /**
      * Changes the current display month to the next month, wrapping the year if needed
      */
-    fun nextMonth() {
+    fun nextMonth(): String {
         current.add(Calendar.MONTH, 1)
+        return currentMonthName()
     }
 
     /**
      * Changes the current display month to the previous month, wrapping the year if needed
      */
-    fun lastMonth() {
+    fun lastMonth(): String {
         current.add(Calendar.MONTH, -1)
+        return currentMonthName()
     }
 
     /**
