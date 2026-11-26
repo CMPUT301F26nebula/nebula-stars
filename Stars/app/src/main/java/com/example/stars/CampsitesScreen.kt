@@ -40,11 +40,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 // cyan, magenta, yellow, from top to bottom
+/*
 val campsiteCardColors = listOf(
     StarsColors.Cyan,
     StarsColors.Magenta,
     StarsColors.Yellow
 )
+*/
 
 /**
  * Screen to browse all the campsites
@@ -119,8 +121,8 @@ fun CampsitesScreen(
                     itemsIndexed(results) { index, campsite ->
                         CampsiteRow(
                             campsite = campsite,
-                            color = campsiteCardColors[index % campsiteCardColors.size],
-                            onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
+                            color = RandomStarsColor.fromId(campsite.id),
+                            onClick = { navController.navigate("campsite/${Uri.encode(campsite.id)}") },
                             imageRepository = imageRepository
                         )
                         Spacer(modifier = Modifier.height(12.dp))

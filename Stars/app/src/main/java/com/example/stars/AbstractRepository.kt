@@ -55,6 +55,9 @@ abstract class AbstractRepository<T: UniqueIdentifier>(
      * @return the document cast to a [dataClass], or null if no such document exists
      */
     open suspend fun getWithId(id: String): T? {
+        if (id == "") {
+            return null
+        }
         return collection.document(id).get().await().toObject(dataClass)
     }
 

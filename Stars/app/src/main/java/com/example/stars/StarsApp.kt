@@ -5,8 +5,11 @@ package com.example.stars
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,11 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.savedstate.SavedState
 import com.google.firebase.firestore.ListenerRegistration
 
 object StarsColors {
@@ -36,6 +41,9 @@ object StarsColors {
     val Transparent = Color(0x00FFFFFF)
 }
 
+// premade instance for app consistency
+val RandomStarsColor = PseudoRandomColor()
+
 // This should be where the current User, and other data shared between screens is stored
 object Databases {
     lateinit var campsiteRepository: CampsiteRepository
@@ -45,6 +53,11 @@ object Databases {
     lateinit var notificationRepository: NotificationRepository
     lateinit var chatRepository: ChatRepository
     lateinit var lotteryRepository: LotteryRepository
+}
+
+object App {
+    lateinit var currentUser: UserProfile
+    lateinit var navController: ProvidableCompositionLocal<NavController>
 }
 
 /**
@@ -74,6 +87,10 @@ fun StarsApp(notifs: Boolean = false) {
     Databases.notificationRepository = notificationRepository
     Databases.chatRepository = chatRepository
     Databases.lotteryRepository = lotteryRepository
+
+    App.currentUser = currentUser
+    App.navController = compositionLocalOf { navController }
+    CompositionLocalProvider(App.navController provides navController) { }
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -148,6 +165,34 @@ fun StarsApp(notifs: Boolean = false) {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
+                composable(
+                    route = "messages/{chatId}",
+                    arguments = listOf(
+                        navArgument("chatId") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
+                    ChatScreen(
+                        navController,
+                        currentUser,
+                        chatId
+                    )
+                }
+                composable("admin messages") { MessagesScreen(navController, currentUser, true) }
+                composable(
+                    route = "admin messages/{chatId}",
+                    arguments = listOf(
+                        navArgument("chatId") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
+                    ChatScreen(
+                        navController,
+                        currentUser,
+                        chatId,
+                        true
+                    )
+                }
                 composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
                 composable("settings") {
                     SettingsScreen(

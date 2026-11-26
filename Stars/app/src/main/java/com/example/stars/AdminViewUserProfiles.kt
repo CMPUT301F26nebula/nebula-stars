@@ -1,6 +1,8 @@
 package com.example.stars
 
+import android.R.attr.fontWeight
 import android.net.Uri
+import android.system.Os.link
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,14 +38,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import coil3.compose.AsyncImage
 
 /**
  * A screen that only admins have access to from (currently) the home screen.
@@ -94,9 +98,12 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
  * TODO: expand cards to show more info
  */
 @Composable
-fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository){
+fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository) {
+    var pfpUri: Uri? by remember { mutableStateOf(null) }
 
-
+    LaunchedEffect(userProfile) {
+        pfpUri = Databases.imageRepository.getImageUri(userProfile.profilePic)?.toUri()
+    }
 
     // show actual buttons if true
     var confirmDeletion by remember { mutableStateOf(false) }
@@ -105,7 +112,6 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
     // used so that the card isn't shown after deletion since userRepository isn't updating
     // until screen change (I think)
     var deleted by remember { mutableStateOf(false) }
-
 
     // default permission level string since it is not a string in the class
     var permissionLevel by remember { mutableStateOf("Entrant") }
@@ -118,11 +124,10 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
 
     // if the user has not been deleted
     if (!deleted) {
-
         Card(
             modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 16.dp)
-                .clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
+                .fillMaxWidth().padding(horizontal = 16.dp),
+                //.clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
             colors = cardColors(StarsColors.White)
         ) {
 
@@ -132,12 +137,13 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                 Column() {
 
                     // Name
-                    Text(
-                        text = userProfile.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
+                    NameTag(
+                        name = userProfile.name,
+                        id = Uri.encode(userProfile.id),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
 
-                        )
+                    Spacer(Modifier.height(4.dp))
 
                     // permission level
                     Text(
@@ -146,6 +152,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                         fontWeight = FontWeight.Medium
                     )
 
+                    Spacer(Modifier.height(4.dp))
 
                     Text(
                         text = userProfile.email,
@@ -153,9 +160,10 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
+                    Spacer(Modifier.height(4.dp))
+
                     // used for phone number formating
                     val nanpVisualTransformation = NanpVisualTransformation()
-
 
                     // phone number
                     Text(
@@ -165,14 +173,10 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                     )
 
                 }
-
-                AsyncImage(
-                    model = userProfile.profilePic,
-                    contentDescription = "profile picture",
-                    modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
-                    contentScale = ContentScale.Crop,
-                    fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                    error = painterResource(R.drawable.default_pfp)
+                UserProfilePicture(
+                    pfpUri,
+                    100.dp,
+                    userProfile.name
                 )
             }
 
@@ -279,11 +283,8 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
                 Text("Cancel", textAlign = TextAlign.Center)
             }
-
         }
-
     }
-
 }
 
 
@@ -322,7 +323,8 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
 
         Column() {
 
-            Button(onClick = {showButtons = false},
+            Button(
+                onClick = { showButtons = false },
                 modifier = Modifier.testTag("Admin Actions").size(height = 40.dp, width = 310.dp),
                 shape = RoundedCornerShape(
                     topStart = 0.dp,
@@ -330,15 +332,17 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Yellow)){
-                Text("Hide Admin Actions",
+                colors = ButtonDefaults.buttonColors(StarsColors.Yellow)
+            ) {
+                Text(
+                    "Hide Admin Actions",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = StarsColors.White)
+                    color = StarsColors.White
+                )
             }
 
             Row() {
-
                 Button(
                     onClick = {
                         val user = runBlocking { userRepository.getWithId(campsite.id) }
@@ -356,15 +360,17 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     ),
                     colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
                 ) {
-                    Text("Ban Owner",
+                    Text(
+                        "Ban Owner",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White)
+                        color = StarsColors.White
+                    )
                 }
 
                 Button(
                     onClick = {
-                        runBlocking { campsiteRepository.removeCampsite(campsite.id) }
+                        runBlocking { campsiteRepository.removeWithId(campsite.id) }
                     },
                     modifier = Modifier.testTag("Remove Campsite")
                         .size(height = 40.dp, width = 155.dp),
@@ -377,12 +383,85 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
 
                 ) {
-                    Text("Remove Listing",
+                    Text(
+                        "Remove Listing",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White)
+                        color = StarsColors.White
+                    )
                 }
+            }
+        }
+    }
+}
 
+
+/**
+ * Admin button to delete a [Chat], only admins should see this
+ *
+ * @param action button label
+ * @param onConfirm callback for confirming the action
+ */
+@Composable
+fun AdminActionOnChat(action: String, onConfirm: () -> Unit) {
+    var confirm by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // show the delete button if not AlreadyPressed
+        if (!confirm) {
+            Button(
+                {
+                    confirm = true
+                },
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                modifier = Modifier.height(40.dp).weight(1f).testTag("get options")
+            ) {
+                Text(action, textAlign = TextAlign.Center)
+            }
+        }
+
+        // show the confirm and cancel buttons
+        if (confirm) {
+            Button(
+                onClick = {
+                    onConfirm()
+                    confirm = false
+                },
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                modifier = Modifier.height(40.dp).weight(1f).testTag("Confirm")
+            ) {
+                Text("Confirm", textAlign = TextAlign.Center)
+            }
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Button(
+                onClick = {
+                    confirm = false
+                },
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                modifier = Modifier.height(40.dp).weight(1f).testTag("Cancel")
+            ) {
+                Text("Cancel", textAlign = TextAlign.Center)
             }
         }
     }
