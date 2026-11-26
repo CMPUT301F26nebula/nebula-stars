@@ -1,6 +1,8 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,7 +51,7 @@ fun AdminViewNotifications(navController: NavController, notificationRepository:
 
             items(notifications) { notification ->
                 Spacer(modifier = Modifier.height(12.dp))
-                AdminNotificationRow(notification)
+                AdminNotificationRow(navController, notification)
             }
         }
     }
@@ -59,7 +61,7 @@ fun AdminViewNotifications(navController: NavController, notificationRepository:
  * these rows shows all the notifications that exist, their sender, recipient, content, and timestamp
  */
 @Composable
-fun AdminNotificationRow(notification: Notification) {
+fun AdminNotificationRow(navController: NavController, notification: Notification) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
     ) {
@@ -72,11 +74,22 @@ fun AdminNotificationRow(notification: Notification) {
             )
 
             // Recipient
+            NameTag(
+                label = "Recipient: ",
+                name = notification.userId,
+                id = Uri.encode(notification.userId),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
+            /*
             Text(
                 text = "Recipient: ${notification.userId}",
+                modifier = Modifier.clickable(onClick = { navController.navigate("user profile/${Uri.encode(notification.userId)}") }),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
                 )
+                */
 
             // Sender
             Text(

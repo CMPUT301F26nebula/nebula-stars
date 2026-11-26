@@ -40,27 +40,38 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 // cyan, magenta, yellow, from top to bottom
+/*
 val campsiteCardColors = listOf(
     StarsColors.Cyan,
     StarsColors.Magenta,
     StarsColors.Yellow
 )
+*/
 
 /**
  * Screen to browse all the campsites
+ *
+ * @param filter the filter currently applied to the list
+ * @param sort the sort currently applied to the list
+ * @param onFilterChange called with the new filter and sort when the user applies them
  */
 @Composable
 fun CampsitesScreen(
     navController: NavController,
     campsiteRepository: CampsiteRepository,
-    imageRepository: ImageRepository
+    imageRepository: ImageRepository,
+    filter: CampsiteFilter,
+    sort: CampsiteSort,
+    onFilterChange: (CampsiteFilter, CampsiteSort) -> Unit
 ) {
     var search by remember { mutableStateOf("") }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
+    var showFilter by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        campsites = campsiteRepository.getFilteredCampsites()
+        campsites = campsiteRepository.getAllCampsites()
     }
-    val results = searchCampsites(campsites, search)
+    val results = applySort(applyFilter(searchCampsites(campsites, search), filter), sort)
+    val filtersOn = filter.isActive || sort.field != null
 
     Column(
         modifier = Modifier
@@ -77,11 +88,9 @@ fun CampsitesScreen(
         ) {
             // Filter button
             Button(
-                onClick = {
-                    // for kaiwen todo : add filter
-                },
+                onClick = { showFilter = true },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = StarsColors.White,
+                    containerColor = if (filtersOn) StarsColors.Yellow else StarsColors.White,
                     contentColor = StarsColors.Purple
                 ),
                 contentPadding = PaddingValues(0.dp),
@@ -127,8 +136,8 @@ fun CampsitesScreen(
                     itemsIndexed(results) { index, campsite ->
                         CampsiteRow(
                             campsite = campsite,
-                            color = campsiteCardColors[index % campsiteCardColors.size],
-                            onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
+                            color = RandomStarsColor.fromId(campsite.id),
+                            onClick = { navController.navigate("campsite/${Uri.encode(campsite.id)}") },
                             imageRepository = imageRepository
                         )
                         Spacer(modifier = Modifier.height(12.dp))
@@ -177,6 +186,18 @@ fun CampsitesScreen(
                     .testTag("searchField")
             )
         }
+    }
+    // filter popup
+    if (showFilter) {
+        FilterDialog(
+            currentFilter = filter,
+            currentSort = sort,
+            onApply = { newFilter, newSort ->
+                onFilterChange(newFilter, newSort)
+                showFilter = false
+            },
+            onDismiss = { showFilter = false }
+        )
     }
 }
 
