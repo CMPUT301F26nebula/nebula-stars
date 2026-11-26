@@ -26,7 +26,7 @@ import com.google.firebase.firestore.ListenerRegistration
 object StarsColors {
     val Purple = Color(0xFF4B0082)
     val DullPurple = Color(0xFF800080)
-    val BrightPurple = Color(0xFF9400D3)
+    val BrightPurple = Color(0xFFB758E8)
     val Cyan = Color(0xFF008B8B)
     val Magenta = Color(0xFFFF1493)
     val Yellow = Color(0xFFEFC700)

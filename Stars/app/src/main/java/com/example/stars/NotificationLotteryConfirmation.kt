@@ -1,43 +1,43 @@
 package com.example.stars
 
-import android.icu.util.GregorianCalendar
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalGridApi
-import androidx.compose.foundation.layout.Grid
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import android.icu.util.Calendar
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Prompts the user with a calendar, campsite selector (if applicable), and accept/decline
@@ -66,15 +66,19 @@ fun NotificationLotteryConfirmation(
     lotteryRepository: LotteryRepository,
     reservationRepository: ReservationRepository,
     campsiteRepository: CampsiteRepository) {
+
     var decline by remember { mutableStateOf(false) }
     var accept by remember { mutableStateOf(false) }
 
-    var startDate by remember { mutableStateOf(GregorianCalendar.getInstance()) }
-    var endDate by remember { mutableStateOf(GregorianCalendar.getInstance()) }
+    //var startDate by remember { mutableStateOf(GregorianCalendar.getInstance()) }
+    var startDate by remember { mutableLongStateOf(0L) }
+    //var endDate by remember { mutableStateOf(GregorianCalendar.getInstance()) }
+    var endDate by remember { mutableLongStateOf(0L) }
 
     var lottery by remember { mutableStateOf(Lottery()) }
     val campsites = remember { mutableListOf<Campsite>() }
-    var selectedCampsiteIndex by remember { mutableIntStateOf(0) }
+    var selectedCampsiteIndex by remember { mutableIntStateOf(-1) }
+
     LaunchedEffect(Unit) {
         lottery = lotteryRepository.getWithId(lotteryId) ?: Lottery()
 
@@ -82,10 +86,28 @@ fun NotificationLotteryConfirmation(
             campsiteRepository.getWithId(it)?.let { element -> campsites.add(element) }
         }
 
-        startDate.timeInMillis = Long.MAX_VALUE
-        endDate.timeInMillis = 0
+        selectedCampsiteIndex = 0
+        Log.d("Lottery Confirmation Test", "IDs found: ${lottery.campsiteIDs.size}")
+        Log.d("Lottery Confirmation Test", "Campsites found: ${campsites.size}")
+        //startDate.timeInMillis = Long.MAX_VALUE
+        //endDate.timeInMillis = 0
     }
 
+    val dateRangePickerState = rememberDateRangePickerState(selectableDates = object : SelectableDates{
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            //Seems to work? idk if there's time conversion weirdness and I haven't noticed
+            return utcTimeMillis < lottery.timePeriod.end && utcTimeMillis > lottery.timePeriod.start
+        }
+    })
+
+    LaunchedEffect(
+        dateRangePickerState.selectedStartDateMillis,
+        dateRangePickerState.selectedEndDateMillis
+    ) {
+        Log.d("Lottery Confirmation Test", "State Changed")
+        startDate = dateRangePickerState.selectedStartDateMillis ?: 0L
+        endDate = dateRangePickerState.selectedEndDateMillis ?: 0L
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -97,7 +119,69 @@ fun NotificationLotteryConfirmation(
         if (lottery.pendingWinnerIDs.contains(currentUser.id)) {
             // Campsite Selector
             // TODO
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    modifier = Modifier.border(
+                        1.dp,
+                        StarsColors.White,
+                        RoundedCornerShape(24.dp)
+                    ),
+                    onClick = {
+                        selectedCampsiteIndex -= 1
+                        if (selectedCampsiteIndex < 0) {
+                            selectedCampsiteIndex = campsites.size-1
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = StarsColors.Transparent,
+                        contentColor = StarsColors.White
+                    )
+                ) {
+                    Text(
+                        text = "<",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
+                Text(
+                    campsites.getOrNull(selectedCampsiteIndex)?.title ?: "No Campsites Found",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
+                    color = StarsColors.White
+                )
+
+                Button(
+                    modifier = Modifier.border(
+                        1.dp,
+                        StarsColors.White,
+                        RoundedCornerShape(24.dp)
+                    ),
+                    onClick = {
+                        selectedCampsiteIndex += 1
+                        selectedCampsiteIndex %= campsites.size
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = StarsColors.Transparent,
+                        contentColor = StarsColors.White
+                    )
+                ) {
+                    Text(
+                        text = ">",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            /*
             // Calendar
             // TODO: make calender open at the lottery date, prevent scrolling past month of lottery
             ReservationCalendar(listOf(
@@ -125,6 +209,65 @@ fun NotificationLotteryConfirmation(
                     }
                 }
             }
+            */
+
+            Box(Modifier
+                .fillMaxSize()
+                .padding(30.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .background(StarsColors.White)
+                .weight(1.0f)
+            ) {
+                DateRangePicker(
+                    state = dateRangePickerState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(5.dp)
+                        .clip(RoundedCornerShape(5.dp)),
+                    dateFormatter = DatePickerDefaults.dateFormatter(selectedDateSkeleton = "MMMd"),
+                    colors = DatePickerDefaults.colors(
+                        containerColor = StarsColors.Purple,
+                        titleContentColor = StarsColors.White,
+                        headlineContentColor = StarsColors.White,
+                        weekdayContentColor = StarsColors.White,
+                        subheadContentColor = StarsColors.White,
+                        navigationContentColor = StarsColors.White,
+                        dayContentColor = StarsColors.BrightPurple,
+                        disabledDayContentColor = StarsColors.DullPurple,
+                        selectedDayContentColor = StarsColors.White,
+                        selectedDayContainerColor = StarsColors.Cyan,
+                        todayContentColor = StarsColors.BrightPurple,
+                        todayDateBorderColor = StarsColors.Yellow,
+                        dayInSelectionRangeContainerColor = StarsColors.Transparent,
+                        dayInSelectionRangeContentColor = StarsColors.Cyan,
+                        dividerColor = StarsColors.DullPurple,
+                        dateTextFieldColors = TextFieldDefaults.colors(
+                            focusedTextColor = StarsColors.White,
+                            unfocusedTextColor = StarsColors.White,
+                            errorTextColor = StarsColors.White,
+                            focusedContainerColor = StarsColors.Purple,
+                            unfocusedContainerColor = StarsColors.Purple,
+                            errorContainerColor = StarsColors.Purple,
+                            // A label is the text above it when something is typed
+                            focusedLabelColor = StarsColors.White,
+                            unfocusedLabelColor = StarsColors.BrightPurple,
+                            // An indicator is the outline color
+                            focusedIndicatorColor = StarsColors.White,
+                            unfocusedIndicatorColor = StarsColors.BrightPurple,
+                            cursorColor = StarsColors.White
+                        )
+                    ),
+                    title = { Text(
+                        "Select Date",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        textAlign = TextAlign.Center
+                    ) }
+                )
+            }
 
             // Accept/Decline prompt
             Row(
@@ -136,7 +279,8 @@ fun NotificationLotteryConfirmation(
                         onClick = {
                             accept = true
                         },
-                        enabled = (startDate.timeInMillis > 0 && endDate.timeInMillis > 0),
+                        //enabled = (startDate.timeInMillis > 0 && endDate.timeInMillis > 0),
+                        enabled = (startDate > 0 && endDate > 0),
                         shape = RoundedCornerShape(
                             15.dp
                         ),
@@ -188,9 +332,11 @@ fun NotificationLotteryConfirmation(
                                         Reservation.uniqueIdFrom(
                                             currentUser.id,
                                             campsites[selectedCampsiteIndex].id,
-                                            EpochRange(startDate.timeInMillis, endDate.timeInMillis)
+                                            //EpochRange(startDate.timeInMillis, endDate.timeInMillis)
+                                            EpochRange(startDate, endDate)
                                         ),
-                                        EpochRange(startDate.timeInMillis, endDate.timeInMillis),
+                                        //EpochRange(startDate.timeInMillis, endDate.timeInMillis),
+                                        EpochRange(startDate, endDate),
                                         ReservationStatus.INVITED,
                                         currentUser.id,
                                         campsites[selectedCampsiteIndex].id
