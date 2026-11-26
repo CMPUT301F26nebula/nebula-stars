@@ -40,7 +40,7 @@ function getUniqueRandom(arr, n) {
 }
 
 // Lottery picker
-exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
+exports.LotteryDraw = onSchedule("* * * * *", async (event) => {
   const lotteriesRef = db.collection("lotteries");
   const snapshot = await lotteriesRef.where("deadline", "<", Date.now()).get();
 
@@ -73,7 +73,7 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
           userId: entrantID,
           read: false,
           content: notifContent,
-          navDestination: "", // TODO: Update this to take the user to the booking screen for the lottery if they won
+          navDestination: `lottery confirm/${lotteryDoc.get("id")}`, 
           sender: "SYSTEM",
           timestamp: Date.now()
         };
