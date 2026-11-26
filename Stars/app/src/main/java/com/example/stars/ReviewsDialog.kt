@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -252,6 +253,8 @@ private fun ReviewItem(
    onRemoveRating: () -> Unit = {},
    onRemoveComment: () -> Unit = {}
 ) {
+    val formatter = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -273,7 +276,7 @@ private fun ReviewItem(
 
         if (rating.stayRange.end != 0L) {
             Text(
-                "Stayed ${formatStayRange(rating.stayRange)}",
+                "Stayed ${formatter.format(Date(rating.stayRange.start))} - ${formatter.format(Date(rating.stayRange.end))}",
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -310,9 +313,3 @@ private fun ReviewItem(
     }
 }
 
-
-//helper func for making a stay range with epoch range
-private fun formatStayRange(range: EpochRange): String {
-    val format = SimpleDateFormat("MMM dd, yyyy", Locale.CANADA)
-    return "${format.format(Date(range.start))} - ${format.format(Date(range.end))}"
-}

@@ -5,8 +5,11 @@ package com.example.stars
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,24 +19,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.savedstate.SavedState
 import com.google.firebase.firestore.ListenerRegistration
 
 object StarsColors {
     val Purple = Color(0xFF4B0082)
     val DullPurple = Color(0xFF800080)
-    val BrightPurple = Color(0xFF9400D3)
+    val BrightPurple = Color(0xFFB758E8)
     val Cyan = Color(0xFF008B8B)
     val Magenta = Color(0xFFFF1493)
     val Yellow = Color(0xFFEFC700)
     val White = Color(0xFFFFFFFF)
+    val Grey = Color(0xBBBBBBFF)
     val Black = Color(0xFF000000)
     val Transparent = Color(0x00FFFFFF)
 }
+
+// premade instance for app consistency
+val RandomStarsColor = PseudoRandomColor()
 
 // This should be where the current User, and other data shared between screens is stored
 object Databases {
@@ -43,6 +52,12 @@ object Databases {
     lateinit var reservationRepository: ReservationRepository
     lateinit var notificationRepository: NotificationRepository
     lateinit var chatRepository: ChatRepository
+    lateinit var lotteryRepository: LotteryRepository
+}
+
+object App {
+    lateinit var currentUser: UserProfile
+    lateinit var navController: ProvidableCompositionLocal<NavController>
 }
 
 /**
@@ -62,6 +77,8 @@ fun StarsApp(notifs: Boolean = false) {
     val chatRepository = remember { ChatRepository(scope) }
     var currentUser by remember { mutableStateOf(UserProfile()) }
     var startAt by remember { mutableStateOf("home") }
+    var campsiteFilter by remember { mutableStateOf(CampsiteFilter()) }
+    var campsiteSort by remember { mutableStateOf(CampsiteSort()) }
 
     Databases.userRepository = userRepository
     Databases.campsiteRepository = campsiteRepository
@@ -69,6 +86,11 @@ fun StarsApp(notifs: Boolean = false) {
     Databases.imageRepository = imageRepository
     Databases.notificationRepository = notificationRepository
     Databases.chatRepository = chatRepository
+    Databases.lotteryRepository = lotteryRepository
+
+    App.currentUser = currentUser
+    App.navController = compositionLocalOf { navController }
+    CompositionLocalProvider(App.navController provides navController) { }
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -125,13 +147,53 @@ fun StarsApp(notifs: Boolean = false) {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
                 composable("home") { HomeScreen(navController, currentUser) }
-                composable("campsites") { CampsitesScreen(navController, campsiteRepository, imageRepository) }
+                composable("campsites") {
+                    CampsitesScreen(
+                        navController,
+                        campsiteRepository,
+                        imageRepository,
+                        filter = campsiteFilter,
+                        sort = campsiteSort,
+                        onFilterChange = { newFilter, newSort ->
+                            campsiteFilter = newFilter
+                            campsiteSort = newSort
+                        }
+                    )
+                }
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
-                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
+                composable(
+                    route = "messages/{chatId}",
+                    arguments = listOf(
+                        navArgument("chatId") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
+                    ChatScreen(
+                        navController,
+                        currentUser,
+                        chatId
+                    )
+                }
+                composable("admin messages") { MessagesScreen(navController, currentUser, true) }
+                composable(
+                    route = "admin messages/{chatId}",
+                    arguments = listOf(
+                        navArgument("chatId") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val chatId = backStackEntry.arguments?.getString("chatId").orEmpty()
+                    ChatScreen(
+                        navController,
+                        currentUser,
+                        chatId,
+                        true
+                    )
+                }
+                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
                 composable("settings") {
                     SettingsScreen(
                         navController,
@@ -325,8 +387,27 @@ fun StarsApp(notifs: Boolean = false) {
                         userRepository = userRepository
                     )
                 }
+
+                composable(
+                    route = "lottery confirm/{lotteryID}",
+                    arguments = listOf(
+                        navArgument("lotteryID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val lotteryId = backStackEntry.arguments
+                        ?.getString("lotteryID").orEmpty()
+                    NotificationLotteryConfirmation(
+                        navController = navController,
+                        currentUser = currentUser,
+                        lotteryId = lotteryId,
+                        lotteryRepository = lotteryRepository,
+                        reservationRepository = reservationRepository,
+                        campsiteRepository = campsiteRepository
+                    )
+                }
             }
         }
     }
-
 }
