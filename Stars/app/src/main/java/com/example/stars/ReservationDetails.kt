@@ -1,16 +1,25 @@
 package com.example.stars
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,8 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -35,44 +47,79 @@ import java.util.Date
 @Composable
 fun ReservationDetails(
     modifier: Modifier = Modifier,
+    navController: NavController,
     reservation: Reservation,
     campsite: Campsite,
-    campOwner: UserProfile
+    campOwner: UserProfile,
+    onClickOtherPerson: (String, String) -> Unit,
+    otherPersonText: (String, String) -> String
 ) {
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
     
     Column(
-        modifier = modifier
-            .padding(12.dp)
-            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center
     ) {
         // TODO these should bring u to their respective details pages
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+        Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Purple).padding(12.dp)
         ) {
-            Text("Campsite:")
-            Spacer(Modifier.width(8.dp))
-            TextButton(
-                onClick = {}
-            ) {
-                Text(text = campsite.title)
-            }
+            Text("RESERVATION",
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 24.sp,
+                    stepSize = 1.sp
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                color = StarsColors.White,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+
+        Button(
+            onClick = {navController.navigate("campsite/${campsite.id}")},
+            colors = ButtonDefaults.buttonColors(StarsColors.Transparent),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(0),
+            contentPadding = PaddingValues(12.dp)
         ) {
-            Text("Campsite Owner:")
-            Spacer(Modifier.width(8.dp))
-            TextButton(
-                onClick = {}
-            ) {
-                Text(campOwner.name)
-            }
+            Text(text = "Campsite: " + campsite.title,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 16.sp,
+                    stepSize = 1.sp
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                color = StarsColors.Black
+            )
         }
+
+        Button(
+            onClick = {onClickOtherPerson(reservation.entrantId, campOwner.id)},
+            colors = ButtonDefaults.buttonColors(StarsColors.Transparent),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(0),
+            contentPadding = PaddingValues(12.dp)
+        ) {
+            Text(text = otherPersonText(reservation.entrantId, campOwner.name),
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 16.sp,
+                    stepSize = 1.sp
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                color = StarsColors.Black
+            )
+        }
+
         Text("Status: ${reservation.status}")
         Text(
-            "Date: ${
+            "Dates: ${
                 simpleDateFormat.format(Date(reservation.timeRange.start))
             } - ${
                 simpleDateFormat.format(Date(reservation.timeRange.end))
@@ -85,7 +132,12 @@ fun ReservationDetails(
  * Modal dialogue showing the details of a reservation
  */
 @Composable
-fun ReservationDetailsModal(reservation: Reservation, onClose: () -> Unit) {
+fun ReservationDetailsModal(navController: NavController,
+                            reservation: Reservation,
+                            onClose: () -> Unit,
+                            onClickOtherPerson: (String, String) -> Unit,
+                            otherPersonText: (String, String) -> String
+) {
     var campsite: Campsite? by remember { mutableStateOf(null) }
     var campOwner: UserProfile? by remember { mutableStateOf(null) }
     var confirmLeaveDialogState by remember { mutableStateOf(false) }
@@ -124,55 +176,45 @@ fun ReservationDetailsModal(reservation: Reservation, onClose: () -> Unit) {
     Dialog(
         onDismissRequest = onClose
     ) {
-        Scaffold(
-            bottomBar = {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Spacer(Modifier.weight(1.0f))
-                    FilledTonalButton(
-                        onClick = {
-                            onClose()
-                        }
-                    ) {
-                        Text("Done")
-                    }
-                }
-            },
-            topBar = {
-                Box(
-                    modifier = Modifier
-                        .padding(12.dp, 6.dp)
-                        .fillMaxWidth()
-                ) {
-                    if (campsite != null && campOwner != null) {
-                        FilledTonalButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                confirmLeaveDialogState = true
-                            }
-                        ) {
-                            Text(
-                                text = "Leave Reservation",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }
-        ) { padding ->
+        Card(colors  = CardDefaults.cardColors(
+            containerColor = StarsColors.White
+        ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
             if (campsite != null && campOwner != null) {
                 ReservationDetails(
-                    modifier = Modifier.padding(padding),
+                    navController = navController,
                     reservation = reservation,
                     campsite = campsite!!,
-                    campOwner = campOwner!!
+                    campOwner = campOwner!!,
+                    onClickOtherPerson = onClickOtherPerson,
+                    otherPersonText = otherPersonText
+
                 )
             } else {
                 LoadingText()
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(12.dp, 6.dp)
+                    .fillMaxWidth()
+            ) {
+                if (campsite != null && campOwner != null) {
+                    FilledTonalButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            confirmLeaveDialogState = true
+                        }
+                    ) {
+                        Text(
+                            text = "Leave Reservation",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }

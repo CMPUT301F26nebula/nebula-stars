@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
@@ -82,13 +85,27 @@ fun CampsiteRow(
                     Text(
                         text = campsite.title,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1, autoSize = TextAutoSize.StepBased(
+                            minFontSize = 1.sp,
+                            maxFontSize = 25.sp,
+                            stepSize = 1.sp
+                        ),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Start
                     )
                     // Price
                     Text(
                         text = "$${campsite.price}",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1, autoSize = TextAutoSize.StepBased(
+                            minFontSize = 1.sp,
+                            maxFontSize = 20.sp,
+                            stepSize = 1.sp
+                        ),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End
                     )
                 }
                 // Rating

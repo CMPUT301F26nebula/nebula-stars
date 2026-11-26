@@ -1,14 +1,24 @@
 package com.example.stars
 
+import android.R
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -47,30 +59,50 @@ fun ReservationCard(
             .fillMaxWidth(),
         onClick = {
             onClick(reservation)
-        }
+        },
+        shape = RoundedCornerShape(
+            10.dp
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = campsite.title,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 24.sp,
+                    stepSize = 1.sp
+                ),
+                modifier = Modifier.weight(0.7f).padding(4.dp)
             )
-            Spacer(Modifier.weight(1.0f))
+
             Text(
-                text = "${reservation.status}"
+                text = "${reservation.status}",
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 20.sp,
+                    stepSize = 1.sp
+                ),
+                modifier = Modifier.weight(0.3f).padding(4.dp),
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
         Text(
-            "Date: ${
+            "Dates: ${
                 simpleDateFormat.format(Date(reservation.timeRange.start))
             } - ${
                 simpleDateFormat.format(Date(reservation.timeRange.end))
-            }"
+            }",
+            modifier = Modifier.padding(4.dp),
+            style = MaterialTheme.typography.bodyMedium,
+
         )
     }
 }
@@ -90,7 +122,7 @@ fun ReservationList(
     onClick: (Reservation) -> Unit = {}
 ) {
     LazyColumn(
-        modifier = modifier
+        modifier = modifier.fillMaxWidth().padding(4.dp)
     ) {
         items(reservations) { res ->
             if (res.id in campsites) {
@@ -128,34 +160,34 @@ fun ReservationListModal(
     }
 
     Dialog(
-        onDismissRequest = onClose
+        onDismissRequest = onClose,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Scaffold(
-            bottomBar = {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Spacer(Modifier.weight(1.0f))
-                    FilledTonalButton(
-                        onClick = onClose
-                    ) {
-                        Text("Back")
-                    }
+        Card(colors  = CardDefaults.cardColors(
+                            containerColor = StarsColors.White
+                        ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp))
+        {
+            Column(modifier = Modifier.fillMaxWidth()) {
+
+                Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Purple).padding(12.dp),
+                    ){
+                    Text("CAMPSITES", style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium,
+                        color = StarsColors.White,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.fillMaxWidth())
                 }
-            }
-        ) { padding ->
-            if (listReady) {
-                ReservationList(
-                    modifier = Modifier.padding(padding),
-                    reservations = reservations,
-                    campsites = campsites,
-                    onClick = onClick
-                )
-            } else {
-                LoadingText()
+
+                if (listReady) {
+                    ReservationList(
+                        reservations = reservations,
+                        campsites = campsites,
+                        onClick = onClick
+                    )
+                }
             }
         }
     }

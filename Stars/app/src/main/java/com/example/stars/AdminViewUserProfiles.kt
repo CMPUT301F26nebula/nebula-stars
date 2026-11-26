@@ -1,6 +1,7 @@
 package com.example.stars
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,10 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,7 +41,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import kotlinx.coroutines.coroutineScope
@@ -50,7 +55,7 @@ import kotlinx.coroutines.runBlocking
  * Shows a list of all users
  */
 @Composable
-fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository, currentUser: UserProfile){
+fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, imageRepository: ImageRepository, currentUser: UserProfile){
 
     var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
 
@@ -81,7 +86,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
                 // so that you can't ban or delete yourself from here
                 if (user != currentUser) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    AdminUserRow(navController, user, userRepository)
+                    AdminUserRow(navController, user, userRepository, imageRepository)
                 }
             }
         }
@@ -91,11 +96,22 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
 /**
  * this screen shows all the users that exist, their name, email, phone, and permission level,
  * and offers ban owner and delete user options
- * TODO: expand cards to show more info
  */
 @Composable
-fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository){
+fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository, imageRepository: ImageRepository){
 
+
+
+    var image by remember {mutableStateOf<String?>(null)}
+    LaunchedEffect(Unit) {
+
+        if (userProfile.profilePic != "") {
+            image = imageRepository.getImageUri(
+                userProfile.profilePic
+            )
+        }
+        Log.d("Admin User Row","Image ID: "+ image)
+    }
 
 
     // show actual buttons if true
@@ -167,7 +183,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                 }
 
                 AsyncImage(
-                    model = userProfile.profilePic,
+                    model = image,
                     contentDescription = "profile picture",
                     modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
                     contentScale = ContentScale.Crop,
@@ -197,7 +213,8 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                                 deleted = true
                             }
                         },
-                        onCancel = { confirmDeletion = false }
+                        onCancel = { confirmDeletion = false },
+                        Modifier.weight(1f)
                     )
                 }
 
@@ -219,7 +236,8 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                             confirmDeletion = false
                             deleted = true
                         },
-                        onCancel = { confirmBan = false }
+                        onCancel = { confirmBan = false },
+                        Modifier.weight(1f)
                     )
                 }
             }
@@ -232,7 +250,8 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
  * only admins should see this
  */
 @Composable
-fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, onConfirm: () -> Unit, onCancel: () -> Unit){
+fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, onConfirm: () -> Unit, onCancel: () -> Unit, modifier: Modifier){
+
 
     // show the delete button if not AlreadyPressed
     if (!confirm) {
@@ -245,14 +264,21 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 bottomEnd = 5.dp
             ),
             colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
-            modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("get options")) {
-            Text(action, textAlign = TextAlign.Center)
+            modifier = modifier) {
+            Text(action, textAlign = TextAlign.Center, maxLines = 1, autoSize = TextAutoSize.StepBased(
+                minFontSize = 1.sp,
+                maxFontSize = 30.sp,
+                stepSize = 1.sp
+            ),
+                color = StarsColors.White)
         }
     }
 
     // show the confirm and cancel buttons
     if (confirm) {
-        Row() {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally
+            ), verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()) {
 
             Button(onConfirm,
                 shape = RoundedCornerShape(
@@ -262,8 +288,13 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomEnd = 5.dp
                 ),
                 colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
-                Text("Confirm",textAlign = TextAlign.Center)
+                modifier = Modifier.testTag("Confirm").weight(1f)) {
+                Text("Confirm",textAlign = TextAlign.Center, maxLines = 1, autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 50.sp,
+                    stepSize = 1.sp
+                ),
+                    color = StarsColors.White)
             }
 
             Spacer(modifier = Modifier.size(10.dp))
@@ -276,8 +307,13 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomEnd = 5.dp
                 ),
                 colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
-                Text("Cancel", textAlign = TextAlign.Center)
+                modifier = Modifier.testTag("Cancel").weight(1f)) {
+                Text("Cancel", textAlign = TextAlign.Center, maxLines = 1, autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 50.sp,
+                    stepSize = 1.sp
+                ),
+                    color = StarsColors.White)
             }
 
         }

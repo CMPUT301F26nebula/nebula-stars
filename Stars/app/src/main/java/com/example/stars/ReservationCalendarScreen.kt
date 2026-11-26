@@ -355,10 +355,13 @@ fun ReservationCalendarScreen(
     // reservation details
     if (selectedReservation != null) {
         ReservationDetailsModal(
+            navController,
             selectedReservation!!,
             onClose = {
                 selectedReservation = null
-            }
+            },
+            onClickOtherPerson = {user, owner -> navController.navigate("user profile/${owner}")},
+            otherPersonText = {user, owner -> "Campsite Owner: $owner"},
         )
     }
 

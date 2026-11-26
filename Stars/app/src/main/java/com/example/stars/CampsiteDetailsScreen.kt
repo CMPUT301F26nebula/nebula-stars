@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import coil.compose.AsyncImage
@@ -230,7 +232,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                         modifier = Modifier.clickable(onClick = { navController.navigate("user profile/${Uri.encode(campsite.ownerId)}") }),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
 
                     //reviews section (clickable and brings you to review page)
@@ -239,7 +241,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                     ) {
                         Text(
                             "Rate: ",
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         )
 
                         StarRatingDisplay(

@@ -1,6 +1,7 @@
 package com.example.stars
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,10 +34,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -56,10 +62,17 @@ fun UserProfileScreen(
     var confirmBan by remember { mutableStateOf(false) }
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var ownedCampsites by remember { mutableStateOf<List<Campsite>>(emptyList<Campsite>()) }
+    var image by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(true) {
         userProfile = userRepository.getWithId(userID)
         ownedCampsites = campsiteRepository.getWithUserId(userID)
+
+        val tempUser = userProfile
+        if (tempUser?.profilePic != "" && tempUser != null){
+            image = imageRepository.getImageUri(tempUser.profilePic)
+        }
+        Log.d("User Profile Screen","Image ID: "+ image)
     }
 
     Column(modifier = Modifier.fillMaxSize()){
@@ -68,8 +81,7 @@ fun UserProfileScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .padding(60.dp)
+                .padding(20.dp)
                 .clip(
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
@@ -97,8 +109,10 @@ fun UserProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
+
+
                             AsyncImage(
-                                model = userProfile!!.profilePic,
+                                model = image,
                                 contentDescription = "profile picture",
                                 modifier = Modifier
                                     .clip(CircleShape)
@@ -182,27 +196,38 @@ fun UserProfileScreen(
                                 )
                             } else {
                                 // List of campsites
-                                LazyColumn (modifier = Modifier
-                                    .height(290.dp)
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .background(StarsColors.Purple)
+                                LazyColumn (modifier = Modifier.clip(RoundedCornerShape(5.dp)).padding(12.dp)
                                 ) {
                                     itemsIndexed(ownedCampsites) { index, campsite ->
-                                        CampsiteRow(
-                                            campsite = campsite,
-                                            color = campsiteCardColors[index % campsiteCardColors.size],
-                                            onClick = {
-                                                navController.navigate(
-                                                    "campsite/${
+                                        Button(onClick = {
+                                                navController.navigate("campsite/${
                                                         Uri.encode(
                                                             campsite.id
                                                         )
                                                     }"
                                                 )
                                             },
-                                            imageRepository = imageRepository
-                                        )
-                                        Spacer(modifier = Modifier.height(12.dp))
+                                            shape = RoundedCornerShape(
+                                                topStart = 5.dp,
+                                                topEnd = 5.dp,
+                                                bottomStart = 5.dp,
+                                                bottomEnd = 5.dp
+                                            ),
+                                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ){
+                                            Text(campsite.title,
+                                                modifier = Modifier.fillMaxWidth(),
+                                                textAlign = TextAlign.Start,
+                                                maxLines = 1, autoSize = TextAutoSize.StepBased(
+                                                    minFontSize = 1.sp,
+                                                    maxFontSize = 20.sp,
+                                                    stepSize = 1.sp
+                                                ),
+                                                color = StarsColors.White
+                                            )
+                                        }
+
                                     }
                                 }
                             }
@@ -211,8 +236,7 @@ fun UserProfileScreen(
 
                     if (currentUser.permission == UserPermission.ADMIN) {
                         Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
                         ) {
 
                             // if not trying to ban user, show the delete button
@@ -231,13 +255,9 @@ fun UserProfileScreen(
                                             navController.popBackStack()
                                         }
                                     },
-                                    onCancel = { confirmDeletion = false }
+                                    onCancel = { confirmDeletion = false },
+                                    Modifier.weight(1f)
                                 )
-                            }
-
-                            // if neither button is expanded put a space between them
-                            if (!confirmBan && !confirmDeletion) {
-                                Spacer(modifier = Modifier.size(10.dp))
                             }
 
                             // if not trying to delete userProfile show the ban button
@@ -255,7 +275,8 @@ fun UserProfileScreen(
                                         confirmDeletion = false
                                         navController.popBackStack()
                                     },
-                                    onCancel = { confirmBan = false }
+                                    onCancel = { confirmBan = false },
+                                    Modifier.weight(1f)
                                 )
                             }
                         }
