@@ -26,11 +26,12 @@ import com.google.firebase.firestore.ListenerRegistration
 object StarsColors {
     val Purple = Color(0xFF4B0082)
     val DullPurple = Color(0xFF800080)
-    val BrightPurple = Color(0xFF9400D3)
+    val BrightPurple = Color(0xFFB758E8)
     val Cyan = Color(0xFF008B8B)
     val Magenta = Color(0xFFFF1493)
     val Yellow = Color(0xFFEFC700)
     val White = Color(0xFFFFFFFF)
+    val Grey = Color(0xBBBBBBFF)
     val Black = Color(0xFF000000)
     val Transparent = Color(0x00FFFFFF)
 }
@@ -43,6 +44,7 @@ object Databases {
     lateinit var reservationRepository: ReservationRepository
     lateinit var notificationRepository: NotificationRepository
     lateinit var chatRepository: ChatRepository
+    lateinit var lotteryRepository: LotteryRepository
 }
 
 /**
@@ -71,6 +73,7 @@ fun StarsApp(notifs: Boolean = false) {
     Databases.imageRepository = imageRepository
     Databases.notificationRepository = notificationRepository
     Databases.chatRepository = chatRepository
+    Databases.lotteryRepository = lotteryRepository
 
     val context = LocalContext.current
     LaunchedEffect(Unit) {
@@ -145,7 +148,7 @@ fun StarsApp(notifs: Boolean = false) {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
-                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository) }
+                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
                 composable("settings") {
                     SettingsScreen(
                         navController,
@@ -339,8 +342,27 @@ fun StarsApp(notifs: Boolean = false) {
                         userRepository = userRepository
                     )
                 }
+
+                composable(
+                    route = "lottery confirm/{lotteryID}",
+                    arguments = listOf(
+                        navArgument("lotteryID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val lotteryId = backStackEntry.arguments
+                        ?.getString("lotteryID").orEmpty()
+                    NotificationLotteryConfirmation(
+                        navController = navController,
+                        currentUser = currentUser,
+                        lotteryId = lotteryId,
+                        lotteryRepository = lotteryRepository,
+                        reservationRepository = reservationRepository,
+                        campsiteRepository = campsiteRepository
+                    )
+                }
             }
         }
     }
-
 }
