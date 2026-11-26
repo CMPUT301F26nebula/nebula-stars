@@ -66,7 +66,7 @@ fun ImageCarousel(
             state = carouselState,
             preferredItemWidth = 280.dp, // Sets target size for fully visible images
             itemSpacing = 8.dp,
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            //contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = modifier
                 .fillMaxWidth()
                 .height(220.dp)

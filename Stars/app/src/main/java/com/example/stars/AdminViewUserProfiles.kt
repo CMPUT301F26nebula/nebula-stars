@@ -1,5 +1,6 @@
 package com.example.stars
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import kotlinx.coroutines.runBlocking
 import coil3.compose.AsyncImage
@@ -74,6 +77,11 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
  */
 @Composable
 fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository) {
+    var pfpUri: Uri? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(userProfile) {
+        pfpUri = Databases.imageRepository.getImageUri(userProfile.profilePic)?.toUri()
+    }
 
     // show actual buttons if true
     var confirmDeletion by remember { mutableStateOf(false) }
@@ -114,7 +122,15 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                         fontWeight = FontWeight.Bold,
                     )
                     */
-                    NameTag(userProfile)
+                    NameTag(userProfile) {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(Modifier.height(4.dp))
 
                     // permission level
                     Text(
@@ -123,6 +139,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                         fontWeight = FontWeight.Medium
                     )
 
+                    Spacer(Modifier.height(4.dp))
 
                     Text(
                         text = userProfile.email,
@@ -130,9 +147,10 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
+                    Spacer(Modifier.height(4.dp))
+
                     // used for phone number formating
                     val nanpVisualTransformation = NanpVisualTransformation()
-
 
                     // phone number
                     Text(
@@ -144,7 +162,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                 }
 
                 AsyncImage(
-                    model = userProfile.profilePic,
+                    model = pfpUri,
                     contentDescription = "profile picture",
                     modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
                     contentScale = ContentScale.Crop,
