@@ -115,6 +115,7 @@ fun StarsApp(notifs: Boolean = false) {
             NavHost(navController = navController, startDestination = startAt) {
                 composable("home") { HomeScreen(navController, currentUser) }
                 composable("campsites") { CampsitesScreen(navController, campsiteRepository, imageRepository) }
+                composable("scan qr code"){QRCodeScannerScreen(navController)}
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
                     ReservationCalendarScreen(navController, currentUser, reservationRepository)
