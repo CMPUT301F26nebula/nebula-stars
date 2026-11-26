@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,12 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
 /**
  * Shows a list of chats the user is in
  *
@@ -46,7 +48,6 @@ fun MessagesScreen(
 
     LaunchedEffect(Unit) {
         userChats = Databases.chatRepository.getWithUserId(userProfile.id)
-        //Chat.addDummyChat("9b48653a52e2154c", "bb256b36d6d6efc7")
         chatsReady = true
     }
 
@@ -71,7 +72,7 @@ fun MessagesScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(userChats) {
-                    ChatCard(it) { chat ->
+                    ChatCard(userProfile, it) { chat ->
                         navController.navigate("messages/${chat.id}")
                     }
                 }
@@ -82,7 +83,6 @@ fun MessagesScreen(
     }
 }
 
-// TODO add colour to this
 /**
  * Summary card showing the chat recipient and last message if there is one
  *
@@ -90,24 +90,45 @@ fun MessagesScreen(
  * @param onClick click callback that receives this cards Chat instance as an argument
  */
 @Composable
-fun ChatCard(chat: Chat, onClick: (Chat) -> Unit) {
-    var entrant: UserProfile? by remember { mutableStateOf(null) }
-    var owner: UserProfile? by remember { mutableStateOf(null) }
+fun ChatCard(userProfile: UserProfile, chat: Chat, onClick: (Chat) -> Unit) {
+    var localUser: UserProfile? by remember { mutableStateOf(null) }
+    var remoteUser: UserProfile? by remember { mutableStateOf(null) }
+    var cardColour: Color by remember { mutableStateOf(StarsColors.White) }
 
     LaunchedEffect(Unit) {
-        entrant = Databases.userRepository.getWithId(chat.entrantId)
-        owner = Databases.userRepository.getWithId(chat.ownerId)
+        val entrant = Databases.userRepository.getWithId(chat.entrantId)
+        val owner = Databases.userRepository.getWithId(chat.ownerId)
+        if (entrant?.id == userProfile.id) {
+            localUser = entrant
+            remoteUser = owner
+        } else if (owner?.id == userProfile.id) {
+            localUser = owner
+            remoteUser = entrant
+        }
+        remoteUser?.let {
+            cardColour = RandomStarsColor.fromId(it.id)
+        }
     }
 
-    if (entrant != null && owner != null) {
+    if (localUser != null && remoteUser != null) {
+        val contentColor = RandomStarsColor.contrast(cardColour)
         Card(
             onClick = {
                 onClick(chat)
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(12.dp),
+            colors = CardColors(
+                cardColour,
+                contentColor,
+                cardColour,
+                contentColor
+            )
         ) {
+            val lastMessage = chat.messages.lastOrNull()
+            val fuzzyDate = FuzzyDateFormat(LocalLocale.current.platformLocale)
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,40 +136,52 @@ fun ChatCard(chat: Chat, onClick: (Chat) -> Unit) {
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    // TODO maybe just show the not current user name?
                     Text(
-                        "${entrant?.name}",
+                        remoteUser?.name ?: "",
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        "${owner?.name}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
                 Spacer(Modifier.height(8.dp))
 
-                val lastMessage = chat.messages.lastOrNull()
-                if (lastMessage != null) {
-                    val lastSender = if (lastMessage.senderId == chat.entrantId) {
-                        entrant?.name
-                    } else if (lastMessage.senderId == chat.ownerId) {
-                        owner?.name
-                    } else {
-                        ""
+                lastMessage?.let {
+                    Text(
+                        fuzzyDate.format(lastMessage.timestamp),
+                        fontSize = 12.sp
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                lastMessage?.let {
+                    val lastSender = when (it.senderId) {
+                        localUser?.id -> {
+                            localUser?.name
+                        }
+                        remoteUser?.id -> {
+                            remoteUser?.name
+                        }
+                        else -> {
+                            ""
+                        }
                     }
-                    // TODO maybe show with coloured nametag?
                     Text(
                         "$lastSender: ${lastMessage.text}",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                }
+                } ?:
+                Text(
+                    "No messages",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }

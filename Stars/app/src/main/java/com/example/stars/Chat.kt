@@ -64,9 +64,9 @@ data class Chat (
          *
          * @param entrantId id of the user in the chat
          * @param ownerId id of the entrant in the chat
-         * @param messages list of messages sent in the chat
+         * @param messages list of messages sent in the chat, empty by default
          */
-        fun new(entrantId: String, ownerId: String, messages: List<Message>): Chat {
+        fun new(entrantId: String, ownerId: String, messages: List<Message> = emptyList()): Chat {
             return Chat(
                 uniqueIdFrom(entrantId, ownerId),
                 entrantId,
@@ -83,14 +83,14 @@ data class Chat (
  *
  * @param local the user on the device
  * @param remote the user not on the device
- * @param localPFP profile picture of [local]
- * @param remotePFP profile picture of [remote]
+ * @param localPFP profile picture of the [local] user
+ * @param remotePFP profile picture of the [remote] user
  */
 data class ChatParticipants(
     val local: UserProfile?,
     val remote: UserProfile?,
-    val localPFP: @Composable () -> Unit,   // if it works it works lol
-    val remotePFP: @Composable () -> Unit
+    val localPFP: @Composable (() -> Unit),   // if it works it works lol
+    val remotePFP: @Composable (() -> Unit)
 )
 
 /**

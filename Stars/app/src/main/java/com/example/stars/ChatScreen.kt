@@ -3,8 +3,8 @@
  */
 package com.example.stars
 
+import android.R.attr.textColor
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -29,6 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -49,6 +50,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -57,8 +60,8 @@ import coil3.compose.AsyncImage
 
 // profile picture image consts
 private object PFPSize {
-    val width = 64.dp
-    val height = 64.dp
+    val width = 52.dp
+    val height = 52.dp
 }
 
 /**
@@ -120,7 +123,7 @@ fun ChatScreen(
                     if (user.profilePic != "") {
                         uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
                     }
-                    @Composable {
+                    {
                         AsyncImage(
                             model = uri,
                             contentDescription = "users profile picture",
@@ -138,7 +141,7 @@ fun ChatScreen(
                     if (user.profilePic != "") {
                         uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
                     }
-                    @Composable {
+                    {
                         AsyncImage(
                             model = uri,
                             contentDescription = "users profile picture",
@@ -155,23 +158,17 @@ fun ChatScreen(
         }
     }
 
-    Column(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        // Header
-        ScreenHeader(
-            navController = navController,
-            title = participants?.remote?.name ?: "CHATTING"
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        // show loading screen until users have been fetched from db
-        if (participants != null) {
-            Spacer(Modifier.weight(1.0f))
-            ChatLog(participants!!, currentChat.messages)
+        containerColor = StarsColors.Purple,
+        contentColor = StarsColors.White,
+        topBar = {
+            ScreenHeader(
+                navController = navController,
+                title = participants?.remote?.name ?: "CHATTING"
+            )
+        },
+        bottomBar = {
             ChatInput { msg ->
                 participants?.local?.let { sender ->
                     val currentTime = System.currentTimeMillis()
@@ -186,8 +183,22 @@ fun ChatScreen(
                     Databases.chatRepository.addOrUpdate(newChat)
                 }
             }
-        } else {
-            LoadingText()
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            // show loading screen until users have been fetched from db
+            if (participants != null) {
+                Spacer(Modifier.weight(1.0f))
+                ChatLog(participants!!, currentChat.messages)
+            } else {
+                LoadingText()
+            }
         }
     }
 }
@@ -210,22 +221,20 @@ fun ChatInput(onSend: (String) -> Unit) {
         TextField(
             value = messageContent,
             onValueChange = {
-                if (messageContent.length <= ChatLimits.MAX_CHAR_LIMIT) {
-                    messageContent = it
-                }
+                messageContent = it
             },
             supportingText = { Text("${messageContent.length}/${ChatLimits.MAX_CHAR_LIMIT}") },
             placeholder = {
                 Text(
                     text = "Message",
                     color = StarsColors.Purple,
-                    fontSize = 20.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Thin
                 )
             },
             textStyle = TextStyle(
                 color = if (messageContent.length > ChatLimits.MAX_CHAR_LIMIT) StarsColors.Magenta else StarsColors.Purple,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 16.sp
             ),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
@@ -250,22 +259,24 @@ fun ChatInput(onSend: (String) -> Unit) {
                 shape = RoundedCornerShape(10.dp, 0.dp, 0.dp, 0.dp),
                 colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(80.dp)
+                    .width(PFPSize.width)
+                    .height(PFPSize.height)
             ) {
                 Text(
                     text = ">",
                     fontSize = 32.sp,
                     color = StarsColors.White,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Visible,
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
             // if the message is too long, still fill the space the button would have occupied
             Box(
                 modifier = Modifier
-                    .width(80.dp)
-                    .height(80.dp)
+                    .width(PFPSize.width)
+                    .height(PFPSize.height)
                     .background(StarsColors.Transparent)
             ) {}
         }
@@ -288,8 +299,8 @@ fun ChatLog(participants: ChatParticipants, messages: List<Message>) {
         state = listState,
         reverseLayout = true
     ) {
-        items(messages.reversed()) {
-            ChatMessage(participants, it, dateFormat)
+        items(messages.reversed()) { msg ->
+            ChatMessage(participants, msg) { dateFormat.format(it) }
         }
     }
 }
@@ -299,20 +310,24 @@ fun ChatLog(participants: ChatParticipants, messages: List<Message>) {
  *
  * @param participants chat participants
  * @param message message to display
- * @param dateFormat used to format the message timestamp
+ * @param dateFormat callback that takes a timestamp in epoch millis and returns a string to display
  */
 @Composable
-fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: FuzzyDateFormat) {
+fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (Long) -> String) {
     val senderIsCurrentUser = participants.local?.id == message.senderId
-
     val senderName = if (senderIsCurrentUser) {
         participants.local.name
     } else {
-        participants.remote?.name ?: "null"
+        participants.remote?.name ?: ""
     }
 
+    val msgColor = RandomStarsColor.fromId(message.senderId)
+    val textColor = RandomStarsColor.contrast(msgColor)
+
     Row(
-        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = if (senderIsCurrentUser) Arrangement.End else Arrangement.Start,
     ) {
@@ -323,8 +338,9 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: Fu
                     .requiredWidth(PFPSize.width)
                     .requiredHeight(PFPSize.height)
             ) {
-                participants.remotePFP
+                participants.remotePFP()
             }
+            Spacer(Modifier.width(8.dp))
         }
 
         val textCardShape = if (senderIsCurrentUser) {
@@ -333,38 +349,67 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: Fu
             RoundedCornerShape(0.dp, 10.dp, 10.dp, 10.dp)
         }
 
-        Card(
-            modifier = Modifier
-                .background(
-                    StarsColors.White,
-                    textCardShape
-                )
+        Column(
+            modifier = Modifier.weight(1F),
+            horizontalAlignment = if (senderIsCurrentUser) {
+                Alignment.End
+            } else {
+                Alignment.Start
+            },
+            verticalArrangement = Arrangement.Top
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp)
+            Row(
+                modifier = Modifier.padding(0.dp, 2.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(senderName)
-                    Text(dateFormat.format(message.timestamp))
-                }
-                Spacer(Modifier.height(8.dp))
-                Text(message.text)
+                Text(
+                    text = senderName,
+                    maxLines = 1,
+                    softWrap = false,
+                    color = StarsColors.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = dateFormat(message.timestamp),
+                    maxLines = 1,
+                    softWrap = false,
+                    color = StarsColors.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Thin
+                )
+            }
+            Card(
+                modifier = Modifier
+                    .background(
+                        msgColor,
+                        textCardShape
+                    )
+                    .width(IntrinsicSize.Max),
+                    colors = CardColors(
+                        msgColor,
+                        textColor,
+                        msgColor,
+                        textColor
+                    )
+            ) {
+                Text(
+                    modifier = Modifier.padding(8.dp),
+                    text = message.text,
+                    fontSize = 16.sp
+                )
             }
         }
 
         if (senderIsCurrentUser) {
+            Spacer(Modifier.width(8.dp))
             Box(
                 modifier = Modifier
                     .requiredWidth(PFPSize.width)
                     .requiredHeight(PFPSize.height)
             ) {
-                participants.localPFP
+                participants.localPFP()
             }
         }
     }
 }
-

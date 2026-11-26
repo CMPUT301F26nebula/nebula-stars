@@ -36,8 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
+import coil3.compose.AsyncImage
 
 /**
  * A screen that only admins have access to from (currently) the home screen.

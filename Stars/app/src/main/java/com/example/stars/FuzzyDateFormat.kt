@@ -21,10 +21,11 @@ class FuzzyDateFormat(locale: Locale) {
      * (Adds an 's' to the end of [label] if [value] is not 1)
      */
     private fun labelUnit(value: Long, label: String): String {
+        var newLabel = label
         if (value != 1L) {
-            label + "s"
+            newLabel += "s"
         }
-        return "$value $label ago"
+        return "$value $newLabel ago"
     }
 
     /**

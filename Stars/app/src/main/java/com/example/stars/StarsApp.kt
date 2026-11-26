@@ -36,6 +36,9 @@ object StarsColors {
     val Transparent = Color(0x00FFFFFF)
 }
 
+// premade instance for app consistency
+val RandomStarsColor = PseudoRandomColor()
+
 // This should be where the current User, and other data shared between screens is stored
 object Databases {
     lateinit var campsiteRepository: CampsiteRepository
