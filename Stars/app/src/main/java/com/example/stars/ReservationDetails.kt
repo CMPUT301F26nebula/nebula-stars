@@ -1,4 +1,8 @@
 package com.example.stars
+/**
+ * The popups on the calendar screen for reservations, both list and details
+ */
+
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +47,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 /**
- * Detailed view of a reservation
+ * Detailed view of a reservation, clicking on the campsite brings you there and same with the
+ * owner/user.
+ * Has onClickOtherPerson, otherPersonText, onDelete, and action so that it can be used for both
+ * owner and user views.
  */
 @Composable
 fun ReservationDetails(
@@ -54,9 +61,12 @@ fun ReservationDetails(
     campOwner: UserProfile,
     onClickOtherPerson: (String, String) -> Unit,
     otherPersonText: (String, String) -> String,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    action: String
 ) {
+    // date format
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
+    // for confirm cancel reservation button
     var confirmLeaveDialogState by remember { mutableStateOf(false) }
 
     Column(
@@ -64,6 +74,7 @@ fun ReservationDetails(
     ) {
         Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Purple).padding(12.dp)
         ) {
+            // header
             Text("RESERVATION",
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
@@ -79,6 +90,7 @@ fun ReservationDetails(
             )
         }
 
+        // campsite name and button to go to details screen
         Button(
             onClick = {navController.navigate("campsite/${campsite.id}")},
             colors = ButtonDefaults.buttonColors(StarsColors.Transparent),
@@ -99,6 +111,7 @@ fun ReservationDetails(
             )
         }
 
+        // Owner or User button depending on who is looking. goes to details screen
         Button(
             onClick = {onClickOtherPerson(reservation.entrantId, campOwner.id)},
             colors = ButtonDefaults.buttonColors(StarsColors.Transparent),
@@ -119,7 +132,16 @@ fun ReservationDetails(
             )
         }
 
-        Text("Status: ${reservation.status}",
+
+        // the status of the reservation
+        Text(text = "Status: " +
+            when(reservation.status){
+                ReservationStatus.INVITED -> "Invited"
+                ReservationStatus.ACCEPTED -> "Accepted"
+                ReservationStatus.CANCELLED_BY_OWNER -> "Cancelled"
+                ReservationStatus.CANCELLED_BY_ENTRANT -> "Cancelled"
+                ReservationStatus.DECLINED -> "Declined"
+            },
             maxLines = 1,
             autoSize = TextAutoSize.StepBased(
                 minFontSize = 1.sp,
@@ -133,6 +155,8 @@ fun ReservationDetails(
             style = MaterialTheme.typography.bodyMedium,
 
         )
+
+        // the date range
         Text(
             "Dates: ${
                 simpleDateFormat.format(Date(reservation.timeRange.start))
@@ -152,24 +176,44 @@ fun ReservationDetails(
             style = MaterialTheme.typography.bodyMedium,
         )
 
-        Box(
-            modifier = Modifier
-                .padding(12.dp, 6.dp)
-                .fillMaxWidth()
-        ) {
+        Spacer(modifier = Modifier.padding(6.dp))
 
-            AdminActionOnUser(
-                confirm = confirmLeaveDialogState,
-                action = "Leave Reservation",
-                onRequest = {confirmLeaveDialogState = !confirmLeaveDialogState},
-                onConfirm = {
-                    Databases.reservationRepository.removeWithId(reservation.id)
-                    confirmLeaveDialogState = false
-                    onDelete()
-                },
-                onCancel = {confirmLeaveDialogState = false},
-                Modifier
-            )
+        // if it is accepted or invited, have a delete button
+        // it shouldn't show when only invited but just in case
+        if (reservation.status <= ReservationStatus.ACCEPTED) {
+            Box(
+                modifier = Modifier
+                    .padding(12.dp, 6.dp)
+                    .fillMaxWidth()
+            ) {
+
+                // not actually admin, just confirm cancel buttons
+                AdminActionOnUser(
+                    confirm = confirmLeaveDialogState,
+                    action = action,
+                    onRequest = { confirmLeaveDialogState = !confirmLeaveDialogState },
+                    onConfirm = {
+
+                        // set cancelled base on who did it
+                        // TODO: notify the person who this effects
+                        if (action == "Delete Reservation") {
+                            val newReservation =
+                                reservation.copy(status = ReservationStatus.CANCELLED_BY_OWNER)
+                            Databases.reservationRepository.addOrUpdate(newReservation)
+                        } else if (action == "Leave Reservation") {
+                            val newReservation =
+                                reservation.copy(status = ReservationStatus.CANCELLED_BY_ENTRANT)
+                            Databases.reservationRepository.addOrUpdate(newReservation)
+
+                        }
+
+                        confirmLeaveDialogState = false
+                        onDelete()
+                    },
+                    onCancel = { confirmLeaveDialogState = false },
+                    Modifier
+                )
+            }
         }
     }
 }
@@ -182,16 +226,19 @@ fun ReservationDetailsModal(navController: NavController,
                             reservation: Reservation,
                             onClose: () -> Unit,
                             onClickOtherPerson: (String, String) -> Unit,
-                            otherPersonText: (String, String) -> String
+                            otherPersonText: (String, String) -> String,
+                            action: String
 ) {
     var campsite: Campsite? by remember { mutableStateOf(null) }
     var campOwner: UserProfile? by remember { mutableStateOf(null) }
+
 
     LaunchedEffect(Unit) {
         campsite = Databases.campsiteRepository.getWithId(reservation.campsiteId)
         campsite?.let { campOwner = Databases.userRepository.getWithId(it.ownerId) }
     }
 
+    // the popup for the reservation list and details
     Dialog(
         onDismissRequest = onClose
     ) {
@@ -211,6 +258,7 @@ fun ReservationDetailsModal(navController: NavController,
                     onClickOtherPerson = onClickOtherPerson,
                     otherPersonText = otherPersonText,
                     onDelete = {onClose()},
+                    action = action
 
                 )
             }

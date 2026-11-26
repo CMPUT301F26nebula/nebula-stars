@@ -376,11 +376,21 @@ fun StarsApp(notifs: Boolean = false) {
                 }
 
                 composable("owner calendar"){
-                    OwnerResrvationsCalander(
+                    OwnerReservationsCalendar(
                         navController,
                         currentUser,
                         reservationRepository,
                         campsiteRepository,
+                        userRepository
+                    )
+                }
+
+                composable("owned reservations list"){
+                    OwnerReservationsList(
+                        navController,
+                        reservationRepository,
+                        campsiteRepository,
+                        currentUser,
                         userRepository
                     )
                 }

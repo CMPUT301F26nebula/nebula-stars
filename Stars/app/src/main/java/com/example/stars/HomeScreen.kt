@@ -155,7 +155,8 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         HomeButtonData("Add a Campsite", "uploadCampsiteButton", "upload campsite"),
                         HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery"),
                         HomeButtonData("My Campsites", "ownedCampsitesButton", "owned campsites"),
-                        HomeButtonData("Reservation Calendar", "ownedCampsiteReservationsButton", "owner calendar")
+                        HomeButtonData("Reservation Calendar", "ownedCampsiteReservationsButton", "owner calendar"),
+                        HomeButtonData("Reservation List", "OwnedCampsiteReservationsList", "owned reservations list")
                     )
 
                     UserPermission.ADMIN -> arrayOf(
