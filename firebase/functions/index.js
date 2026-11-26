@@ -50,7 +50,7 @@ exports.LotteryDraw = onSchedule("* * * * *", async (event) => {
 
   for (const lotteryDoc of snapshot.docs) {
     const pendingWinners = lotteryDoc.get("pendingWinnerIDs")
-    if (pendingWinners.length >= 0)
+    if (pendingWinners.length > 0)
       continue;
     const entrantIDs = lotteryDoc.get("entrantIDs") || [];
     const numWinners = lotteryDoc.get("numWinners") || 0;
