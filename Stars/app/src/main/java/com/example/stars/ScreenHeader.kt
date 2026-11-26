@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -54,6 +55,8 @@ fun ScreenHeader(
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
             color = StarsColors.Purple,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
         Spacer(Modifier.weight(1.0f))
