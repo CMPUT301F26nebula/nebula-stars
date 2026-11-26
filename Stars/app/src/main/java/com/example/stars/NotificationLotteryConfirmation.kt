@@ -118,7 +118,6 @@ fun NotificationLotteryConfirmation(
 
         if (lottery.pendingWinnerIDs.contains(currentUser.id)) {
             // Campsite Selector
-            // TODO
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,28 +125,30 @@ fun NotificationLotteryConfirmation(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    modifier = Modifier.border(
-                        1.dp,
-                        StarsColors.White,
-                        RoundedCornerShape(24.dp)
-                    ),
-                    onClick = {
-                        selectedCampsiteIndex -= 1
-                        if (selectedCampsiteIndex < 0) {
-                            selectedCampsiteIndex = campsites.size-1
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = StarsColors.Transparent,
-                        contentColor = StarsColors.White
-                    )
-                ) {
-                    Text(
-                        text = "<",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                if (campsites.size > 1) {
+                    Button(
+                        modifier = Modifier.border(
+                            1.dp,
+                            StarsColors.White,
+                            RoundedCornerShape(24.dp)
+                        ),
+                        onClick = {
+                            selectedCampsiteIndex -= 1
+                            if (selectedCampsiteIndex < 0) {
+                                selectedCampsiteIndex = campsites.size - 1
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = StarsColors.Transparent,
+                            contentColor = StarsColors.White
+                        )
+                    ) {
+                        Text(
+                            text = "<",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
                 Text(
@@ -158,26 +159,28 @@ fun NotificationLotteryConfirmation(
                     color = StarsColors.White
                 )
 
-                Button(
-                    modifier = Modifier.border(
-                        1.dp,
-                        StarsColors.White,
-                        RoundedCornerShape(24.dp)
-                    ),
-                    onClick = {
-                        selectedCampsiteIndex += 1
-                        selectedCampsiteIndex %= campsites.size
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = StarsColors.Transparent,
-                        contentColor = StarsColors.White
-                    )
-                ) {
-                    Text(
-                        text = ">",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                if (campsites.size > 1) {
+                    Button(
+                        modifier = Modifier.border(
+                            1.dp,
+                            StarsColors.White,
+                            RoundedCornerShape(24.dp)
+                        ),
+                        onClick = {
+                            selectedCampsiteIndex += 1
+                            selectedCampsiteIndex %= campsites.size
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = StarsColors.Transparent,
+                            contentColor = StarsColors.White
+                        )
+                    ) {
+                        Text(
+                            text = ">",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
