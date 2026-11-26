@@ -413,8 +413,11 @@ fun CampsiteDetailsScreen(
                 Spacer(Modifier.height(4.dp))
 
                 Column(
-                    modifier = Modifier.padding(10.dp)
-                ) {
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+
+                    ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -643,12 +646,11 @@ fun OwnerUserRow(userProfile: UserProfile){
             Column() {
 
                 // Name
-                Text(
-                    text = userProfile.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-
-                    )
+                NameTag(
+                    name = userProfile.name,
+                    id = userProfile.id,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
 
                 // email
                 Text(
@@ -675,18 +677,6 @@ fun OwnerUserRow(userProfile: UserProfile){
                 100.dp,
                 userProfile.name
             )
-            /*
-            AsyncImage(
-                model = userProfile.profilePic,
-                contentDescription = "profile picture",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(100.dp, 100.dp),
-                contentScale = ContentScale.Crop,
-                fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                error = painterResource(R.drawable.default_pfp)
-            )
-             */
         }
     }
 }

@@ -170,16 +170,6 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             size = 100.dp,
                             username = currentUser.name
                         )
-                        /*
-                        AsyncImage(
-                            model = newImage,
-                            contentDescription = "profile picture",
-                            modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
-                            contentScale = ContentScale.Crop,
-                            fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                            error = painterResource(R.drawable.default_pfp)
-                        )
-                         */
                     }
 
 
@@ -630,16 +620,6 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         100.dp,
                         currentUser.name
                     )
-                    /*
-                    AsyncImage(
-                        model = newImage,
-                        contentDescription = "profile picture",
-                        modifier = Modifier.clip(CircleShape).size(100.dp, 100.dp),
-                        contentScale = ContentScale.Crop,
-                        fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                        error = painterResource(R.drawable.default_pfp)
-                    )
-                     */
                 }
 
                 // text field to change name
