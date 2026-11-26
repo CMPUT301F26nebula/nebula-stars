@@ -133,7 +133,7 @@ fun UpdateCampsiteScreen(
             ratingCount = oldCampsite.ratingCount
         }
     }
-    
+
     // display QR code only for an existing, saved campsite
     LaunchedEffect(campsiteId) {
         val savedCampsite = campsiteRepo.getWithId(campsiteId)

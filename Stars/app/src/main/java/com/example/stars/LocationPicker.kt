@@ -74,7 +74,7 @@ fun OpenStreetLocationPicker(
         config.load(context, prefs)
 
         // 2. Set a real, non-placeholder User-Agent for OSM tile policy compliance
-        config.userAgentValue = "nebula-stars/1.0 (franchuk.amy@ualberta.ca)"
+        config.userAgentValue = "com.nebula.stars"
         Log.d("map user agent", config.userAgentValue)
 
         // 3. Separate base path and tile cache subdirectories to prevent SQLite lock errors
@@ -90,6 +90,7 @@ fun OpenStreetLocationPicker(
             controller.setZoom(initialZoom)
             controller.setCenter(GeoPoint(initialLatitude, initialLongitude))
             overlays.add(CopyrightOverlay(context))
+            clipToOutline = true
         }
     }
 
