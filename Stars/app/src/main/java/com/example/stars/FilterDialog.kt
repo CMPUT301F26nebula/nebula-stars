@@ -67,8 +67,8 @@ private fun FilterSectionTitle(text: String) {
 @Composable
 fun FilterDialog(
     currentFilter: CampsiteFilter,
-    currentSort: CampsiteFilter.CampsiteSort,
-    onApply: (CampsiteFilter, CampsiteFilter.CampsiteSort) -> Unit,
+    currentSort: CampsiteSort,
+    onApply: (CampsiteFilter, CampsiteSort) -> Unit,
     onDismiss: () -> Unit
 ) {
     //only applied when the user presses 'apply'
@@ -188,7 +188,7 @@ fun FilterDialog(
                     // sort
                     FilterSectionTitle("Sort By")
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        CampsiteFilter.SortField.entries.forEach { field ->
+                        CampsiteSort.SortField.entries.forEach { field ->
                             //https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-filter-chip.html
                             FilterChip(
                                 selected = sortField == field,
@@ -216,6 +216,7 @@ fun FilterDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        //clear all
                         TextButton(
                             onClick = {
                                 location = null
@@ -228,7 +229,10 @@ fun FilterDialog(
                             Text("Clear all")
                         }
                         Row {
+                            //cancel
                             TextButton(onClick = onDismiss) { Text("Cancel") }
+
+                            //apply
                             Button(
                                 onClick = {
                                     onApply(
@@ -238,7 +242,7 @@ fun FilterDialog(
                                             dateRange = dateRange,
                                             guests = guestsText.toIntOrNull()?.takeIf { it > 0 }
                                         ),
-                                        CampsiteFilter.CampsiteSort(sortField, ascending)
+                                        CampsiteSort(sortField, ascending)
                                     )
                                 },
                                 colors = ButtonDefaults.buttonColors(StarsColors.Purple)

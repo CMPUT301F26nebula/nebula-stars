@@ -48,20 +48,25 @@ val campsiteCardColors = listOf(
 
 /**
  * Screen to browse all the campsites
+ *
+ * @param filter the filter currently applied to the list
+ * @param sort the sort currently applied to the list
+ * @param onFilterChange called with the new filter and sort when the user applies them
  */
 @Composable
 fun CampsitesScreen(
     navController: NavController,
     campsiteRepository: CampsiteRepository,
-    imageRepository: ImageRepository
+    imageRepository: ImageRepository,
+    filter: CampsiteFilter,
+    sort: CampsiteSort,
+    onFilterChange: (CampsiteFilter, CampsiteSort) -> Unit
 ) {
     var search by remember { mutableStateOf("") }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
-    var filter by remember { mutableStateOf(CampsiteFilter()) }
-    var sort by remember { mutableStateOf(CampsiteFilter.CampsiteSort()) }
     var showFilter by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        campsites = campsiteRepository.getFilteredCampsites()
+        campsites = campsiteRepository.getAllCampsites()
     }
     val results = applySort(applyFilter(searchCampsites(campsites, search), filter), sort)
     val filtersOn = filter.isActive || sort.field != null
@@ -171,8 +176,7 @@ fun CampsitesScreen(
             currentFilter = filter,
             currentSort = sort,
             onApply = { newFilter, newSort ->
-                filter = newFilter
-                sort = newSort
+                onFilterChange(newFilter, newSort)
                 showFilter = false
             },
             onDismiss = { showFilter = false }

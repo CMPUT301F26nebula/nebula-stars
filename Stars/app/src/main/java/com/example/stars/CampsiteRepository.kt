@@ -1,6 +1,5 @@
 /*
 Contains repository helper class to get and store Campsite objects from firestore
-TODO: Fill out getFilteredCampsites signature
  */
 package com.example.stars
 
@@ -17,12 +16,11 @@ class CampsiteRepository(private val scope: CoroutineScope):
     AbstractUserDataRepository<Campsite>("campsites", scope, Campsite::class.java){
 
     /**
-     * Gets a list of campsites matching the passed filters
-     * TODO: Add filters as parameters
+     * Gets a list of all campsites. Filtering and sorting are done in CampsiteFilter.kt
      *
-     * @return list of campsites matching the filters, which can be empty if none work
+     * @return list of all campsites, which can be empty if there are none
      */
-    suspend fun getFilteredCampsites(): List<Campsite> {
+    suspend fun getAllCampsites(): List<Campsite> {
         return getAll()
     }
 

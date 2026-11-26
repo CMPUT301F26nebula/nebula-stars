@@ -31,18 +31,25 @@ data class CampsiteFilter(
         get() {
             return location != null || dateRange != null || guests != null
         }
+}
 
+
+/**
+ * How to sort the campsite list
+ *
+ * @param field the field to sort by, null means no sorting
+ * @param ascending true for ascending, false for descending
+ */
+data class CampsiteSort(
+    val field: SortField? = null,
+    val ascending: Boolean = true
+) {
     // fields the campsite list can be sorted by
     enum class SortField(val label: String) {
         NAME("Name"), PRICE("Price"), RATING("Rating")
     }
-
-    /// how to sort the campsite list (true for ascending, false for descending
-    data class CampsiteSort(
-        val field: SortField? = null,
-        val ascending: Boolean = true
-    )
 }
+
 
 //used Google Search's automatic ai summary for this.
 // "how to find distance between two points on globe", "how do i implement haversine formula in kotlin" 24-11-2026
@@ -66,8 +73,8 @@ fun isAvailableFor(campsite: Campsite, range: EpochRange): Boolean {
 }
 
 // returns only the campsites that pass every active filter
-fun applyFilter(campsite: List<Campsite>, filter: CampsiteFilter): List<Campsite> {
-    return campsite.filter { campsite ->
+fun applyFilter(campsites: List<Campsite>, filter: CampsiteFilter): List<Campsite> {
+    return campsites.filter { campsite ->
         val locationOk = filter.location == null ||
                 distanceKm(filter.location, campsite.location) <= filter.radius
         val dateOk = filter.dateRange == null || isAvailableFor(campsite, filter.dateRange)
@@ -77,12 +84,12 @@ fun applyFilter(campsite: List<Campsite>, filter: CampsiteFilter): List<Campsite
 }
 
 // sorts campsites
-fun applySort(campsites: List<Campsite>, sort: CampsiteFilter.CampsiteSort): List<Campsite> {
+fun applySort(campsites: List<Campsite>, sort: CampsiteSort): List<Campsite> {
     val field = sort.field ?: return campsites
 
     val toSort: List<Campsite>
     val unrated: List<Campsite>
-    if (field == CampsiteFilter.SortField.RATING) {
+    if (field == CampsiteSort.SortField.RATING) {
         toSort = campsites.filter { it.ratingCount > 0 }
         unrated = campsites.filter { it.ratingCount == 0 }
     } else {
@@ -92,15 +99,15 @@ fun applySort(campsites: List<Campsite>, sort: CampsiteFilter.CampsiteSort): Lis
 
     val sorted = when (field) {
         //sort by alphabetical
-        CampsiteFilter.SortField.NAME ->
+        CampsiteSort.SortField.NAME ->
             if (sort.ascending) toSort.sortedBy { it.title.lowercase() }
             else toSort.sortedByDescending { it.title.lowercase() }
         //sort by price
-        CampsiteFilter.SortField.PRICE ->
+        CampsiteSort.SortField.PRICE ->
             if (sort.ascending) toSort.sortedBy { it.price }
             else toSort.sortedByDescending { it.price }
         //sort by rating
-        CampsiteFilter.SortField.RATING ->
+        CampsiteSort.SortField.RATING ->
             if (sort.ascending) toSort.sortedBy { it.averageRating }
             else toSort.sortedByDescending { it.averageRating }
     }
