@@ -415,9 +415,8 @@ fun CampsiteDetailsScreen(
                 Column(
                     modifier = Modifier
                         .padding(10.dp)
-                        .fillMaxWidth(),
-
-                    ) {
+                        .fillMaxWidth()
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
