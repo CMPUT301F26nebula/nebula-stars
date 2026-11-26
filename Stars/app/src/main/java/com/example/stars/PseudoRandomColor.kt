@@ -3,6 +3,8 @@
  */
 package com.example.stars
 
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CardColors
 import androidx.compose.ui.graphics.Color
 import kotlin.math.abs
 
@@ -36,5 +38,33 @@ class PseudoRandomColor(
      */
     fun contrast(color: Color): Color {
         return contrastColor.getOrDefault(color, StarsColors.Black)
+    }
+
+    /**
+     * Generates [ButtonColors] from a users [id]
+     */
+    fun buttonColorsFromId(id: String): ButtonColors {
+        val container = fromId(id)
+        val content = contrast(container)
+        return ButtonColors(
+            container,
+            content,
+            container,
+            content
+        )
+    }
+
+    /**
+     * Generates [CardColors] from a users [id]
+     */
+    fun cardColorsFromId(id: String): CardColors {
+        val container = fromId(id)
+        val content = contrast(container)
+        return CardColors(
+            container,
+            content,
+            container,
+            content
+        )
     }
 }

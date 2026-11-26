@@ -1,3 +1,6 @@
+/*
+ *  Displays a users profile information
+ */
 package com.example.stars
 
 import android.net.Uri
@@ -17,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,11 +34,38 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
+
+/**
+ * Circular user profile picture
+ *
+ * @param uri profile picture [Uri], if null will use a default image
+ * @param size width and height of the circle
+ * @param username name of the user for image description
+ */
+@Composable
+fun UserProfilePicture(
+    uri: Uri?,
+    size: Dp,
+    username: String = "user"
+) {
+    AsyncImage(
+        model = uri,
+        contentDescription = "$username profile picture",
+        modifier = Modifier
+            .clip(CircleShape)
+            .size(size, size),
+        contentScale = ContentScale.Crop,
+        fallback = painterResource(R.drawable.default_pfp),
+        error = painterResource(R.drawable.default_pfp)
+    )
+}
 
 /**
  * The expanded view of a user's profile
@@ -55,10 +86,14 @@ fun UserProfileScreen(
     var confirmDeletion by remember { mutableStateOf(false) }
     var confirmBan by remember { mutableStateOf(false) }
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var userPFP by remember { mutableStateOf<Uri?>(null) }
     var ownedCampsites by remember { mutableStateOf<List<Campsite>>(emptyList<Campsite>()) }
 
     LaunchedEffect(true) {
         userProfile = userRepository.getWithId(userID)
+        userProfile?.let {
+            userPFP = imageRepository.getImageUri(it.profilePic)?.toUri()
+        }
         ownedCampsites = campsiteRepository.getWithUserId(userID)
     }
 
@@ -97,6 +132,12 @@ fun UserProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
+                            UserProfilePicture(
+                                userPFP,
+                                100.dp,
+                                userProfile?.name ?: "user"
+                            )
+                            /*
                             AsyncImage(
                                 model = userProfile!!.profilePic,
                                 contentDescription = "profile picture",
@@ -107,6 +148,7 @@ fun UserProfileScreen(
                                 fallback = painterResource(R.drawable.default_pfp), // shown when model is null
                                 error = painterResource(R.drawable.default_pfp)
                             )
+                             */
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -142,26 +184,64 @@ fun UserProfileScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        Text(
-                            text = "Contact Info:",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = StarsColors.Purple
-                        )
+                        userProfile?.let { user ->
+                            // entrants shouldnt be able to message other entrants, or themselves lol
+                            if (!(currentUser.permission == UserPermission.ENTRANT && user.permission == UserPermission.ENTRANT) &&
+                                (currentUser.id != user.id)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Button(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = {
+                                            // duplicated check in case this gets copy pasted
+                                            if (currentUser.id != user.id) {
+                                                val chat = runBlocking {
+                                                    Databases.chatRepository.getOrCreate(currentUser to user)
+                                                }
+                                                navController.navigate("messages/${chat.id}")
+                                            }
+                                        },
+                                        colors = RandomStarsColor.buttonColorsFromId(user.id)
+                                    ) {
+                                        Text(
+                                            "Message User",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
 
-                        Text(
-                            text = userProfile?.email ?: "",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = StarsColors.Purple
-                        )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+                        }
 
-                        Text(
-                            text = userProfile?.phone ?: "",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = StarsColors.Purple
-                        )
+                        if (currentUser.permission != UserPermission.ENTRANT) {
+
+                            Text(
+                                text = "Contact Info:",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = StarsColors.Purple
+                            )
+
+                            Text(
+                                text = userProfile?.email ?: "",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = StarsColors.Purple
+                            )
+
+                            Text(
+                                text = userProfile?.phone ?: "",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = StarsColors.Purple
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(10.dp))
 
@@ -214,7 +294,6 @@ fun UserProfileScreen(
                             horizontalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-
                             // if not trying to ban user, show the delete button
                             if (!confirmBan) {
                                 AdminActionOnUser(

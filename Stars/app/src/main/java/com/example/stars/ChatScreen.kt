@@ -28,6 +28,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -63,18 +64,22 @@ private object PFPSize {
     val height = 52.dp
 }
 
+
+
 /**
  * Screen for sending and viewing messages
  *
  * @param navController navigation controller
  * @param userProfile current device user
  * @param chatId unique id of the chat to display
+ * @param readOnly if true, the input bar will be hidden
  */
 @Composable
 fun ChatScreen(
     navController: NavController,
     userProfile: UserProfile,
-    chatId: String
+    chatId: String,
+    readOnly: Boolean = false
 ) {
     var currentChat: Chat by remember { mutableStateOf(Chat()) }
 
@@ -98,7 +103,17 @@ fun ChatScreen(
         // if for whatever reason it cant get from db, loading forever
         Databases.chatRepository.getWithId(chatId)?.let { chat ->
             currentChat = chat
-
+            participants = Databases.chatRepository.getChatParticipants(
+                userProfile,
+                currentChat,
+                { user, uri ->
+                    UserProfilePicture(
+                        uri,
+                        PFPSize.width,
+                        user?.name ?: "chatter")
+                }
+            )
+            /*
             // was written before both users got merged into a Pair so thats why theyre named that
             val entrant = Databases.userRepository.getWithId(chat.userIdA())
             val owner = Databases.userRepository.getWithId(chat.userIdB())
@@ -123,7 +138,13 @@ fun ChatScreen(
                     if (user.profilePic != "") {
                         uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
                     }
-                    {
+                    @Composable {
+                        UserProfilePicture(
+                            uri,
+                            PFPSize.width,
+                            user.name
+                        )
+                        /*
                         AsyncImage(
                             model = uri,
                             contentDescription = "users profile picture",
@@ -134,6 +155,7 @@ fun ChatScreen(
                             fallback = painterResource(R.drawable.default_pfp),
                             error = painterResource(R.drawable.default_pfp)
                         )
+                         */
                     }
                 } ?: {},
                 remoteUser?.let { user ->
@@ -141,7 +163,13 @@ fun ChatScreen(
                     if (user.profilePic != "") {
                         uri = Databases.imageRepository.getImageUri(user.profilePic)?.toUri()
                     }
-                    {
+                    @Composable {
+                        UserProfilePicture(
+                            uri,
+                            PFPSize.width,
+                            user.name
+                        )
+                        /*
                         AsyncImage(
                             model = uri,
                             contentDescription = "users profile picture",
@@ -152,9 +180,11 @@ fun ChatScreen(
                             fallback = painterResource(R.drawable.default_pfp),
                             error = painterResource(R.drawable.default_pfp)
                         )
+                         */
                     }
                 } ?: {}
             )
+             */
         }
     }
 
@@ -169,18 +199,20 @@ fun ChatScreen(
             )
         },
         bottomBar = {
-            ChatInput { msg ->
-                participants?.local?.let { sender ->
-                    val currentTime = System.currentTimeMillis()
-                    val newMessage = Message.new(
-                        sender.id,
-                        msg,
-                        currentTime
-                    )
-                    val newChat = currentChat.addMessage(newMessage)
+            if (!readOnly) {
+                ChatInput { msg ->
+                    participants?.local?.let { sender ->
+                        val currentTime = System.currentTimeMillis()
+                        val newMessage = Message.new(
+                            sender.id,
+                            msg,
+                            currentTime
+                        )
+                        val newChat = currentChat.addMessage(newMessage)
 
-                    // the chat will recompose when the database gets the message, so there might be some lag
-                    Databases.chatRepository.addOrUpdate(newChat)
+                        // the chat will recompose when the database gets the message, so there might be some lag
+                        Databases.chatRepository.addOrUpdate(newChat)
+                    }
                 }
             }
         }
@@ -206,7 +238,8 @@ fun ChatScreen(
 /**
  * Chat text input field
  *
- * @param onSend callback for when the user sends a message
+ * @param onSend callback for when the user sends a message, receives the chat contents and a
+ * callback for clearing the [TextField] to prevent clearing before the database updates
  */
 @Composable
 fun ChatInput(onSend: (String) -> Unit) {
@@ -250,7 +283,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                 .testTag("messageTextField")
         )
 
-        if (messageContent.length <= ChatLimits.MAX_CHAR_LIMIT) {
+        if (messageContent.length in 1..ChatLimits.MAX_CHAR_LIMIT) {
             Button(
                 onClick = {
                     onSend(messageContent)
@@ -320,9 +353,7 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (L
     } else {
         participants.remote?.name ?: ""
     }
-
-    val msgColor = RandomStarsColor.fromId(message.senderId)
-    val textColor = RandomStarsColor.contrast(msgColor)
+    val cardColors = RandomStarsColor.cardColorsFromId(message.senderId)
 
     Row(
         modifier = Modifier
@@ -382,16 +413,11 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (L
             Card(
                 modifier = Modifier
                     .background(
-                        msgColor,
+                        cardColors.containerColor,
                         textCardShape
                     )
                     .width(IntrinsicSize.Max),
-                    colors = CardColors(
-                        msgColor,
-                        textColor,
-                        msgColor,
-                        textColor
-                    )
+                colors = cardColors
             ) {
                 Text(
                     modifier = Modifier.padding(8.dp),
@@ -410,6 +436,88 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (L
             ) {
                 participants.localPFP()
             }
+        }
+    }
+}
+
+/**
+ * Summary card showing the chat recipient and last message if there is one
+ *
+ * @param participants the [ChatParticipants]
+ * @param chat the [Chat]
+ * @param onClick click callback that receives this cards [chat] instance as an argument
+ */
+@Composable
+fun ChatCard(participants: ChatParticipants, chat: Chat, onClick: (Chat) -> Unit) {
+    Card(
+        onClick = {
+            onClick(chat)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        colors = participants.remote?.let { remote ->
+            RandomStarsColor.cardColorsFromId(remote.id)
+        } ?: CardDefaults.cardColors()
+    ) {
+        val lastMessage = chat.messages.lastOrNull()
+        val fuzzyDate = FuzzyDateFormat(LocalLocale.current.platformLocale)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                participants.remotePFP()
+
+                Spacer(Modifier.width(8.dp))
+
+                Text(
+                    participants.remote?.name ?: "",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            lastMessage?.let {
+                Text(
+                    fuzzyDate.format(lastMessage.timestamp),
+                    fontSize = 12.sp
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            lastMessage?.let {
+                val lastSender = when (it.senderId) {
+                    participants.local?.id -> {
+                        participants.local.name
+                    }
+                    participants.remote?.id -> {
+                        participants.remote.name
+                    }
+                    else -> {
+                        ""
+                    }
+                }
+                Text(
+                    "$lastSender: ${lastMessage.text}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            } ?: Text(
+                "No messages",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

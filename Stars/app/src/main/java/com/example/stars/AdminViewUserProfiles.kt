@@ -1,6 +1,8 @@
 package com.example.stars
 
+import android.R.attr.fontWeight
 import android.net.Uri
+import android.system.Os.link
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -122,11 +125,10 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
 
     // if the user has not been deleted
     if (!deleted) {
-
         Card(
             modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 16.dp)
-                .clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
+                .fillMaxWidth().padding(horizontal = 16.dp),
+                //.clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
             colors = cardColors(StarsColors.White)
         ) {
 
@@ -136,13 +138,11 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                 Column() {
 
                     // Name
-                    NameTag(userProfile) {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    NameTag(
+                        name = userProfile.name,
+                        id = Uri.encode(userProfile.id),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
 
                     Spacer(Modifier.height(4.dp))
 
@@ -174,7 +174,12 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                     )
 
                 }
-
+                UserProfilePicture(
+                    pfpUri,
+                    100.dp,
+                    userProfile.name
+                )
+                /*
                 AsyncImage(
                     model = pfpUri,
                     contentDescription = "profile picture",
@@ -183,6 +188,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                     fallback = painterResource(R.drawable.default_pfp), // shown when model is null
                     error = painterResource(R.drawable.default_pfp)
                 )
+                 */
             }
 
             // buttons to delete and ban

@@ -163,10 +163,14 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                         },
                         modifier = Modifier.size(100.dp, 100.dp).clip(CircleShape)
                             .align(Alignment.CenterHorizontally),
-                        enabled = !readonlyDetails,
-
-
-                        ) {
+                        enabled = !readonlyDetails
+                    ) {
+                        UserProfilePicture(
+                            newImage,
+                            size = 100.dp,
+                            username = currentUser.name
+                        )
+                        /*
                         AsyncImage(
                             model = newImage,
                             contentDescription = "profile picture",
@@ -175,6 +179,7 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             fallback = painterResource(R.drawable.default_pfp), // shown when model is null
                             error = painterResource(R.drawable.default_pfp)
                         )
+                         */
                     }
 
 
@@ -616,11 +621,16 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     },
-                    modifier = Modifier.size(100.dp, 100.dp).clip(CircleShape)
-                        .align(Alignment.CenterHorizontally),
-
-
-                    ) {
+                    modifier = Modifier
+                        .size(100.dp, 100.dp).clip(CircleShape)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    UserProfilePicture(
+                        newImage,
+                        100.dp,
+                        currentUser.name
+                    )
+                    /*
                     AsyncImage(
                         model = newImage,
                         contentDescription = "profile picture",
@@ -629,6 +639,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         fallback = painterResource(R.drawable.default_pfp), // shown when model is null
                         error = painterResource(R.drawable.default_pfp)
                     )
+                     */
                 }
 
                 // text field to change name

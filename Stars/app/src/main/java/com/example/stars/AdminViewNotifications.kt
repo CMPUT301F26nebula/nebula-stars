@@ -74,12 +74,22 @@ fun AdminNotificationRow(navController: NavController, notification: Notificatio
             )
 
             // Recipient
+            NameTag(
+                label = "Recipient: ",
+                name = notification.userId,
+                id = Uri.encode(notification.userId),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
+            /*
             Text(
                 text = "Recipient: ${notification.userId}",
                 modifier = Modifier.clickable(onClick = { navController.navigate("user profile/${Uri.encode(notification.userId)}") }),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
                 )
+                */
 
             // Sender
             Text(

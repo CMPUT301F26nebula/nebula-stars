@@ -47,9 +47,11 @@ import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
@@ -417,26 +419,24 @@ fun CampsiteDetailsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        //name of the owner
-                        Text(
+                        // name of the owner
+                        owner?.let {
+                            NameTag(
+                                label = "Owner: ",
+                                name = it.name,
+                                id = it.id,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Medium,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        // show label even if owner has not been loaded
+                        } ?: Text(
                             "Owner:",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
                         )
-
-                        Spacer(Modifier.width(8.dp))
-
-                        owner?.let {
-                            NameTag(it) { name ->
-                                Text(
-                                    name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Medium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
                     }
 
                     Spacer(Modifier.height(4.dp))
@@ -612,6 +612,11 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
 @Composable
 fun OwnerUserRow(userProfile: UserProfile){
 
+    var userPFP: Uri? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(userProfile) {
+        userPFP = Databases.imageRepository.getImageUri(userProfile.profilePic)?.toUri()
+    }
 
     // default permission level string since it is not a string in the class
     var permissionLevel by remember { mutableStateOf("Entrant") }
@@ -665,6 +670,12 @@ fun OwnerUserRow(userProfile: UserProfile){
 
             }
 
+            UserProfilePicture(
+                userPFP,
+                100.dp,
+                userProfile.name
+            )
+            /*
             AsyncImage(
                 model = userProfile.profilePic,
                 contentDescription = "profile picture",
@@ -675,6 +686,7 @@ fun OwnerUserRow(userProfile: UserProfile){
                 fallback = painterResource(R.drawable.default_pfp), // shown when model is null
                 error = painterResource(R.drawable.default_pfp)
             )
+             */
         }
     }
 }
