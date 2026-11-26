@@ -50,7 +50,7 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
 
   for (const lotteryDoc of snapshot.docs) {
     const pendingWinners = lotteryDoc.get("pendingWinnerIDs")
-    if (pendingWinners.length >= 0)
+    if (pendingWinners.length > 0)
       continue;
     const entrantIDs = lotteryDoc.get("entrantIDs") || [];
     const numWinners = lotteryDoc.get("numWinners") || 0;
@@ -73,7 +73,7 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
           userId: entrantID,
           read: false,
           content: notifContent,
-          navDestination: "", // TODO: Update this to take the user to the booking screen for the lottery if they won
+          navDestination: `lottery confirm/${lotteryDoc.get("id")}`, 
           sender: "SYSTEM",
           timestamp: Date.now()
         };

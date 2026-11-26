@@ -1,6 +1,5 @@
 /*
 Contains repository helper class to get and store Campsite objects from firestore
-TODO: Fill out getFilteredCampsites signature
  */
 package com.example.stars
 
@@ -15,14 +14,32 @@ import kotlinx.coroutines.tasks.await
  */
 class CampsiteRepository(private val scope: CoroutineScope):
     AbstractUserDataRepository<Campsite>("campsites", scope, Campsite::class.java){
+    
+    suspend fun removeCampsite(id: String) {
+        val lotteryRepository = LotteryRepository(scope)
+        val imageRepository = ImageRepository(scope)
+
+        for (lottery in lotteryRepository.getWithCampsiteId(id)) {
+            lottery.campsiteIDs = lottery.campsiteIDs.filter { it != id }
+            lotteryRepository.addOrUpdate(lottery)
+            if (lottery.campsiteIDs.isEmpty()) {
+                lotteryRepository.removeWithId(lottery.id)
+            }
+        }
+
+        for (imageId in getWithId(id)?.imageIds ?: emptyList()){
+            imageRepository.deleteImage(imageId)
+        }
+
+        removeWithId(id)
+    }
 
     /**
-     * Gets a list of campsites matching the passed filters
-     * TODO: Add filters as parameters
+     * Gets a list of all campsites. Filtering and sorting are done in CampsiteFilter.kt
      *
-     * @return list of campsites matching the filters, which can be empty if none work
+     * @return list of all campsites, which can be empty if there are none
      */
-    suspend fun getFilteredCampsites(): List<Campsite> {
+    suspend fun getAllCampsites(): List<Campsite> {
         return getAll()
     }
 
