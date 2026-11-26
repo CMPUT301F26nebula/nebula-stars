@@ -31,7 +31,7 @@ class UserRepository(private val scope: CoroutineScope):
         val imageRepository = ImageRepository(scope)
 
         for (campsite in campsiteRepository.getWithUserId(user.id)) {
-            campsiteRepository.removeWithId(campsite.id)
+            campsiteRepository.removeCampsite(campsite.id)
         }
 
         if (user.profilePic != ""){
@@ -57,7 +57,7 @@ class UserRepository(private val scope: CoroutineScope):
         val campsiteRepository = CampsiteRepository(scope)
         val ownedCampsites = campsiteRepository.getWithUserId(ownerProfile.id)
         for (camp in ownedCampsites) {
-            campsiteRepository.removeWithId(camp.id)
+            campsiteRepository.removeCampsite(camp.id)
         }
 
         ownerProfile.banned = true

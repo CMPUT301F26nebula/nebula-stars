@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +41,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import coil3.compose.AsyncImage
 
@@ -47,9 +51,20 @@ import coil3.compose.AsyncImage
  * Shows a list of all users
  */
 @Composable
-fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository){
+fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository, currentUser: UserProfile){
 
-    val users = runBlocking { userRepository.getAll() }
+    var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
+
+    /*
+    different code simplified by claude prompt: "how do I fix out of order updates"
+    claude sonnet 5.5 2026-11-23
+    https://claude.ai/share/c67ca8f5-33e2-4715-a58d-36c88dbbfe32
+     */
+    LaunchedEffect(Unit) {
+        userRepository.addListener { updated ->
+            users = updated.filterNotNull()
+        }
+    }
 
     // column to hold things and make background purple
     Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple)) {
@@ -63,8 +78,12 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
 
             itemsIndexed(users) { index, user ->
-                Spacer(modifier = Modifier.height(12.dp))
-                AdminUserRow(navController, user, userRepository)
+
+                // so that you can't ban or delete yourself from here
+                if (user != currentUser) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    AdminUserRow(navController, user, userRepository)
+                }
             }
         }
     }
@@ -105,7 +124,9 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
     if (!deleted) {
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth().padding(horizontal = 16.dp)
+                .clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
             colors = cardColors(StarsColors.White)
         ) {
 
@@ -115,13 +136,6 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                 Column() {
 
                     // Name
-                    /*
-                    Text(
-                        text = userProfile.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    */
                     NameTag(userProfile) {
                         Text(
                             text = it,
@@ -274,16 +288,8 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
                 Text("Cancel", textAlign = TextAlign.Center)
             }
-
-
-
-
-
-
         }
-
     }
-
 }
 
 
@@ -338,8 +344,6 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
             }
 
             Row() {
-
-
                 Button(
                     onClick = {
                         val user = runBlocking { userRepository.getWithId(campsite.id) }
@@ -383,10 +387,7 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                         style = MaterialTheme.typography.bodyMedium,
                         color = StarsColors.White)
                 }
-
             }
         }
-
-
     }
 }

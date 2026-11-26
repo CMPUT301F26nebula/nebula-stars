@@ -72,4 +72,5 @@ class AdminAbilityTests {
         userRepo.deleteUserEntirely(owner)
         assertNull(userRepo.getWithId(owner.id))
     }
+
 }
