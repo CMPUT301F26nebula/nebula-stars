@@ -202,7 +202,7 @@ fun RatingDialog(
                         focusedLabelColor = StarsColors.OnSurface,
                         cursorColor = StarsColors.OnSurface
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 

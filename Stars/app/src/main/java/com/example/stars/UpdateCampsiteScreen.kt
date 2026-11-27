@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -52,8 +54,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -133,6 +137,8 @@ fun UpdateCampsiteScreen(
         bottomStart = 10.dp,
         bottomEnd = 10.dp
     )
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     // If a campsite exists, get its info and fill in
     LaunchedEffect(campsiteId) {
@@ -227,7 +233,12 @@ fun UpdateCampsiteScreen(
                                 focusedLabelColor = StarsColors.OnBackground
                             ),
                             shape = fieldShape,
-                            modifier = Modifier.fillMaxWidth().testTag("titleInput")
+                            modifier = Modifier.fillMaxWidth().testTag("titleInput"),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -250,7 +261,7 @@ fun UpdateCampsiteScreen(
                                 focusedLabelColor = StarsColors.OnBackground
                             ),
                             shape = fieldShape,
-                            modifier = Modifier.fillMaxWidth().testTag("descriptionInput")
+                            modifier = Modifier.fillMaxWidth().testTag("descriptionInput"),
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -280,7 +291,12 @@ fun UpdateCampsiteScreen(
                             ),
                             shape = fieldShape,
                             modifier = Modifier.fillMaxWidth().testTag("priceInput"),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            ),
+                            singleLine = true
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -310,7 +326,12 @@ fun UpdateCampsiteScreen(
                             ),
                             shape = fieldShape,
                             modifier = Modifier.fillMaxWidth().testTag("capacityInput"),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            ),
+                            singleLine = true,
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -596,8 +617,13 @@ fun UpdateCampsiteScreen(
                             shape = fieldShape,
                             modifier = Modifier.fillMaxWidth().testTag("latitudeInput"),
                             keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Decimal
-                            )
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            ),
+                            singleLine = true,
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -632,8 +658,13 @@ fun UpdateCampsiteScreen(
                             shape = fieldShape,
                             modifier = Modifier.fillMaxWidth().testTag("longitudeInput"),
                             keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Decimal
-                            )
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            ),
+                            singleLine = true
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
