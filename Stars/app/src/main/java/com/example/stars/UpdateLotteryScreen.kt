@@ -76,6 +76,7 @@ fun UpdateLotteryScreen(
 ) {
     // Set up
     // Variables to store working copy of the lottery
+    val ownerIDs = remember { mutableStateListOf<String>() }
     val campsiteIDs = remember { mutableStateListOf<String>() }
     var timePeriod by remember { mutableStateOf(EpochRange()) }
     var deadline by remember { mutableLongStateOf((-1.0).toLong()) }
@@ -106,6 +107,7 @@ fun UpdateLotteryScreen(
     LaunchedEffect(Unit) {
         val oldLottery = lotteryRepo.getWithId(lotteryId)
         if (oldLottery != null) {
+            ownerIDs.addAll(oldLottery.ownerIDs)
             campsiteIDs.addAll(oldLottery.campsiteIDs)
             timePeriod = oldLottery.timePeriod
             deadline = oldLottery.deadline
@@ -412,7 +414,7 @@ fun UpdateLotteryScreen(
                                 lotteryRepo.addOrUpdate(
                                     Lottery(
                                         id = lotteryId,
-                                        ownerID = currentUser.id,
+                                        ownerIDs = if (ownerIDs.isEmpty()) { listOf(currentUser.id) } else { ownerIDs},
                                         campsiteIDs = campsiteIDs,
                                         timePeriod = timePeriod,
                                         deadline = deadline,
@@ -423,7 +425,7 @@ fun UpdateLotteryScreen(
                                         confirmedIDs = confirmedIDs
                                     )
                                 )
-                                Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
+                                Log.d("Lottery Update Submission", "Lottery $lotteryId Uploaded")
                                 navController.popBackStack()
                             },
                             colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),

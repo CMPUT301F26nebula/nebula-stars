@@ -2,7 +2,7 @@ package com.example.stars
 
 data class Lottery (
     override val id: String = "",
-    val ownerID: String = "",
+    val ownerIDs: List<String> = emptyList(),
     var campsiteIDs: List<String> = emptyList(),
     val timePeriod: EpochRange = EpochRange(),
     val deadline: Long = (-1).toLong(),
