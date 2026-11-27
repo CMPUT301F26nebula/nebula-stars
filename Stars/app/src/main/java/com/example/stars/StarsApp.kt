@@ -452,7 +452,8 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryId = lotteryId,
                         lotteryRepository = lotteryRepository,
                         reservationRepository = reservationRepository,
-                        campsiteRepository = campsiteRepository
+                        campsiteRepository = campsiteRepository,
+                        notificationRepository = notificationRepository
                     )
                 }
             }
