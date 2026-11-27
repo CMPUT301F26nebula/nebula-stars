@@ -27,6 +27,7 @@ enum class UserPermission {
  * @param notifs true if the user has notifications enabled, false otherwise
  * @param firebaseId the user's cloud firebase messaging ID
  * @param profilePic the users selected profile picture
+ * @param theme name of the theme the user has selected
  */
 data class UserProfile(
     override val id: String = "",
@@ -38,5 +39,6 @@ data class UserProfile(
     var permission: UserPermission = UserPermission.ENTRANT,
     var notifs: Boolean = false,
     var firebaseId: String = "",
-    var profilePic: String = ""
+    var profilePic: String = "",
+    var theme: String = "Moonlight"
 ): UniqueIdentifier

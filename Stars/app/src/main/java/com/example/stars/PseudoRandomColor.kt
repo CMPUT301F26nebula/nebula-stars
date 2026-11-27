@@ -9,23 +9,22 @@ import androidx.compose.ui.graphics.Color
 import kotlin.math.abs
 
 /**
- * Maps a unique id to a set of colours
+ * Maps a unique id to a set of colors
  *
- * @param colors list of potential colours
- * @param contrastColor map of colours in [colors] to their contrast colour
+ * @param colors list of potential colors
+ * @param contrastColor map of colors in [colors] to their contrast color
  */
-class PseudoRandomColor(
-    private val colors: List<Color> = listOf(
-        StarsColors.Cyan,
-        StarsColors.Magenta,
-        StarsColors.Yellow
-    ),
-    private val contrastColor: Map<Color, Color> = mapOf(
-        StarsColors.Cyan to StarsColors.White,
-        StarsColors.Magenta to StarsColors.White,
-        StarsColors.Yellow to StarsColors.White
-    )
-) {
+class PseudoRandomColor {
+    /**
+     * The accent colors of the current theme
+     */
+    private val colors: List<Color>
+        get() = listOf(
+            StarsColors.Accent1,
+            StarsColors.Accent2,
+            StarsColors.Accent3
+        )
+
     /**
      * Get a [Color] from an [id] string
      */
@@ -34,10 +33,10 @@ class PseudoRandomColor(
     }
 
     /**
-     * Gets a [color]s [contrastColor]
+     * Gets the text color to use on top of [color]
      */
     fun contrast(color: Color): Color {
-        return contrastColor.getOrDefault(color, StarsColors.Black)
+        return if (color in colors) StarsColors.OnAccent else StarsColors.Black
     }
 
     /**

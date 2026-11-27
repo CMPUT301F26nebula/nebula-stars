@@ -217,14 +217,14 @@ fun CampsiteDetailsScreen(
                                         bottomStart = corner,
                                         bottomEnd = 0.dp
                                     ),
-                                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                    colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                                     modifier = Modifier.weight(1F)
                                 ) {
                                     Text(
                                         "View Entrants",
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = StarsColors.White
+                                        color = StarsColors.OnAccent
                                     )
                                 }
                             } else {
@@ -236,14 +236,14 @@ fun CampsiteDetailsScreen(
                                         bottomStart = corner,
                                         bottomEnd = 0.dp
                                     ),
-                                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                    colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                                     modifier = Modifier.weight(1F)
                                 ) {
                                     Text(
                                         "Create Lottery",
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = StarsColors.White
+                                        color = StarsColors.OnAccent
                                     )
                                 }
                             }
@@ -263,14 +263,14 @@ fun CampsiteDetailsScreen(
                                     bottomStart = 0.dp,
                                     bottomEnd = corner
                                 ),
-                                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent2),
                                 modifier = Modifier.weight(1F)
                             ) {
                                 Text(
                                     "Edit Campsite",
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = StarsColors.White
+                                    color = StarsColors.OnAccent
                                 )
                             }
                         }
@@ -302,14 +302,14 @@ fun CampsiteDetailsScreen(
                                             bottomStart = corner,
                                             bottomEnd = 0.dp
                                         ),
-                                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                        colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                                         modifier = Modifier.weight(1F)
                                     ) {
                                         Text(
                                             "Join Lottery",
                                             textAlign = TextAlign.Center,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = StarsColors.White
+                                            color = StarsColors.OnAccent
                                         )
                                     }
                                 // are in the lottery show the exit button
@@ -331,14 +331,14 @@ fun CampsiteDetailsScreen(
                                             bottomStart = corner,
                                             bottomEnd = 0.dp
                                         ),
-                                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                        colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                                         modifier = Modifier.weight(1F)
                                     ) {
                                         Text(
                                             "Exit Lottery",
                                             textAlign = TextAlign.Center,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = StarsColors.White
+                                            color = StarsColors.OnAccent
                                         )
                                     }
                                 }
@@ -352,14 +352,14 @@ fun CampsiteDetailsScreen(
                                         bottomStart = corner,
                                         bottomEnd = 0.dp
                                     ),
-                                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                    colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                                     modifier = Modifier.weight(1F)
                                 ) {
                                     Text(
                                         "No Lottery",
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = StarsColors.White,
+                                        color = StarsColors.OnAccent,
                                     )
                                 }
                             }
@@ -373,7 +373,7 @@ fun CampsiteDetailsScreen(
                                     bottomStart = 0.dp,
                                     bottomEnd = corner
                                 ),
-                                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent),
                                 modifier = Modifier.weight(1F)
                             ) {
                                 Text(
@@ -399,7 +399,7 @@ fun CampsiteDetailsScreen(
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .background(StarsColors.White)
+                    .background(StarsColors.Surface)
                     .fillMaxSize()
             ) {
                 // images
@@ -457,8 +457,8 @@ fun CampsiteDetailsScreen(
                         StarRatingDisplay(
                             average = shownCampsite.averageRating,
                             count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
-                            color = StarsColors.Yellow,
-                            numberColor = StarsColors.Black
+                            color = StarsColors.Accent3,
+                            numberColor = StarsColors.OnSurface
                         )
                     }
 
@@ -577,7 +577,6 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
     // column to hold things and make background purple
     Column(modifier = Modifier
         .fillMaxSize()
-        .background(color = StarsColors.Purple)
         .statusBarsPadding()) {
 
         BackButton(navController)
@@ -632,7 +631,7 @@ fun OwnerUserRow(userProfile: UserProfile){
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        colors = cardColors(StarsColors.White)
+        colors = cardColors(StarsColors.Surface)
     ) {
 
         Row(Modifier

@@ -51,7 +51,7 @@ private fun FilterSectionTitle(text: String) {
         text,
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
-        color = StarsColors.Purple)
+        color = StarsColors.OnSurface)
 }
 
 /**
@@ -89,7 +89,7 @@ fun FilterDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = StarsColors.White,
+            color = StarsColors.Surface,
         ) {
             if (showMap) {
                 Box(modifier = Modifier.fillMaxWidth().height(500.dp)) {
@@ -118,19 +118,19 @@ fun FilterDialog(
                         "Filter and Sort",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = StarsColors.Purple
+                        color = StarsColors.OnSurface
                     )
 
                     //filter by location
                     FilterSectionTitle("Location")
                     Text(
                         text = location?.let { "%.4f, %.4f".format(it.latitude, it.longitude) } ?: "Any location",
-                        color = StarsColors.Purple
+                        color = StarsColors.OnSurface
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(
                             onClick = { showMap = true },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent3, StarsColors.OnAccent),
                         ) {
                             Text(if (location == null) "Pick location" else "Change location")
                         }
@@ -157,12 +157,12 @@ fun FilterDialog(
                     FilterSectionTitle("Date")
                     Text(
                         text = dateRange?.let { "${formatter.format(Date(it.start))} – ${formatter.format(Date(it.end))}" } ?: "Any dates",
-                        color = StarsColors.Purple
+                        color = StarsColors.OnSurface
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(
                             onClick = { showDatePicker = true },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent)
                         ) {
                             Text(if (dateRange == null) "Pick dates" else "Change dates")
                         }
@@ -245,7 +245,7 @@ fun FilterDialog(
                                         CampsiteSort(sortField, ascending)
                                     )
                                 },
-                                colors = ButtonDefaults.buttonColors(StarsColors.Purple)
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent)
                             ) {
                                 Text("Apply")
                             }
@@ -283,7 +283,7 @@ fun FilterDialog(
                             Text(
                                 "Select your stay",
                                 modifier = Modifier.padding(12.dp),
-                                color = StarsColors.Purple,
+                                color = StarsColors.OnSurface,
                                 fontWeight = FontWeight.Bold
                             )
                         },

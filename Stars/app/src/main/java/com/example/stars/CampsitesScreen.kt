@@ -39,14 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
-// cyan, magenta, yellow, from top to bottom
-/*
-val campsiteCardColors = listOf(
-    StarsColors.Cyan,
-    StarsColors.Magenta,
-    StarsColors.Yellow
-)
-*/
 
 /**
  * Screen to browse all the campsites
@@ -76,7 +68,7 @@ fun CampsitesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(StarsColors.Purple)
+            .background(StarsColors.Background)
             ,//.navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -90,8 +82,8 @@ fun CampsitesScreen(
             Button(
                 onClick = { showFilter = true },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (filtersOn) StarsColors.Yellow else StarsColors.White,
-                    contentColor = StarsColors.Purple
+                    containerColor = if (filtersOn) StarsColors.Accent3 else StarsColors.Surface,
+                    contentColor = if (filtersOn) StarsColors.OnAccent else StarsColors.OnSurface
                 ),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
@@ -129,7 +121,7 @@ fun CampsitesScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (results.isEmpty()) {
-                Text("No campsites found", color = StarsColors.White)
+                Text("No campsites found", color = StarsColors.OnBackground)
             } else {
                 // List of campsites
                 LazyColumn {
@@ -151,7 +143,7 @@ fun CampsitesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
-                .background(StarsColors.White),
+                .background(StarsColors.Surface),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Search field
@@ -161,13 +153,13 @@ fun CampsitesScreen(
                 placeholder = {
                     Text(
                         text = "Search",
-                        color = StarsColors.Purple,
+                        color = StarsColors.OnSurface,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 textStyle = TextStyle(
-                    color = StarsColors.Purple,
+                    color = StarsColors.OnSurface,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 ),
@@ -176,9 +168,9 @@ fun CampsitesScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = StarsColors.Purple,
-                    unfocusedIndicatorColor = StarsColors.Purple.copy(alpha = 0.6f),
-                    cursorColor = StarsColors.Purple
+                    focusedIndicatorColor = StarsColors.OnSurface,
+                    unfocusedIndicatorColor = StarsColors.OnSurface.copy(alpha = 0.6f),
+                    cursorColor = StarsColors.OnSurface
                 ),
                 modifier = Modifier
                     .weight(1f)
