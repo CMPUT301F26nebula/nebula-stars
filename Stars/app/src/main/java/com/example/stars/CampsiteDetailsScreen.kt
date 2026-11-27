@@ -2,7 +2,6 @@
  * the expanded view of a campsites details. if you are a user you can join/leave an active lottery
  * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
  * if you are an admin you can delete the listing or ban the owner.
- * TODO: add time and place details
  * BUG: images have white space on the left and do not fill
  */
 package com.example.stars
@@ -32,11 +31,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -197,8 +199,22 @@ fun CampsiteDetailsScreen(
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = RandomStarsColor.contrast(titleColor)
+                        color = RandomStarsColor.contrast(titleColor),
+                        modifier = Modifier.weight(0.7f)
                     )
+
+                    // Get campsite location
+                    Button(
+                        onClick = { navController.navigate("location/${campsite.location.latitude},${campsite.location.longitude}") },
+                        shape = RoundedCornerShape(0.dp),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Transparent),
+                        modifier = Modifier.weight(0.3f)
+                    ) {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = "location symbol"
+                        )
+                    }
                 }
             },
             bottomBar = {
@@ -384,24 +400,6 @@ fun CampsiteDetailsScreen(
                             ) {
                                 Text(
                                     "QR Code", textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                            // Get campsite location
-                            // TODO for Cameron: Make this pretty
-                            Button(
-                                onClick = { navController.navigate("location/${campsite.location.latitude},${campsite.location.longitude}") },
-                                shape = RoundedCornerShape(
-                                    topStart = 0.dp,
-                                    topEnd = 0.dp,
-                                    bottomStart = 0.dp,
-                                    bottomEnd = corner
-                                ),
-                                colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent),
-                                modifier = Modifier.weight(1F)
-                            ) {
-                                Text(
-                                    "Location", textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
