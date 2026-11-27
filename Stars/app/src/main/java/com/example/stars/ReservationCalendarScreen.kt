@@ -72,6 +72,7 @@ fun ReservationCalendarDay(
         fg = StarsColors.OnHighlight
         circleColor = StarsColors.Highlight
     } else if (day.isFiller) {
+        fg = StarsColors.OnBackground
         modifier = modifier.background(StarsColors.Muted)
     }
     if (day.events.isNotEmpty()) {
