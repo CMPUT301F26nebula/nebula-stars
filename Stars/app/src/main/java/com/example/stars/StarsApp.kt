@@ -151,6 +151,7 @@ fun StarsApp(notifs: Boolean = false) {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
                 composable("home") { HomeScreen(navController, currentUser) }
+                composable("scan qr code"){QRCodeScannerScreen(navController)}
                 composable("campsites") {
                     CampsitesScreen(
                         navController,
