@@ -60,22 +60,22 @@ fun ReservationCalendarDay(
     eventColors: Map<String, Color> = emptyMap(),
     onClick: (CalendarDay) -> Unit = {}
 ) {
-    var fg = StarsColors.OnBackground
+    var fg = StarsColors.OnSurface
     var circleColor = StarsColors.Transparent
     var modifier = Modifier
         .fillMaxSize()
-        .background(StarsColors.OnSurface)
-        .border(1.dp, StarsColors.Surface)
+        .background(StarsColors.Surface)
+        .border(1.dp, StarsColors.OnSurface.copy(alpha = 0.25f))
 
-
+    // today gets a highlight circle around the number
     if (day.isCurrent) {
-        fg = StarsColors.OnSurface
-        circleColor = StarsColors.OnBackground
-        modifier = modifier.background(StarsColors.OnBackground)
-    } else   if (day.isFiller) {
+        fg = StarsColors.OnHighlight
+        circleColor = StarsColors.Highlight
+    } else if (day.isFiller) {
         modifier = modifier.background(StarsColors.Muted)
     }
     if (day.events.isNotEmpty()) {
+        if (!day.isCurrent) fg = StarsColors.OnAccent // today keeps its circle colors
         val colorStops = buildList {
             val stopInc = 1.0f / day.events.size
             var stop = 0.0f
