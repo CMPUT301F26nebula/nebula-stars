@@ -1,6 +1,7 @@
 package com.example.stars
 
 import android.R
+import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,7 +53,35 @@ fun ReservationCard(
     campsite: Campsite,
     onClick: (Reservation) -> Unit = {}
 ) {
+    var colour: androidx.compose.ui.graphics.Color
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
+
+
+    // change the shown status text to the correct word to the status and the colour to match
+    //TODO change the colours to correct
+    val text = when(reservation.status){
+        ReservationStatus.INVITED -> {
+            colour = StarsColors.Purple
+            "Invited"
+        }
+        ReservationStatus.ACCEPTED -> {
+            colour = StarsColors.Cyan
+            "Accepted"
+        }
+        ReservationStatus.CANCELLED_BY_OWNER -> {
+            colour = StarsColors.Magenta
+            "Cancelled"
+        }
+        ReservationStatus.CANCELLED_BY_ENTRANT -> {
+            colour = StarsColors.Magenta
+            "Cancelled"
+        }
+        ReservationStatus.DECLINED -> {
+            colour = StarsColors.Yellow
+            "Declined"
+        }
+    }
+
     ElevatedCard(
         modifier = Modifier
             .padding(12.dp)
@@ -63,7 +92,7 @@ fun ReservationCard(
         shape = RoundedCornerShape(
             10.dp
         ),
-        colors = CardDefaults.cardColors(StarsColors.Cyan)
+        colors = CardDefaults.cardColors(colour)
     ) {
         Row(
             modifier = Modifier
@@ -84,8 +113,7 @@ fun ReservationCard(
                 color = StarsColors.White
             )
 
-            Text(
-                text = "${reservation.status}",
+            Text(text = text,
                 maxLines = 1,
                 autoSize = TextAutoSize.StepBased(
                     minFontSize = 1.sp,

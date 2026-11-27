@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import kotlinx.coroutines.async
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
@@ -268,27 +267,38 @@ fun UserProfileScreen(
                                 )
                             } else {
                                 // List of campsites
-                                LazyColumn (modifier = Modifier
-                                    .height(290.dp)
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .background(StarsColors.Purple)
+                                LazyColumn (modifier = Modifier.clip(RoundedCornerShape(5.dp)).padding(12.dp)
                                 ) {
                                     itemsIndexed(ownedCampsites) { index, campsite ->
-                                        CampsiteRow(
-                                            campsite = campsite,
-                                            color = RandomStarsColor.fromId(campsite.id),
-                                            onClick = {
-                                                navController.navigate(
-                                                    "campsite/${
+                                        Button(onClick = {
+                                                navController.navigate("campsite/${
                                                         Uri.encode(
                                                             campsite.id
                                                         )
                                                     }"
                                                 )
                                             },
-                                            imageRepository = imageRepository
-                                        )
-                                        Spacer(modifier = Modifier.height(12.dp))
+                                            shape = RoundedCornerShape(
+                                                topStart = 5.dp,
+                                                topEnd = 5.dp,
+                                                bottomStart = 5.dp,
+                                                bottomEnd = 5.dp
+                                            ),
+                                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ){
+                                            Text(campsite.title,
+                                                modifier = Modifier.fillMaxWidth(),
+                                                textAlign = TextAlign.Start,
+                                                maxLines = 1, autoSize = TextAutoSize.StepBased(
+                                                    minFontSize = 1.sp,
+                                                    maxFontSize = 20.sp,
+                                                    stepSize = 1.sp
+                                                ),
+                                                color = StarsColors.White
+                                            )
+                                        }
+
                                     }
                                 }
                             }
@@ -297,9 +307,9 @@ fun UserProfileScreen(
 
                     if (currentUser.permission == UserPermission.ADMIN) {
                         Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
                         ) {
+
                             // if not trying to ban user, show the delete button
                             if (!confirmBan) {
                                 AdminActionOnUser(
@@ -316,7 +326,8 @@ fun UserProfileScreen(
                                             navController.popBackStack()
                                         }
                                     },
-                                    onCancel = { confirmDeletion = false }
+                                    onCancel = { confirmDeletion = false },
+                                    Modifier.weight(1f)
                                 )
                             }
 
@@ -340,7 +351,8 @@ fun UserProfileScreen(
                                         confirmDeletion = false
                                         navController.popBackStack()
                                     },
-                                    onCancel = { confirmBan = false }
+                                    onCancel = { confirmBan = false },
+                                    Modifier.weight(1f)
                                 )
                             }
                         }

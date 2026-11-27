@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.navArgument
-import coil.compose.AsyncImage
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 

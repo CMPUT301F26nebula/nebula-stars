@@ -7,13 +7,23 @@ package com.example.stars
 import android.widget.Button
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +35,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.runBlocking
@@ -126,7 +139,7 @@ fun OwnerReservationsCalendar(navController: NavController,
         // Header
         ScreenHeader(
             navController = navController,
-            title = "RESERVATIONS"
+            title = "CALENDAR"
         )
 
         Spacer(Modifier.weight(1.0f))
@@ -144,22 +157,26 @@ fun OwnerReservationsCalendar(navController: NavController,
     }
 }
 
-
+/**
+ * this function shows a list of reservations for owned campsites based on a set of filters
+ */
 @Composable
 fun OwnerReservationsList(navController: NavController,reservationRepository: ReservationRepository,
                           campsiteRepository: CampsiteRepository, currentUser: UserProfile,
                           userRepository: UserRepository){
 
     var userReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
-    var calendarReady by remember { mutableStateOf(false) }
     var selectedReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
     var ownedCampsites by remember { mutableStateOf<List<Campsite>>(emptyList()) }
     var selectedReservation: Reservation? by remember { mutableStateOf(null) }
+    var filter by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
 
     DisposableEffect(Unit) {
         // TERRIBLY inefficient but we don't store reservations with their user so :P TODO maybe change that later
         val listener = reservationRepository.addListener {
-            calendarReady = false
+
 
             // get owned campsites
             val campsites = runBlocking { campsiteRepository.getAll() }
@@ -182,8 +199,9 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
                     }
                 }
             }
-            calendarReady = true
         }
+
+
 
         // should probably unregister the listener after we exit this screen
         onDispose { listener.remove() }
@@ -191,9 +209,9 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
 
 
     var campsites: Map<String, Campsite> by remember { mutableStateOf(emptyMap()) }
-    var listReady by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect(userReservations) {
         campsites = buildMap {
             for (res in userReservations) {
                 Databases.campsiteRepository.getWithId(res.campsiteId)?.let {
@@ -201,7 +219,6 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
                 }
             }
         }
-        listReady = true
     }
 
     // reservation details
@@ -221,48 +238,197 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
         )
     }
 
+    // set the filter when the user hits a button
+    when(filter){
+        "" -> {selectedReservations = userReservations}
 
-    Column() {
+        "Declined" -> {
+            val tempSelectedList = ArrayList<Reservation>()
+
+            for (reservation in userReservations){
+                if (reservation.status == ReservationStatus.DECLINED){
+                    tempSelectedList.add(reservation)
+                }
+            }
+            selectedReservations = tempSelectedList
+        }
+        "Invited" -> {
+            val tempSelectedList = ArrayList<Reservation>()
+
+            for (reservation in userReservations){
+                if (reservation.status == ReservationStatus.INVITED){
+                    tempSelectedList.add(reservation)
+                }
+            }
+
+            selectedReservations = tempSelectedList
+        }
+
+        "Cancelled" -> {
+            val tempSelectedList = ArrayList<Reservation>()
+
+            for (reservation in userReservations){
+                if (reservation.status >= ReservationStatus.CANCELLED_BY_ENTRANT){
+                    tempSelectedList.add(reservation)
+                }
+            }
+
+            selectedReservations = tempSelectedList
+        }
+
+        "Accepted" -> {
+            val tempSelectedList = ArrayList<Reservation>()
+
+            for (reservation in userReservations){
+                if (reservation.status == ReservationStatus.ACCEPTED){
+                    tempSelectedList.add(reservation)
+                }
+            }
+
+            selectedReservations = tempSelectedList
+        }
+
+    }
+
+
+    // the screen
+    Column(modifier = Modifier.fillMaxSize()) {
 
         ScreenHeader(
             navController = navController,
-            title = "RESERVATIONS LIST"
+            title = "RESERVATIONS",
+            contentAfter = {
+                IconButton(onClick = { expanded = !expanded }) {
+
+                    Column() {
+                    //TODO: Replace with correct colour
+                    Text(
+                        text = "☰",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = StarsColors.Purple
+                    )
+                    Box(modifier = Modifier.fillMaxWidth()){
+
+                        DropdownMenu(expanded = expanded,
+                            onDismissRequest = {expanded = false},
+
+                        ) {
+
+                            DropdownMenuItem(text = {
+                                Text(text = "All",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = 1.sp,
+                                        maxFontSize = 14.sp,
+                                        stepSize = 1.sp
+                                    ),
+                                )
+                            },
+
+                                onClick = {
+                                    filter = ""
+                                    expanded = false
+                                }
+                            )
+
+                            DropdownMenuItem(text = {
+                                Text(text = "Cancelled",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = 1.sp,
+                                        maxFontSize = 14.sp,
+                                        stepSize = 1.sp
+                                    ),
+                                )
+                            },
+
+                                onClick = {
+                                    filter = "Cancelled"
+                                    expanded = false
+                                }
+                            )
+
+                            DropdownMenuItem(text = {
+                                Text(text = "Accepted",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = 1.sp,
+                                        maxFontSize = 14.sp,
+                                        stepSize = 1.sp
+                                    ),
+                                    color = StarsColors.Black
+                                )
+                            },
+
+                                onClick = {
+                                    filter = "Accepted"
+                                    expanded = false
+                                }
+                            )
+
+                            DropdownMenuItem(text = {
+                                Text(text = "Invited",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = 1.sp,
+                                        maxFontSize = 14.sp,
+                                        stepSize = 1.sp
+                                    ),
+                                )
+                            },
+
+                                onClick = {
+                                    filter = "Invited"
+                                    expanded = false
+                                }
+                            )
+
+                            DropdownMenuItem(text = {
+                                Text(text = "Declined",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 1,
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = 1.sp,
+                                        maxFontSize = 14.sp,
+                                        stepSize = 1.sp
+                                    ),
+                                )
+                            },
+
+                                onClick = {
+                                    filter = "Declined"
+                                    expanded = false
+                                }
+                            )
+
+                        }
+
+                    }
+                }
+                    }
+            }
         )
 
+
+
         ReservationList(
-            Modifier,
+            Modifier.weight(1f),
             selectedReservations,
             campsites,
             onClick = {
                 selectedReservation = it
-                selectedReservations = emptyList()
             }
         )
 
-        Row(){
-            Button(onClick = {
-                    val tempSelectedList = ArrayList<Reservation>()
-
-                    for (reservation in userReservations){
-                        if (reservation.status >= ReservationStatus.CANCELLED_BY_ENTRANT){
-                            tempSelectedList.add(reservation)
-                        }
-                    }
-
-                    selectedReservations = tempSelectedList
-                }
-            ){
-                Text(   Text = "Cancelled",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center, maxLines = 1, autoSize = TextAutoSize.StepBased(
-                            minFontSize = 1.sp,
-                            maxFontSize = 50.sp,
-                            stepSize = 1.sp
-                        ),
-                    )
-            }
-        }
     }
-
-
 }

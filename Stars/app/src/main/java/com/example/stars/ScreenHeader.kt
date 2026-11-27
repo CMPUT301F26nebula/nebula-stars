@@ -55,8 +55,9 @@ fun ScreenHeader(
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
             color = StarsColors.Purple,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            lineHeight = 34.sp
         )
 
         Spacer(Modifier.weight(1.0f))

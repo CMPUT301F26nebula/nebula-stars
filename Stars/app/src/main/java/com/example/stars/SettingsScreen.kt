@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 /**
  * Screen you can get to from the home page, shows all your settings options as well as register as
  * owner and become admin.
- * TODO: have a notification on/off checkbox when notifications are implemented.
  * TODO: make it so that admins are notified on admin request to approve new admins
  * TODO: any other settings we need
  */
@@ -52,9 +51,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
 
 
     // back button
-    Box(modifier = Modifier.statusBarsPadding()){
-        BackButton(navController)
-    }
+    ScreenHeader(navController = navController, title = "SETTINGS")
 
     // used for centering
     Column(modifier = Modifier.fillMaxSize(),
@@ -89,12 +86,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         },
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
                             .testTag("Request Admin"),
-                        shape = RoundedCornerShape(
-                            topStart = 5.dp,
-                            topEnd = 5.dp,
-                            bottomStart = 5.dp,
-                            bottomEnd = 15.dp
-                        ),
+                        shape = RoundedCornerShape(5.dp),
                         colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
                         enabled = !currentUser.banned
                     ) { Text("Request Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
@@ -114,11 +106,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
                             .testTag("Become Admin"),
                         shape = RoundedCornerShape(
-                            topStart = 5.dp,
-                            topEnd = 5.dp,
-                            bottomStart = 5.dp,
-                            bottomEnd = 15.dp
-                        ),
+                        5.dp),
                         colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
                     ) {
                         Text("Confirm Become Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -129,13 +117,9 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                 if (currentUser.permission == UserPermission.ADMIN && !showAdminRemove) {
                     Button(
                         onClick = { showAdminRemove = true },
-                        shape = RoundedCornerShape(
-                            topStart = 5.dp,
-                            topEnd = 5.dp,
-                            bottomStart = 5.dp,
-                            bottomEnd = 5.dp
-                        ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                        shape = RoundedCornerShape(5.dp),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                        modifier = Modifier.size(width = 300.dp, height = 50.dp)
                     ) {
                         Text(
                             "Remove Admin Status",
@@ -169,12 +153,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         },
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
                             .testTag("Become Owner"),
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 15.dp
-                        ),
+                        shape = RoundedCornerShape(5.dp),
                         colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
                         enabled = !currentUser.banned
                     ) {
@@ -196,12 +175,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         },
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
                             .testTag("Confirm Become Owner"),
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 15.dp
-                        ),
+                        shape = RoundedCornerShape(5.dp),
                         colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
                     ) {
                         Text("Confirm Become Owner", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -216,12 +190,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             showOwnerRemove = true
                             showAdminSignUp = false
                         },
-                        shape = RoundedCornerShape(
-                            topStart = 5.dp,
-                            topEnd = 5.dp,
-                            bottomStart = 5.dp,
-                            bottomEnd = 15.dp
-                        ),
+                        shape = RoundedCornerShape(5.dp),
                         colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
                         modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Remove Owner")
                     ) {
@@ -258,14 +227,14 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                     modifier = Modifier
                         .size(width = 300.dp, height = 50.dp)
                         .testTag("appPolicyButton"),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(5.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = StarsColors.Cyan
                     )
                 ) {
                     Text(
                         text = "Policies & Guidelines",
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = StarsColors.White
                     )

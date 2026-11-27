@@ -84,7 +84,7 @@ fun OwnerViewCampsites(navController: NavController,
                         if (campsite.ownerId == currentUser.id) {
                             CampsiteRow(
                                 campsite = campsite,
-                                color = campsiteCardColors[index % campsiteCardColors.size],
+                                color = StarsColors.Cyan,
                                 onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
                                 imageRepository = imageRepository
                             )
