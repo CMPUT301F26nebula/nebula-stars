@@ -36,7 +36,7 @@ fun AppPolicyScreen(navController: NavController){
             text = "App Policies & Guidelines",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = StarsColors.White
+            color = StarsColors.Surface
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -45,7 +45,7 @@ fun AppPolicyScreen(navController: NavController){
             text = "Policy Information",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = StarsColors.White
+            color = StarsColors.Surface
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -53,7 +53,7 @@ fun AppPolicyScreen(navController: NavController){
         Text(
             text = "The app policies and guidelines will appear here once they have been approved by the Nebula Stars team.",
             fontSize = 16.sp,
-            color = StarsColors.White,
+            color = StarsColors.Surface,
             modifier = Modifier.testTag("policyContent")
         )
 

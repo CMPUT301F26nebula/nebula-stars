@@ -124,7 +124,7 @@ fun UserProfileScreen(
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
-                        modifier = Modifier,
+                        modifier = Modifier.weight(1.0f).padding(bottom = 10.dp),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start
                     ) {
