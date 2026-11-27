@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,11 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+
 
 /**
  * Data for one home screen tile
@@ -43,6 +40,7 @@ fun HomeTile(navController: NavController, data: HomeButtonData, color: Color, m
             .clip(tileShape)
             .background(color)
             .clickable { navController.navigate(data.navRoute) }
+            .testTag(data.tag)
             .padding(14.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -56,12 +54,14 @@ fun HomeTile(navController: NavController, data: HomeButtonData, color: Color, m
             text = data.text,
             color = StarsColors.OnAccent,
             fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
 
-// tile colors
+// tile layout
 @Composable
 fun HomeLayout(navController: NavController, rows: List<List<HomeButtonData>>, modifier: Modifier = Modifier) {
     val accents = listOf(StarsColors.Accent1, StarsColors.Accent2, StarsColors.Accent3)
@@ -78,7 +78,7 @@ fun HomeLayout(navController: NavController, rows: List<List<HomeButtonData>>, m
                     HomeTile(
                         navController = navController,
                         data = data,
-                        // diagonal pattern so no two touching tiles share a color
+                        // tile color
                         color = accents[(rowIndex + colIndex) % accents.size],
                         modifier = Modifier
                             .weight(1f)
