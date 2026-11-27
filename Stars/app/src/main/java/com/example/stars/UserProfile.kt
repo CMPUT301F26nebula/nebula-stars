@@ -40,5 +40,5 @@ data class UserProfile(
     var notifs: Boolean = false,
     var firebaseId: String = "",
     var profilePic: String = "",
-    var theme: String = "Moonlight"
+    var theme: String = "Legacy"
 ): UniqueIdentifier

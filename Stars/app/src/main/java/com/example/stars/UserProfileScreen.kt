@@ -159,18 +159,6 @@ fun UserProfileScreen(
                                 100.dp,
                                 userProfile?.name ?: "user"
                             )
-                            /*
-                            AsyncImage(
-                                model = userProfile!!.profilePic,
-                                contentDescription = "profile picture",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .size(100.dp, 100.dp),
-                                contentScale = ContentScale.Crop,
-                                fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                                error = painterResource(R.drawable.default_pfp)
-                            )
-                             */
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
