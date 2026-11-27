@@ -40,8 +40,8 @@ object ThemePresets {
         highlight = Color(0xFFB758E8),
         onHighlight = Color(0xFFFFFFFF),
         muted = Color(0xFF800080),
-        confirm = Color(0xFFFF1493),
-        cancel = Color(0xFF008B8B),
+        confirm = Color(0xFF008B8B),
+        cancel = Color(0xFFFF1493),
     )
 
     // light theme

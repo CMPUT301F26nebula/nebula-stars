@@ -312,12 +312,12 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 10.dp,
                     bottomEnd = 10.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Accent3)
+                colors = ButtonDefaults.buttonColors(StarsColors.Surface, StarsColors.Cancel)
             ) {
                 Text("Show Admin Actions",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = StarsColors.OnAccent)
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     } else {
@@ -336,13 +336,12 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Accent3)
+                colors = ButtonDefaults.buttonColors(StarsColors.Surface, StarsColors.Cancel)
             ) {
                 Text(
                     "Hide Admin Actions",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = StarsColors.OnAccent
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
             Row(

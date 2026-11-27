@@ -136,7 +136,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent)
                     ) {
                         Text("Confirm Become Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -150,9 +150,10 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             topStart = 5.dp,
                             topEnd = 5.dp,
                             bottomStart = 5.dp,
-                            bottomEnd = 5.dp
+                            bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent)
+                        modifier = Modifier.size(width = 300.dp, height = 50.dp),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
                     ) {
                         Text(
                             "Remove Admin Status",
@@ -219,7 +220,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent)
                     ) {
                         Text("Confirm Become Owner", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -239,7 +240,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent),
                         modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Remove Owner")
                     ) {
                         Text(
