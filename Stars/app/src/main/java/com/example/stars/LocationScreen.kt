@@ -37,6 +37,12 @@ fun LocationScreen(
     initialLatitude: Double,
     initialLongitude: Double,
 ) {
+
+    ScreenHeader(
+        navController = navController,
+        title = "LOCATION"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +50,6 @@ fun LocationScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Campsite Location", color = StarsColors.OnBackground, style = Typography().titleMedium)
 
         Spacer(modifier = Modifier.size(24.dp))
 
@@ -52,17 +57,12 @@ fun LocationScreen(
             selectable = false,
             initialLatitude = initialLatitude,
             initialLongitude = initialLongitude,
-            initialZoom = 10.0
+            initialZoom = 10.0,
+            onlyZoom = true
         )
 
         Spacer(modifier = Modifier.size(24.dp))
 
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier.testTag("qrBackButton")
-        ) {
-            Text("Back")
-        }
     }
 }
 
