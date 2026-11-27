@@ -71,7 +71,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
     }
 
     // column to hold things and make background purple
-    Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple)) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
         ScreenHeader(
             navController = navController,
@@ -129,7 +129,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
             modifier = Modifier
                 .fillMaxWidth().padding(horizontal = 16.dp),
                 //.clickable(onClick = { navController.navigate("user profile/${Uri.encode(userProfile.id)}") }),
-            colors = cardColors(StarsColors.White)
+            colors = cardColors(StarsColors.Surface)
         ) {
 
             Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically,
@@ -249,7 +249,7 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 bottomStart = 5.dp,
                 bottomEnd = 5.dp
             ),
-            colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+            colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
             modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("get options")) {
             Text(action, textAlign = TextAlign.Center)
         }
@@ -266,7 +266,7 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomStart = 5.dp,
                     bottomEnd = 5.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
                 modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
                 Text("Confirm",textAlign = TextAlign.Center)
             }
@@ -280,7 +280,7 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomStart = 5.dp,
                     bottomEnd = 5.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent),
                 modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
                 Text("Cancel", textAlign = TextAlign.Center)
             }
@@ -312,12 +312,12 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 10.dp,
                     bottomEnd = 10.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Yellow)
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent3)
             ) {
                 Text("Show Admin Actions",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = StarsColors.White)
+                    color = StarsColors.OnAccent)
             }
         }
     } else {
@@ -336,13 +336,13 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Yellow)
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent3)
             ) {
                 Text(
                     "Hide Admin Actions",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = StarsColors.White
+                    color = StarsColors.OnAccent
                 )
             }
             Row(
@@ -368,13 +368,13 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                         bottomStart = 10.dp,
                         bottomEnd = 0.dp
                     ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                    colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                 ) {
                     Text(
                         "Ban Owner",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White
+                        color = StarsColors.OnAccent
                     )
                 }
 
@@ -392,13 +392,14 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                         bottomStart = 0.dp,
                         bottomEnd = 10.dp
                     ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cancel)
+
                 ) {
                     Text(
                         "Remove Listing",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White
+                        color = StarsColors.OnAccent
                     )
                 }
             }
@@ -431,7 +432,7 @@ fun AdminActionOnChat(action: String, onConfirm: () -> Unit) {
                     bottomStart = 5.dp,
                     bottomEnd = 5.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
                 modifier = Modifier.height(40.dp).weight(1f).testTag("get options")
             ) {
                 Text(action, textAlign = TextAlign.Center)
@@ -451,7 +452,7 @@ fun AdminActionOnChat(action: String, onConfirm: () -> Unit) {
                     bottomStart = 5.dp,
                     bottomEnd = 5.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
                 modifier = Modifier.height(40.dp).weight(1f).testTag("Confirm")
             ) {
                 Text("Confirm", textAlign = TextAlign.Center)
@@ -469,7 +470,7 @@ fun AdminActionOnChat(action: String, onConfirm: () -> Unit) {
                     bottomStart = 5.dp,
                     bottomEnd = 5.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent),
                 modifier = Modifier.height(40.dp).weight(1f).testTag("Cancel")
             ) {
                 Text("Cancel", textAlign = TextAlign.Center)

@@ -1,44 +1,43 @@
 package com.example.stars
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 /**
- * Generic back button
+ * Generic back button. Transparent, so it blends with whatever it sits on.
  *
  * @param navController NavController for popping the ui stack
+ * @param tint color of the arrow
  */
+
+// https://chatgpt.com/share/6b08d456-c4f0-83e8-9715-d4edab7e83c4
+// "android studio kotlin what are ways to do a back button symbol? Im using a special character right now
+// but is there other ways?" Chatgpt, 2026-11-26.
 @Composable
-fun BackButton(navController: NavController) {
-    Button(
+fun BackButton(navController: NavController, tint: Color = StarsColors.OnBackground) {
+    IconButton(
         onClick = {
             if (!navController.popBackStack()) {
                 navController.navigate("home")
-                }
-                  },
-        shape = RectangleShape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = StarsColors.Purple,
-            contentColor = StarsColors.White
-        ),
+            }
+        },
         modifier = Modifier
-            .testTag("backButton"), // for testing
-        contentPadding = PaddingValues(0.dp)
+            .testTag("backButton") // for testing
     ) {
-        Text(
-            text = "◀",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Back",
+            tint = tint,
+            modifier = Modifier.size(32.dp)
         )
     }
 }

@@ -101,7 +101,7 @@ fun ImageCarousel(
                     content = { Text("Delete Image",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = StarsColors.White,)
+                        color = StarsColors.OnAccent,)
                     },
                     modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete Image"),
                     shape = RoundedCornerShape(
@@ -110,7 +110,7 @@ fun ImageCarousel(
                         bottomStart = 10.dp,
                         bottomEnd = 10.dp
                     ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                    colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                 )
             }
         }
