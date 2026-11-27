@@ -159,6 +159,7 @@ fun StarsApp(notifs: Boolean = false) {
         }
     }
 
+    
     if (currentUser.id.isNotBlank()) {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
@@ -247,7 +248,7 @@ fun StarsApp(notifs: Boolean = false) {
                     AdminViewUserProfiles(
                         navController,
                         userRepository,
-                        campsiteRepository,
+                        imageRepository,
                         currentUser
                     )
                 }
@@ -258,6 +259,14 @@ fun StarsApp(notifs: Boolean = false) {
                         userRepository
                     )
                 }
+                composable("owned campsites"){
+                    OwnerViewCampsites(navController,
+                        campsiteRepository,
+                        imageRepository,
+                        currentUser
+                    )
+                }
+
                 composable(
                     route = "edit campsite {campsiteId}",
                     arguments = listOf(
@@ -432,7 +441,8 @@ fun StarsApp(notifs: Boolean = false) {
                         userID = userID,
                         campsiteRepository = campsiteRepository,
                         imageRepository = imageRepository,
-                        userRepository = userRepository
+                        userRepository = userRepository,
+                        reservationRepository = reservationRepository
                     )
                 }
 
@@ -456,7 +466,28 @@ fun StarsApp(notifs: Boolean = false) {
                         notificationRepository = notificationRepository
                     )
                 }
+
+                composable("owner calendar"){
+                    OwnerReservationsCalendar(
+                        navController,
+                        currentUser,
+                        reservationRepository,
+                        campsiteRepository,
+                        userRepository
+                    )
+                }
+
+                composable("owned reservations list"){
+                    OwnerReservationsList(
+                        navController,
+                        reservationRepository,
+                        campsiteRepository,
+                        currentUser,
+                        userRepository
+                    )
+                }
             }
         }
     }
+
 }

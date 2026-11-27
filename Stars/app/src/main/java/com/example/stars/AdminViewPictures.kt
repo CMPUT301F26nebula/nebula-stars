@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.navArgument
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
@@ -85,7 +86,7 @@ fun AdminViewPictures(navController: NavController, userRepository: UserReposito
                 // if they don't have a profile pic show nothing
                 if (user.profilePic != "") {
                     item() {
-                        AdminViewProfilePicturesRow(user, imageRepository, userRepository)
+                        AdminViewProfilePicturesRow(navController, user, imageRepository, userRepository)
                         Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
@@ -226,7 +227,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
  * this shows the profile pictures of the users. delete deletes
  */
 @Composable
-fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageRepository, userRepository: UserRepository){
+fun AdminViewProfilePicturesRow(navController: NavController, user: UserProfile, imageRepository: ImageRepository, userRepository: UserRepository){
 
     Card(
         colors  = CardDefaults.cardColors(
@@ -240,8 +241,8 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
         // offset by -3 since that covers the top of the card
         Column(modifier = Modifier.fillMaxWidth().offset(y = -3.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
-            // TODO: send click to users details
-            Button(onClick = {},
+
+            Button(onClick = { navController.navigate("user profile/${user.id}") },
                 shape = RoundedCornerShape(
                     topStart = 12.dp,
                     topEnd = 12.dp,

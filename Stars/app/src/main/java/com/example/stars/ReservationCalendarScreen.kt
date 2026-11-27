@@ -45,7 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import java.util.Calendar
 
 /**
  * A single calendar day that will change its background colour if there is a campsite reservation on that day
@@ -58,7 +57,7 @@ import java.util.Calendar
 fun ReservationCalendarDay(
     day: CalendarDay,
     eventColors: Map<String, Color> = emptyMap(),
-    onClick: (CalendarDay) -> Unit = {}
+    onClick: (List<Reservation>) -> Unit = {}
 ) {
     var fg = StarsColors.OnBackground
     var circleColor = StarsColors.Transparent
@@ -90,10 +89,10 @@ fun ReservationCalendarDay(
             .background(Brush.verticalGradient(colorStops = colorStops))
             .clickable(onClick = {
                 if (day.events.isNotEmpty()) {
-                    onClick(day)
+                    onClick(day.events)
                 }
             }
-        )
+            )
     }
 
     Box(
@@ -126,7 +125,7 @@ fun ReservationCalendarDay(
  */
 @OptIn(ExperimentalGridApi::class)
 @Composable
-fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDay) -> Unit = {}) {
+fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (List<Reservation>) -> Unit = {}) {
     val colors = listOf(StarsColors.Accent1, StarsColors.Accent2, StarsColors.Accent3)
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
@@ -145,15 +144,13 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
     var currentYear by remember { mutableIntStateOf(calendarManager.currentYear()) }
 
     // if reservations change a new calendarManager wont be created so we must update it if needed
-    LaunchedEffect(reservations, currentMonth) {
-        calendarManager.updateReservations(reservations)
-        val refreshCalender = {
-            calendarDays = calendarManager.getMonthDisplayDays().iterator()
-            currentMonth = calendarManager.currentMonthName()
-            currentYear = calendarManager.currentYear()
-        }
-        refreshCalender()
+    calendarManager.updateReservations(reservations)
+    val refreshCalender = {
+        calendarDays = calendarManager.getMonthDisplayDays().iterator()
+        currentMonth = calendarManager.currentMonthName()
+        currentYear = calendarManager.currentYear()
     }
+    refreshCalender()
 
     val changeMonthButtonModifier = Modifier
         .border(1.dp, StarsColors.OnBackground, shape = RoundedCornerShape(24.dp))
@@ -191,7 +188,9 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
             Button(
                 modifier = changeMonthButtonModifier,
                 onClick = {
-                    currentMonth = calendarManager.lastMonth()
+                    calendarManager.lastMonth()
+                    // force text to recompose as well
+                    refreshCalender()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
@@ -208,7 +207,8 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
             Button(
                 modifier = changeMonthButtonModifier,
                 onClick = {
-                    currentMonth = calendarManager.nextMonth()
+                    calendarManager.nextMonth()
+                    refreshCalender()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
@@ -315,25 +315,6 @@ fun ReservationCalendarScreen(
         onDispose { listener.remove() }
     }
 
-    // TODO remove at some point
-    var debugDialogState by remember { mutableStateOf(false) }
-    if (debugDialogState) {
-        DebugReservationCreator(
-            onClose = {
-                debugDialogState = false
-            },
-            onConfirm = {
-                val id = Reservation.uniqueIdFrom(currentUser.id, "07359064-6222-427e-a491-a3e66e731fb3", it)
-                reservationRepository.addOrUpdate(Reservation(
-                    id = id,
-                    timeRange = it,
-                    status = ReservationStatus.INVITED,
-                    entrantId = currentUser.id,
-                    campsiteId = "07359064-6222-427e-a491-a3e66e731fb3"
-                ))
-            }
-        )
-    }
 
     // if reservations overlap then the user should be able to choose which one they wanna look at
     if (selectedReservations.size > 1) {
@@ -355,10 +336,14 @@ fun ReservationCalendarScreen(
     // reservation details
     if (selectedReservation != null) {
         ReservationDetailsModal(
+            navController,
             selectedReservation!!,
             onClose = {
                 selectedReservation = null
-            }
+            },
+            onClickOtherPerson = {user, owner -> navController.navigate("user profile/${owner}")},
+            otherPersonText = {user, owner -> "Owner: $owner"},
+            action = "Leave Reservation"
         )
     }
 
@@ -373,28 +358,14 @@ fun ReservationCalendarScreen(
         ScreenHeader(
             navController = navController,
             title = "RESERVATIONS"
-        ) {
-            Text(
-                text = "+ ",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = StarsColors.OnSurface,
-                // TODO debug, remove later
-                modifier = Modifier.combinedClickable(
-                    onClick = {},
-                    onLongClick = {
-                        debugDialogState = true
-                    }
-                )
-            )
-        }
+        )
 
         Spacer(Modifier.weight(1.0f))
 
         // the thingy doesnt like to recompose properly after the reservations are found so loading screen it is :P
         if (calendarReady) {
             ReservationCalendar(userReservations) {
-                selectedReservations = it.events
+                selectedReservations = it
             }
         } else {
             LoadingText()
