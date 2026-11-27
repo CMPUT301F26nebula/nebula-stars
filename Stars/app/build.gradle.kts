@@ -71,6 +71,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.0")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-functions")
+    implementation("org.maplibre.gl:android-sdk-opengl:13.6.1")
 
     // QR code generation
     implementation("com.google.zxing:core:3.5.3")

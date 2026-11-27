@@ -133,7 +133,7 @@ fun UpdateCampsiteScreen(
             ratingCount = oldCampsite.ratingCount
         }
     }
-    
+
     // display QR code only for an existing, saved campsite
     LaunchedEffect(campsiteId) {
         val savedCampsite = campsiteRepo.getWithId(campsiteId)
@@ -566,7 +566,7 @@ fun UpdateCampsiteScreen(
 
                         OpenStreetLocationPicker(
                             initialLatitude = if (location.latitude != 0.0) location.latitude else 53.5344,
-                            initialLongitude = if (location.longitude != 0.0) location.longitude else 113.4903,
+                            initialLongitude = if (location.longitude != 0.0) location.longitude else -113.4903,
                             onLocationConfirmed = { result -> location = result }
                         )
 
