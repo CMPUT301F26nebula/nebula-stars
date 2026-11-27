@@ -1,3 +1,4 @@
+
 package com.example.stars
 
 import android.net.Uri
@@ -156,16 +157,6 @@ fun CampsiteDetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        /* overhauled nov 26 2026
-         * RIP to the greatest lines of code ever written:
-         *
-         * if (currentLottery != null) {
-         *      ...
-         * }
-         * if (currentLottery == null) {
-         *      ...
-         * }
-         */
         Scaffold(
             modifier = Modifier
                 .clip(
