@@ -64,6 +64,22 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID
 
+// Helper functions provided by Gemini, https://gemini.google.com/share/d/1QlViE8pcIrwnri9vOBtLyUEivtndgQj3?usp=sharing 2026-11-27
+private const val DEFAULT_CAMPSITE_LATITUDE = 53.5461
+private const val DEFAULT_CAMPSITE_LONGITUDE = -113.49028
+
+private fun formatCoordinateText(value: Double): String {
+    return if (value == 0.0) "" else value.toString()
+}
+
+private fun isValidLatitude(lat: Double): Boolean {
+    return lat.isFinite() && lat in -90.0..90.0
+}
+
+private fun isValidLongitude(lng: Double): Boolean {
+    return lng.isFinite() && lng in -180.0..180.0
+}
+
 /**
  * Screen to update info for a new or existing campsite
  * Restyled by Gemini, "Working on this android app in jetpack compose.
@@ -85,7 +101,6 @@ fun UpdateCampsiteScreen(
     imageRepo: ImageRepository,
     campsiteId: String = UUID.randomUUID().toString()
 ) {
-    // Set up
     // Variables to store working copy of the campsite
     var title by remember { mutableStateOf("") }
     var price by remember { mutableDoubleStateOf(0.0) }
@@ -96,7 +111,10 @@ fun UpdateCampsiteScreen(
     val reservations = remember { mutableStateListOf<String>() }
     val availabilitySchedule = remember { mutableStateListOf<EpochRange>() }
     var location by remember { mutableStateOf(LocationCoordinates(0.0, 0.0)) }
-    // not editable on this screen but kept so saving doesnt erase the campsite's ratings
+    var latInput by remember { mutableStateOf("") }
+    var lngInput by remember { mutableStateOf("") }
+
+    // Not editable on this screen, but kept so saving doesn't erase the campsite's ratings
     var ratingTotal by remember { mutableDoubleStateOf(0.0) }
     var ratingCount by remember { mutableIntStateOf(0) }
     var campsiteExists by remember(campsiteId) { mutableStateOf(false) }
@@ -117,7 +135,7 @@ fun UpdateCampsiteScreen(
     )
 
     // If a campsite exists, get its info and fill in
-    LaunchedEffect(Unit) {
+    LaunchedEffect(campsiteId) {
         val oldCampsite = campsiteRepo.getWithId(campsiteId)
         if (oldCampsite != null) {
             title = oldCampsite.title
@@ -125,21 +143,25 @@ fun UpdateCampsiteScreen(
             capacity = oldCampsite.capacity
             description = oldCampsite.description
             rules = oldCampsite.rules
+            imageIds.clear()
             imageIds.addAll(oldCampsite.imageIds)
+            reservations.clear()
             reservations.addAll(oldCampsite.reservationIds)
+            availabilitySchedule.clear()
             availabilitySchedule.addAll(oldCampsite.availabilitySchedule)
             location = oldCampsite.location
+            latInput = formatCoordinateText(oldCampsite.location.latitude)
+            lngInput = formatCoordinateText(oldCampsite.location.longitude)
             ratingTotal = oldCampsite.ratingTotal
             ratingCount = oldCampsite.ratingCount
         }
     }
 
-    // display QR code only for an existing, saved campsite
+    // Display QR code only for an existing, saved campsite
     LaunchedEffect(campsiteId) {
         val savedCampsite = campsiteRepo.getWithId(campsiteId)
         campsiteExists = savedCampsite != null &&
                 savedCampsite.ownerId == currentUser.id
-
     }
 
     Column(
@@ -159,7 +181,7 @@ fun UpdateCampsiteScreen(
 
             Column(
                 modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState())
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
@@ -379,35 +401,37 @@ fun UpdateCampsiteScreen(
                             LocalLocale.current.platformLocale
                         )
 
-                        // display list of selected date ranges
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)) {
-                                availabilitySchedule.forEach { dateRange ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                        // Display list of selected date ranges
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            availabilitySchedule.forEach { dateRange ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "${formatter.format(Date(dateRange.start))} - " +
+                                                "${formatter.format(Date(dateRange.end))}",
+                                        color = StarsColors.OnSurface,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Button(
+                                        modifier = Modifier.width(IntrinsicSize.Min),
+                                        onClick = {
+                                            availabilitySchedule.remove(dateRange)
+                                        }
                                     ) {
                                         Text(
-                                            text = "${formatter.format(Date(dateRange.start))} - " +
-                                                    "${formatter.format(Date(dateRange.end))}",
-                                            color = StarsColors.OnSurface,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Medium
+                                            text = "X",
+                                            fontWeight = FontWeight.Bold
                                         )
-                                        Button(
-                                            modifier = Modifier.width(IntrinsicSize.Min),
-                                            onClick = {
-                                                availabilitySchedule.remove(dateRange)
-                                            }
-                                        ) {
-                                            Text(
-                                                text = "X",
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
                                     }
+                                }
                             }
                         }
 
@@ -419,7 +443,6 @@ fun UpdateCampsiteScreen(
                                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                                     if (utcTimeMillis <= System.currentTimeMillis()) return false
                                     for ((start, end) in availabilitySchedule) {
-                                        // must check equals to as well otherwise it wont count the start and end dates
                                         if (utcTimeMillis in start..end) {
                                             return false
                                         }
@@ -429,14 +452,10 @@ fun UpdateCampsiteScreen(
                             }
                         )
 
-                        // TODO this + dialog should probably be moved to the start of the display hierarchy
                         var dateRangeDialogState by remember { mutableStateOf(false) }
-                        // anon function for consistency
-                        // if we ever lift the dialogue into its own function itd be a closure for the closure lol
                         val closeDialog = {
                             newStart = 0L
                             newEnd = 0L
-                            // null unselects the date picker selection
                             dateRangePickerState.setSelection(null, null)
                             dateRangeDialogState = false
                         }
@@ -444,7 +463,6 @@ fun UpdateCampsiteScreen(
                             Dialog(
                                 onDismissRequest = closeDialog
                             ) {
-                                // tall date input looks yuckyy
                                 val dialogHeight = when (dateRangePickerState.displayMode) {
                                     DisplayMode.Picker -> 600.dp
                                     else -> 300.dp
@@ -476,12 +494,7 @@ fun UpdateCampsiteScreen(
                                                     if (newStart > 0L && newEnd > 0L) {
                                                         val toRemove = mutableListOf<EpochRange>()
                                                         for (range in availabilitySchedule) {
-                                                            // cant put start/end on an invalid date but you can surround one
-                                                            // in that case we just remove all enclosed ranges so they get
-                                                            // "globbed" into the larger one
                                                             if (newStart < range.start && range.end < newEnd) {
-                                                                // throws a concurrency exception if we try and remove each range individually
-                                                                // so we batch them before removing all at once
                                                                 toRemove.add(range)
                                                             }
                                                         }
@@ -538,7 +551,7 @@ fun UpdateCampsiteScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // opens date picker dialog
+                        // Opens date picker dialog
                         Button(
                             onClick = {
                                 dateRangeDialogState = true
@@ -554,25 +567,89 @@ fun UpdateCampsiteScreen(
 
                         // Geolocation Section
                         Text(
-                            "LOCATION",
+                            "Latitude",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = StarsColors.OnSurface
                         )
-                        Text("Lat: ${location.latitude}", color = Color.Gray, fontSize = 14.sp)
-                        Text("Lng: ${location.longitude}", color = Color.Gray, fontSize = 14.sp)
+                        OutlinedTextField(
+                            value = latInput,
+                            onValueChange = { newValue ->
+                                latInput = newValue
+                                if (newValue.isEmpty()) {
+                                    location = LocationCoordinates(0.0, location.longitude)
+                                } else {
+                                    val parsed = newValue.toDoubleOrNull()
+                                    if (parsed != null && isValidLatitude(parsed)) {
+                                        location = LocationCoordinates(parsed, location.longitude)
+                                    }
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
+                                unfocusedTextColor = StarsColors.OnBackground,
+                                focusedTextColor = StarsColors.OnBackground,
+                                unfocusedLabelColor = StarsColors.OnBackground,
+                                focusedLabelColor = StarsColors.OnBackground
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("latitudeInput"),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal
+                            )
+                        )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                        OpenStreetLocationPicker(
-                            initialLatitude = if (location.latitude != 0.0) location.latitude else 53.5344,
-                            initialLongitude = if (location.longitude != 0.0) location.longitude else -113.4903,
-                            onLocationConfirmed = { result -> location = result }
+                        Text(
+                            "Longitude",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StarsColors.OnSurface
+                        )
+                        OutlinedTextField(
+                            value = lngInput,
+                            onValueChange = { newValue ->
+                                lngInput = newValue
+                                if (newValue.isEmpty()) {
+                                    location = LocationCoordinates(location.latitude, 0.0)
+                                } else {
+                                    val parsed = newValue.toDoubleOrNull()
+                                    if (parsed != null && isValidLongitude(parsed)) {
+                                        location = LocationCoordinates(location.latitude, parsed)
+                                    }
+                                }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
+                                unfocusedTextColor = StarsColors.OnBackground,
+                                focusedTextColor = StarsColors.OnBackground,
+                                unfocusedLabelColor = StarsColors.OnBackground,
+                                focusedLabelColor = StarsColors.OnBackground
+                            ),
+                            shape = fieldShape,
+                            modifier = Modifier.fillMaxWidth().testTag("longitudeInput"),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal
+                            )
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // changed this because this now ensures the button is only displayed to the campsites owner
+                        OpenStreetLocationPicker(
+                            initialLatitude = if (location.latitude != 0.0) location.latitude else DEFAULT_CAMPSITE_LATITUDE,
+                            initialLongitude = if (location.longitude != 0.0) location.longitude else DEFAULT_CAMPSITE_LONGITUDE,
+                            onLocationConfirmed = { result ->
+                                location = result
+                                latInput = formatCoordinateText(result.latitude)
+                                lngInput = formatCoordinateText(result.longitude)
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         if (campsiteExists) {
                             Button(
                                 onClick = {
