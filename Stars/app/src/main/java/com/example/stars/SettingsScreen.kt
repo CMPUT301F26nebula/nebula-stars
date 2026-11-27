@@ -290,7 +290,6 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
             }
         }
     }
-
 }
 
 /**

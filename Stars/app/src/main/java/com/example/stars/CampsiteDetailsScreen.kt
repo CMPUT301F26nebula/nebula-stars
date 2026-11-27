@@ -1,3 +1,10 @@
+/**
+ * the expanded view of a campsites details. if you are a user you can join/leave an active lottery
+ * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
+ * if you are an admin you can delete the listing or ban the owner.
+ * TODO: add time and place details
+ * BUG: images have white space on the left and do not fill
+ */
 package com.example.stars
 
 import android.net.Uri
@@ -11,9 +18,11 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -58,11 +67,16 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
 /**
- * the expanded view of a campsites details. if you are a user you can join/leave an active lottery
- * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
- * if you are an admin you can delete the listing or ban the owner.
- * TODO: add time and place details
- * BUG: images have white space on the left and do not fill
+ * Expanded [campsite] details screen
+ *
+ * @param navController navigation controller
+ * @param currentUser current [UserProfile]
+ * @param campsite [Campsite] to display
+ * @param campsiteRepository database accessor
+ * @param imageRepo database accessor
+ * @param userRepository database accessor
+ * @param lotteryRepository database accessor
+ * @param reservationRepository database accessor
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,32 +165,23 @@ fun CampsiteDetailsScreen(
         title = "CAMPSITE"
     )
 
-    Column(modifier = Modifier
-        .fillMaxSize(),
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        /* overhauled nov 26 2026
-         * RIP to the greatest lines of code ever written:
-         *
-         * if (currentLottery != null) {
-         *      ...
-         * }
-         * if (currentLottery == null) {
-         *      ...
-         * }
-         */
         Scaffold(
             modifier = Modifier
                 .clip(
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 30.dp,
-                        bottomStart = 10.dp,
-                        bottomEnd = 10.dp
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
                     )
                 )
-                .size(height = 500.dp, width = 310.dp), // TODO should prob do something about these hardcoded values since image carousel depends on it a bit
+                .size(height = 460.dp, width = 310.dp),
             topBar = {
                 val titleColor = RandomStarsColor.fromId(campsite.id)
                 Row(
@@ -198,7 +203,8 @@ fun CampsiteDetailsScreen(
             },
             bottomBar = {
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
                     // show the owner buttons if owner
                     if (currentUser.id == campsite.ownerId) {
@@ -381,15 +387,24 @@ fun CampsiteDetailsScreen(
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
-                        }
-                    }
-                    if (currentUser.permission == UserPermission.ADMIN) {
-                        Box(
-                            modifier = Modifier
-                                .height(40.dp)
-                                .fillMaxWidth()
-                        ) {
-                                AdminCampsiteActions(campsite, userRepository, campsiteRepository)
+                            // Get campsite location
+                            // TODO for Cameron: Make this pretty
+                            Button(
+                                onClick = { navController.navigate("location/${campsite.location.latitude},${campsite.location.longitude}") },
+                                shape = RoundedCornerShape(
+                                    topStart = 0.dp,
+                                    topEnd = 0.dp,
+                                    bottomStart = 0.dp,
+                                    bottomEnd = corner
+                                ),
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent),
+                                modifier = Modifier.weight(1F)
+                            ) {
+                                Text(
+                                    "Location", textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
                 }
@@ -413,7 +428,9 @@ fun CampsiteDetailsScreen(
                 Spacer(Modifier.height(4.dp))
 
                 Column(
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -564,6 +581,23 @@ fun CampsiteDetailsScreen(
                 }
             }
         }
+        if (currentUser.permission == UserPermission.ADMIN) {
+            // reserve space for second button row so everything doesnt move when u open this
+            Box(
+                modifier = Modifier.size(310.dp, 80.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        // needed to fill pixel gap
+                        .background(
+                            StarsColors.Accent3,
+                            RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
+                        )
+                ) {
+                    AdminCampsiteActions(campsite, userRepository, campsiteRepository)
+                }
+            }
+        }
     }
 }
 
@@ -642,12 +676,11 @@ fun OwnerUserRow(userProfile: UserProfile){
             Column() {
 
                 // Name
-                Text(
-                    text = userProfile.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-
-                    )
+                NameTag(
+                    name = userProfile.name,
+                    id = userProfile.id,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
 
                 // email
                 Text(
@@ -674,18 +707,6 @@ fun OwnerUserRow(userProfile: UserProfile){
                 100.dp,
                 userProfile.name
             )
-            /*
-            AsyncImage(
-                model = userProfile.profilePic,
-                contentDescription = "profile picture",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(100.dp, 100.dp),
-                contentScale = ContentScale.Crop,
-                fallback = painterResource(R.drawable.default_pfp), // shown when model is null
-                error = painterResource(R.drawable.default_pfp)
-            )
-             */
         }
     }
 }

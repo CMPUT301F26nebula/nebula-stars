@@ -371,6 +371,28 @@ fun StarsApp(notifs: Boolean = false) {
                         campsiteId = campsiteId
                     )
                 }
+                composable(
+                    route = "location/{latitude},{longitude}",
+                    arguments = listOf(
+                        navArgument("latitude") {
+                            type = NavType.FloatType
+                        },
+                        navArgument("longitude") {
+                            type = NavType.FloatType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val latitude = backStackEntry.arguments
+                        ?.getFloat("latitude")?.toDouble()
+                    val longitude = backStackEntry.arguments
+                        ?.getFloat("longitude")?.toDouble()
+
+                    LocationScreen(
+                        navController = navController,
+                        initialLatitude = latitude ?: 0.0,
+                        initialLongitude = longitude ?: 0.0
+                    )
+                }
 
                 composable(
                     route = "entrants/{lotteryID}",
