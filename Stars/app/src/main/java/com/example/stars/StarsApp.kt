@@ -159,10 +159,7 @@ fun StarsApp(notifs: Boolean = false) {
         }
     }
 
-    // TODO: Remove, made for testing
-    reservationRepository.addOrUpdate(Reservation("Test 2", EpochRange(1795667190126, 1797055200000), ReservationStatus.ACCEPTED, "9d895e0b02c72145","60c4be28-1d27-45b9-a3a0-ee72aaad82b1"))
-    reservationRepository.addOrUpdate(Reservation("Test 3", EpochRange(1795154400000, 1795845600000), ReservationStatus.ACCEPTED, "9d895e0b02c72145","dce17b36-57bf-4a15-9d07-91d1aa63bfd8"))
-
+    
     if (currentUser.id.isNotBlank()) {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
