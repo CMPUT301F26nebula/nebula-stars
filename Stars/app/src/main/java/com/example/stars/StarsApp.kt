@@ -27,15 +27,34 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.savedstate.SavedState
 import com.google.firebase.firestore.ListenerRegistration
+import com.example.stars.ui.theme.StarsPalette
+import com.example.stars.ui.theme.ThemePresets
 
 object StarsColors {
-    val Purple = Color(0xFF4B0082)
-    val DullPurple = Color(0xFF800080)
-    val BrightPurple = Color(0xFFB758E8)
-    val Cyan = Color(0xFF008B8B)
-    val Magenta = Color(0xFFFF1493)
-    val Yellow = Color(0xFFEFC700)
-    val White = Color(0xFFFFFFFF)
+    // the active theme, changing this recolors the whole app
+    var palette: StarsPalette by mutableStateOf(ThemePresets.Default)
+    val Background: Color get() = palette.background
+    val OnBackground: Color get() = palette.onBackground
+    val Surface: Color get() = palette.surface
+    val OnSurface: Color get() = palette.onSurface
+    val Accent1: Color get() = palette.accent1
+    val Accent2: Color get() = palette.accent2
+    val Accent3: Color get() = palette.accent3
+    val OnAccent: Color get() = palette.onAccent
+    val Highlight: Color get() = palette.highlight
+    val OnHighlight: Color get() = palette.onHighlight
+    val Muted: Color get() = palette.muted
+
+    // old names kept here so existing screens still compile
+    val Purple: Color get() = palette.background
+    val DullPurple: Color get() = palette.muted
+    val BrightPurple: Color get() = palette.highlight
+    val Cyan: Color get() = palette.accent1
+    val Magenta: Color get() = palette.accent2
+    val Yellow: Color get() = palette.accent3
+    val White: Color get() = palette.surface
+
+    // fixed colors that dont change with the theme
     val Grey = Color(0xBBBBBBFF)
     val Black = Color(0xFF000000)
     val Transparent = Color(0x00FFFFFF)
@@ -128,6 +147,11 @@ fun StarsApp(notifs: Boolean = false) {
         if (user != null) {
             currentUser = user
         }
+    }
+
+    // apply the user's saved theme whenever their profile loads or the theme changes
+    LaunchedEffect(currentUser.theme) {
+        StarsColors.palette = ThemePresets.byName(currentUser.theme)
     }
 
     // only navigates, never touches currentUser

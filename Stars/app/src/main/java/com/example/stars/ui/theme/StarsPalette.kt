@@ -1,13 +1,14 @@
 package com.example.stars.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.example.stars.ui.theme.ThemePresets.Default
+import com.example.stars.ui.theme.ThemePresets.all
 
 /**
  * App colors, each val has one job.
  */
 data class StarsPalette(
     val name: String,
-    val isDark: Boolean, // for status bar icons and material components
     val background: Color,
     val onBackground: Color,
     val surface: Color,
@@ -22,13 +23,12 @@ data class StarsPalette(
 )
 
 /**
- * the built in themes the user can pick from settings
+ * The built in themes the user can pick from settings
  */
 object ThemePresets {
     //mockup colors/default theme
     val Default = StarsPalette(
         name = "Default",
-        isDark = true,
         background = Color(0xFF4B0082),
         onBackground = Color(0xFFFFFFFF),
         surface = Color(0xFFFFFFFF),
@@ -41,10 +41,10 @@ object ThemePresets {
         onHighlight = Color(0xFFFFFFFF),
         muted = Color(0xFF800080)
     )
+
     // light theme
     val Light = StarsPalette(
         name = "Light",
-        isDark = false,
         background = Color(0xFFF4EFFA),
         onBackground = Color(0xFF2A1745),
         surface = Color(0xFFFFFFFF),
@@ -57,10 +57,10 @@ object ThemePresets {
         onHighlight = Color(0xFFFFFFFF),
         muted = Color(0xFFD9CCEB)
     )
+
     // dark theme
     val Dark = StarsPalette(
         name = "Dark",
-        isDark = true,
         background = Color(0xFF121212),
         onBackground = Color(0xFFE6E1EC),
         surface = Color(0xFF1E1E1E),
@@ -73,10 +73,10 @@ object ThemePresets {
         onHighlight = Color(0xFFEADDFF),
         muted = Color(0xFF2B2930)
     )
+
     // dark purple theme
     val Nebula = StarsPalette(
         name = "Nebula",
-        isDark = true,
         background = Color(0xFF1A0B2E),
         onBackground = Color(0xFFF3E8FF),
         surface = Color(0xFF2D1B4E),
@@ -89,10 +89,10 @@ object ThemePresets {
         onHighlight = Color(0xFF1A0B2E),
         muted = Color(0xFF3C2A5C)
     )
+
     // dark blue/pale yellow theme
     val Moonlight = StarsPalette(
         name = "Moonlight",
-        isDark = true,
         background = Color(0xFF0B1A33),
         onBackground = Color(0xFFFFF6D5),
         surface = Color(0xFF13294B),
@@ -105,10 +105,10 @@ object ThemePresets {
         onHighlight = Color(0xFF0B1A33),
         muted = Color(0xFF1B2F52)
     )
+
     // dark green theme
     val Forest = StarsPalette(
         name = "Forest",
-        isDark = true,
         background = Color(0xFF0F2417),
         onBackground = Color(0xFFEEF5E9),
         surface = Color(0xFF1B3A26),
@@ -123,4 +123,9 @@ object ThemePresets {
     )
 
     val all = listOf(Default, Light, Dark, Nebula, Moonlight, Forest)
+
+    /**
+     * Finds a preset by its saved name, or Default if it doesnt exist
+     */
+    fun byName(name: String): StarsPalette = all.find { it.name == name } ?: Default
 }
