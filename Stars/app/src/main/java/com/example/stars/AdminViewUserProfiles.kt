@@ -265,7 +265,7 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                 maxFontSize = 30.sp,
                 stepSize = 1.sp
             ),
-                color = StarsColors.White)
+                color = StarsColors.OnAccent)
         }
     }
 

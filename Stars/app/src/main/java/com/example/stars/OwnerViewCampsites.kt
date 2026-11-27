@@ -55,7 +55,6 @@ fun OwnerViewCampsites(navController: NavController,
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(StarsColors.Purple)
         ,//.navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -75,7 +74,7 @@ fun OwnerViewCampsites(navController: NavController,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (campsites.isEmpty()) {
-                Text("No campsites found", color = StarsColors.White)
+                Text("No campsites found", color = StarsColors.OnBackground)
             } else {
                 // List of campsites
                 LazyColumn {
@@ -84,7 +83,7 @@ fun OwnerViewCampsites(navController: NavController,
                         if (campsite.ownerId == currentUser.id) {
                             CampsiteRow(
                                 campsite = campsite,
-                                color = StarsColors.Cyan,
+                                color = StarsColors.Accent1,
                                 onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
                                 imageRepository = imageRepository
                             )

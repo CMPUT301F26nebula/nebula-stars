@@ -158,7 +158,7 @@ fun CampsiteDetailsScreen(navController: NavController,
         Box(
             modifier = Modifier
                 .background(
-                    StarsColors.White,
+                    StarsColors.OnBackground,
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 30.dp,
@@ -176,7 +176,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 bottomEnd = 10.dp,
             )).fillMaxWidth()) {
 
-                Row(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Cyan)
+                Row(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Accent1)
                     .padding(10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
@@ -186,7 +186,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = StarsColors.White,
+                        color = StarsColors.Surface,
                     )
 
                 }
@@ -263,7 +263,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                     StarRatingDisplay(
                         average = shownCampsite.averageRating,
                         count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
-                        color = StarsColors.Yellow,
+                        color = StarsColors.Accent3,
                         numberColor = StarsColors.Black
                     )
                 }
@@ -362,14 +362,14 @@ fun CampsiteDetailsScreen(navController: NavController,
                             bottomStart = corner,
                             bottomEnd = 0.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                         modifier = Modifier.size(height = 40.dp, width = 155.dp),
                     ) {
                         Text(
                             "View Entrants",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = StarsColors.White
+                            color = StarsColors.OnBackground
                         )
                     }
                 }
@@ -384,7 +384,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             bottomStart = corner,
                             bottomEnd = 0.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                         modifier = Modifier.size(height = 40.dp, width = 155.dp),
                     )
 
@@ -393,7 +393,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             "Create Lottery",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = StarsColors.White
+                            color = StarsColors.OnBackground
                         )
                     }
                 }
@@ -406,13 +406,13 @@ fun CampsiteDetailsScreen(navController: NavController,
                         bottomStart = 0.dp,
                         bottomEnd = corner
                     ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                    colors = ButtonDefaults.buttonColors(StarsColors.OnSurface),
                     modifier = Modifier.size(height = 40.dp, width = 155.dp),
                 ) {
                     Text("Edit Campsite",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StarsColors.White
+                        color = StarsColors.OnBackground
                     )
                 }
 
@@ -450,14 +450,14 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 bottomStart = corner,
                                 bottomEnd = 0.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                             modifier = Modifier.size(height = 40.dp, width = 155.dp),
                         ) {
                             Text(
                                 "Join Lottery",
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = StarsColors.White
+                                color = StarsColors.OnBackground
                             )
                         }
 
@@ -484,14 +484,14 @@ fun CampsiteDetailsScreen(navController: NavController,
                                 bottomStart = corner,
                                 bottomEnd = 0.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                             modifier = Modifier.size(height = 40.dp, width = 155.dp),
                         ) {
                             Text(
                                 "Exit Lottery",
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = StarsColors.White
+                                color = StarsColors.OnBackground
                             )
                         }
                     }
@@ -501,7 +501,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                 if (currentLottery == null) {
                     Box(modifier = Modifier
                         .background(
-                            StarsColors.Cyan,
+                            StarsColors.Accent1,
                             shape = RoundedCornerShape(
                                 topStart = 0.dp,
                                 topEnd = 0.dp,
@@ -516,7 +516,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                             "No Lottery",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = StarsColors.White,
+                            color = StarsColors.OnBackground,
 
                         )
                     }
@@ -529,7 +529,7 @@ fun CampsiteDetailsScreen(navController: NavController,
                         topEnd = 0.dp,
                         bottomStart = 0.dp,
                         bottomEnd = corner
-                    ),colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                    ),colors = ButtonDefaults.buttonColors(StarsColors.OnSurface),
                     modifier = Modifier.size(height = 40.dp, width = 155.dp),
 
                 ) {Text("QR Code",textAlign = TextAlign.Center,
@@ -557,7 +557,7 @@ fun OwnerViewUserProfiles(navController: NavController, lotteryID: String, userR
 
 
     // column to hold things and make background purple
-    Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple).statusBarsPadding()) {
+    Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
 
         BackButton(navController)
 
@@ -604,7 +604,7 @@ fun OwnerUserRow(userProfile: UserProfile){
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        colors = cardColors(StarsColors.White)
+        colors = cardColors(StarsColors.Surface)
     ) {
 
         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically,

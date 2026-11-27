@@ -306,7 +306,7 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
                         text = "☰",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = StarsColors.Purple
+                        color = StarsColors.OnSurface
                     )
                     Box(modifier = Modifier.fillMaxWidth()){
 

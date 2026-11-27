@@ -61,23 +61,23 @@ fun ReservationCard(
     //TODO change the colours to correct
     val text = when(reservation.status){
         ReservationStatus.INVITED -> {
-            colour = StarsColors.Purple
+            colour = StarsColors.Background
             "Invited"
         }
         ReservationStatus.ACCEPTED -> {
-            colour = StarsColors.Cyan
+            colour = StarsColors.Accent1
             "Accepted"
         }
         ReservationStatus.CANCELLED_BY_OWNER -> {
-            colour = StarsColors.Magenta
+            colour = StarsColors.Accent2
             "Cancelled"
         }
         ReservationStatus.CANCELLED_BY_ENTRANT -> {
-            colour = StarsColors.Magenta
+            colour = StarsColors.Accent2
             "Cancelled"
         }
         ReservationStatus.DECLINED -> {
-            colour = StarsColors.Yellow
+            colour = StarsColors.Accent3
             "Declined"
         }
     }
@@ -110,7 +110,7 @@ fun ReservationCard(
                     stepSize = 1.sp
                 ),
                 modifier = Modifier.weight(0.7f).padding(4.dp),
-                color = StarsColors.White
+                color = StarsColors.OnBackground
             )
 
             Text(text = text,
@@ -122,7 +122,7 @@ fun ReservationCard(
                 ),
                 modifier = Modifier.weight(0.3f).padding(4.dp),
                 style = MaterialTheme.typography.bodyMedium,
-                color = StarsColors.White
+                color = StarsColors.OnBackground
             )
         }
         Text(
@@ -133,7 +133,7 @@ fun ReservationCard(
             }",
             modifier = Modifier.padding(4.dp),
             style = MaterialTheme.typography.bodyMedium,
-            color = StarsColors.White
+            color = StarsColors.OnBackground
 
         )
     }
@@ -196,7 +196,7 @@ fun ReservationListModal(
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Card(colors  = CardDefaults.cardColors(
-                            containerColor = StarsColors.White
+                            containerColor = StarsColors.Surface
                         ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -204,11 +204,11 @@ fun ReservationListModal(
         {
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Purple).padding(12.dp),
+                Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Background).padding(12.dp),
                     ){
                     Text("CAMPSITES", style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = StarsColors.White,
+                        color = StarsColors.OnBackground,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.fillMaxWidth())
                 }

@@ -121,7 +121,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                     listOf(HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery", Icons.Default.Star)),
                     listOf(HomeButtonData("My Campsites", "ownedCampsitesButton", "owned campsites", Icons.Default.Home)),
                     listOf(HomeButtonData("Reservation Calendar", "ownedCampsiteReservationsButton", "owner calendar", Icons.Default.DateRange)),
-                    ListOf(HomeButtonData("Reservation List", "OwnedCampsiteReservationsList", "owned reservations list", Icons.Default.List)),
+                    listOf(HomeButtonData("Reservation List", "OwnedCampsiteReservationsList", "owned reservations list", Icons.Default.List)),
                 )
 
 

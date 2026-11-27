@@ -72,7 +72,7 @@ fun ReservationDetails(
     Column(
         verticalArrangement = Arrangement.Center
     ) {
-        Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Purple).padding(12.dp)
+        Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Background).padding(12.dp)
         ) {
             // header
             Text("RESERVATION",
@@ -85,7 +85,7 @@ fun ReservationDetails(
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start,
-                color = StarsColors.White,
+                color = StarsColors.OnBackground,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -243,7 +243,7 @@ fun ReservationDetailsModal(navController: NavController,
         onDismissRequest = onClose
     ) {
         Card(colors  = CardDefaults.cardColors(
-            containerColor = StarsColors.White
+            containerColor = StarsColors.Surface
         ),
             modifier = Modifier
                 .fillMaxWidth()

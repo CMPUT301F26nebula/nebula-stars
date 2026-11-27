@@ -37,7 +37,7 @@ fun AppPolicyScreen(navController: NavController){
         modifier = Modifier.fillMaxSize()) {
 
 
-        //TODO: change out color
+
         Card(
             modifier = Modifier.size(height = 500.dp, width = 310.dp).padding(10.dp),
 
@@ -47,9 +47,9 @@ fun AppPolicyScreen(navController: NavController){
             bottomStart = 10.dp,
             bottomEnd = 10.dp
         ),
-            //TODO: change out color
+
             colors  = CardDefaults.cardColors(
-                containerColor = StarsColors.White
+                containerColor = StarsColors.OnBackground
             ),
         ) {
             Column(
