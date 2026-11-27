@@ -93,7 +93,9 @@ object ThemePresets {
         onAccent = Color(0xFFFFFFFF),
         highlight = Color(0xFFC77DFF),
         onHighlight = Color(0xFF1A0B2E),
-        muted = Color(0xFF3C2A5C)
+        muted = Color(0xFF3C2A5C),
+        confirm = Color(0xFF752A96),
+        cancel = Color(0xFF5C38B0)
     )
 
     // dark blue/pale yellow theme
@@ -109,7 +111,9 @@ object ThemePresets {
         onAccent = Color(0xFFFFF6D5),
         highlight = Color(0xFFF6E7A1),
         onHighlight = Color(0xFF0B1A33),
-        muted = Color(0xFF1B2F52)
+        muted = Color(0xFF1B2F52),
+        confirm = Color(0xFF330DB2),
+        cancel = Color(0xFF0C42B4)
     )
 
     // dark green theme
@@ -125,7 +129,9 @@ object ThemePresets {
         onAccent = Color(0xFFF1FAEE),
         highlight = Color(0xFF95D5B2),
         onHighlight = Color(0xFF0F2417),
-        muted = Color(0xFF22412F)
+        muted = Color(0xFF22412F),
+        confirm = Color(0xFF223D1B),
+        cancel = Color(0xFF083304)
     )
 
     val all = listOf(Legacy, Light, Dark, Nebula, Moonlight, Forest)
