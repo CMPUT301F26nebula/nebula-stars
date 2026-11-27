@@ -397,7 +397,7 @@ fun CampsiteDetailsScreen(
                                     bottomStart = 0.dp,
                                     bottomEnd = corner
                                 ),
-                                colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent),
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                                 modifier = Modifier.weight(1F)
                             ) {
                                 Text(

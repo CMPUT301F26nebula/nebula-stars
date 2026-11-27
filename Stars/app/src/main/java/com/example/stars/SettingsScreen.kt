@@ -146,11 +146,12 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                 if (currentUser.permission == UserPermission.ADMIN && !showAdminRemove) {
                     Button(
                         onClick = { showAdminRemove = true },
+                        modifier = Modifier.size(width = 300.dp, height = 50.dp),
                         shape = RoundedCornerShape(
                             topStart = 5.dp,
                             topEnd = 5.dp,
                             bottomStart = 5.dp,
-                            bottomEnd = 5.dp
+                            bottomEnd = 15.dp
                         ),
                         colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent)
                     ) {
@@ -269,23 +270,22 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                 // user story #58 - allow users to view app policies and guidelines
 
                 Button(
-                    onClick = {
-                        navController.navigate("app policies")
-                    },
+                    onClick = { navController.navigate("app policies") },
                     modifier = Modifier
                         .size(width = 300.dp, height = 50.dp)
                         .testTag("appPolicyButton"),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 5.dp,
+                        topEnd = 5.dp,
+                        bottomStart = 5.dp,
+                        bottomEnd = 15.dp
+                    ),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = StarsColors.Accent1
+                        containerColor = StarsColors.Accent3,
+                        contentColor = StarsColors.OnAccent
                     )
                 ) {
-                    Text(
-                        text = "Policies & Guidelines",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = StarsColors.OnBackground
-                    )
+                    Text("Policies & Guidelines", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
