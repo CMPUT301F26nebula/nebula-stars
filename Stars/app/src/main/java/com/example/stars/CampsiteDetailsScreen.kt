@@ -572,7 +572,7 @@ fun CampsiteDetailsScreen(
                     modifier = Modifier
                         // needed to fill pixel gap
                         .background(
-                            StarsColors.Yellow,
+                            StarsColors.Accent3,
                             RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
                         )
                 ) {

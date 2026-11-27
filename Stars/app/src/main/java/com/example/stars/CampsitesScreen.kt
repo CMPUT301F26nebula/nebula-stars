@@ -101,8 +101,8 @@ fun CampsitesScreen(
                 navController.navigate("scan qr code")
             },
             colors = ButtonDefaults.buttonColors(
-            containerColor = StarsColors.White,
-            contentColor = StarsColors.Purple
+            containerColor = StarsColors.Surface,
+            contentColor = StarsColors.OnBackground
         ),
         modifier = Modifier
             .fillMaxWidth()
