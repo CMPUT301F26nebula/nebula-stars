@@ -4,7 +4,6 @@
 package com.example.stars
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -24,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,13 +35,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import kotlinx.coroutines.async
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
@@ -86,7 +82,8 @@ fun UserProfileScreen(
     userID: String,
     campsiteRepository: CampsiteRepository,
     imageRepository: ImageRepository,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    reservationRepository: ReservationRepository
 ) {
 
     var confirmDeletion by remember { mutableStateOf(false) }
@@ -94,6 +91,24 @@ fun UserProfileScreen(
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var userPFP by remember { mutableStateOf<Uri?>(null) }
     var ownedCampsites by remember { mutableStateOf<List<Campsite>>(emptyList<Campsite>()) }
+    var reservations by remember { mutableStateOf<List<Reservation>>(emptyList<Reservation>()) }
+    var campsites: Map<String, Campsite> by remember {
+        mutableStateOf(
+            emptyMap()
+        )
+    }
+
+
+    LaunchedEffect(reservations) {
+        campsites = buildMap {
+            for (res in reservations) {
+                Databases.campsiteRepository.getWithId(res.campsiteId)
+                    ?.let {
+                        put(res.id, it)
+                    }
+            }
+        }
+    }
 
     LaunchedEffect(true) {
         userProfile = userRepository.getWithId(userID)
@@ -101,6 +116,8 @@ fun UserProfileScreen(
             userPFP = imageRepository.getImageUri(it.profilePic)?.toUri()
         }
         ownedCampsites = campsiteRepository.getWithUserId(userID)
+
+        reservations = reservationRepository.getWithUserId(userID)
     }
 
     Column(modifier = Modifier.fillMaxSize()){
@@ -269,7 +286,6 @@ fun UserProfileScreen(
                                 // List of campsites
                                 LazyColumn (modifier = Modifier.clip(RoundedCornerShape(5.dp))
                                     .padding(12.dp)
-                                    .background(StarsColors.OnSurface)
                                 ) {
                                     itemsIndexed(ownedCampsites) { index, campsite ->
                                         Button(onClick = {
@@ -305,58 +321,105 @@ fun UserProfileScreen(
                                 }
                             }
                         }
+
+
                     }
 
-                    if (currentUser.permission == UserPermission.ADMIN) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-                        ) {
 
-                            // if not trying to ban user, show the delete button
-                            if (!confirmBan) {
-                                AdminActionOnUser(
-                                    confirmDeletion,
-                                    action = "Delete User",
-                                    onRequest = {
-                                        confirmDeletion = true
-                                        confirmBan = false
-                                    },
-                                    onConfirm = {
-                                        runBlocking {
-                                            userRepository.deleteUser(userProfile!!)
+
+                    if (currentUser.permission == UserPermission.ADMIN) {
+                        Column() {
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    10.dp,
+                                   alignment = Alignment.CenterHorizontally
+                                ),
+                            ) {
+
+                                // if not trying to ban user, show the delete button
+                                if (!confirmBan) {
+
+                                    // for making buttons be the same size if there is no ban button
+                                    var mod: Modifier
+                                    if ((userProfile?.permission
+                                            ?: UserPermission.ENTRANT) >= UserPermission.OWNER){
+                                        mod = Modifier.weight(1f)
+                                    }
+                                    else{
+                                        mod = Modifier.fillMaxWidth()
+                                    }
+
+                                    AdminActionOnUser(
+                                        confirmDeletion,
+                                        action = "Delete User",
+                                        onRequest = {
+                                            confirmDeletion = true
+                                            confirmBan = false
+                                        },
+                                        onConfirm = {
+                                            runBlocking {
+                                                userRepository.deleteUser(userProfile!!)
+                                                confirmDeletion = false
+                                                navController.popBackStack()
+                                            }
+                                        },
+                                        onCancel = { confirmDeletion = false },
+                                        mod
+                                    )
+                                }
+
+                                // if neither button is expanded put a space between them
+                                if (!confirmBan && !confirmDeletion) {
+                                    Spacer(modifier = Modifier.size(10.dp))
+                                }
+
+                                // if not trying to delete userProfile show the ban button
+                                if (!confirmDeletion && (userProfile?.permission
+                                        ?: UserPermission.ENTRANT) >= UserPermission.OWNER
+                                ) {
+                                    AdminActionOnUser(
+                                        confirmBan, "Ban Owner",
+                                        onRequest = {
+                                            confirmDeletion = false
+                                            confirmBan = true
+                                        },
+                                        onConfirm = {
+                                            runBlocking { userRepository.banOwner(userProfile!!) }
                                             confirmDeletion = false
                                             navController.popBackStack()
-                                        }
-                                    },
-                                    onCancel = { confirmDeletion = false },
-                                    Modifier.weight(1f)
-                                )
+                                        },
+                                        onCancel = { confirmBan = false },
+                                        Modifier.weight(1f)
+                                    )
+                                }
                             }
 
-                            // if neither button is expanded put a space between them
-                            if (!confirmBan && !confirmDeletion) {
-                                Spacer(modifier = Modifier.size(10.dp))
+                            // button to make someone an admin only if they aren't an admin
+                            if (userProfile!!.permission != UserPermission.ADMIN) {
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(), onClick = {
+                                        val adminProfile =
+                                            userProfile!!.copy(permission = UserPermission.ADMIN)
+                                        userRepository.addOrUpdate(adminProfile)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(StarsColors.Accent3),
+                                    shape = RoundedCornerShape(5.dp)
+                                ) {
+                                    Text(
+                                        "Make Admin",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 1, autoSize = TextAutoSize.StepBased(
+                                            minFontSize = 1.sp,
+                                            maxFontSize = 20.sp,
+                                            stepSize = 1.sp
+                                        ),
+                                        color = StarsColors.OnAccent
+                                    )
+                                }
                             }
 
-                            // if not trying to delete userProfile show the ban button
-                            if (!confirmDeletion && (userProfile?.permission
-                                    ?: UserPermission.ENTRANT) >= UserPermission.OWNER
-                            ) {
-                                AdminActionOnUser(
-                                    confirmBan, "Ban Owner",
-                                    onRequest = {
-                                        confirmDeletion = false
-                                        confirmBan = true
-                                    },
-                                    onConfirm = {
-                                        runBlocking { userRepository.banOwner(userProfile!!) }
-                                        confirmDeletion = false
-                                        navController.popBackStack()
-                                    },
-                                    onCancel = { confirmBan = false },
-                                    Modifier.weight(1f)
-                                )
-                            }
                         }
                     }
                 }
