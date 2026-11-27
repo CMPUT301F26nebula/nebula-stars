@@ -60,16 +60,28 @@ private const val EDMONTON_LATITUDE = 53.5461
 private const val EDMONTON_LONGITUDE = -113.49028
 private const val DEFAULT_CITY_ZOOM = 11.0
 
+/**
+ * A location picker on a map
+ *
+ * @param onLocationConfirmed Callback for when a location is selected
+ * @param modifier
+ * @param initialLatitude
+ * @param initialLongitude
+ * @param initialZoom
+ * @param styleUrl any valid openfreemap map style
+ * @param selectable true when used as a location picker, false when used as a location display
+ */
 @Composable
 fun OpenStreetLocationPicker(
-    onLocationConfirmed: (LocationCoordinates) -> Unit,
+    onLocationConfirmed: (LocationCoordinates) -> Unit = {},
     modifier: Modifier = Modifier
         .fillMaxWidth()
         .height(360.dp),
     initialLatitude: Double = EDMONTON_LATITUDE,
     initialLongitude: Double = EDMONTON_LONGITUDE,
     initialZoom: Double = DEFAULT_CITY_ZOOM,
-    styleUrl: String = OPEN_FREE_MAP_LIBERTY_STYLE
+    styleUrl: String = OPEN_FREE_MAP_LIBERTY_STYLE,
+    selectable: Boolean = true
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -197,14 +209,15 @@ fun OpenStreetLocationPicker(
                 }
             }
         }
+        if(selectable) {
+            Spacer(modifier = Modifier.height(2.dp))
 
-        Spacer(modifier = Modifier.height(2.dp))
-
-        Button(
-            onClick = { currentOnLocationConfirmed(selectedLocation) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Confirm Location")
+            Button(
+                onClick = { currentOnLocationConfirmed(selectedLocation) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Confirm Location")
+            }
         }
     }
 }
