@@ -50,7 +50,7 @@ fun QRCodeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Campsite QR Code", color = Color.White, style = Typography().titleMedium)
+        Text("Campsite QR Code", color = StarsColors.OnBackground, style = Typography().titleMedium)
 
         Spacer(modifier = Modifier.size(24.dp))
 
@@ -65,7 +65,7 @@ fun QRCodeScreen(
 
             Spacer(modifier = Modifier.size(16.dp))
 
-            Text("Scan this QR code to view campsite details.", color = Color.White, style = Typography().titleMedium)
+            Text("Scan this QR code to view campsite details.", color = StarsColors.OnBackground, style = Typography().titleMedium)
         } else {
             Text("No valid campsite ID provided.")
         }

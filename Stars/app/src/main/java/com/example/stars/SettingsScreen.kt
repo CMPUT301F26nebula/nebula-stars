@@ -65,7 +65,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.background(
-                StarsColors.White,
+                StarsColors.Surface,
                 shape = RoundedCornerShape(
                     topStart = 10.dp,
                     topEnd = 30.dp,
@@ -78,6 +78,23 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
 
             // button holding column
             Column() {
+                // themes
+                Button(
+                    onClick = { navController.navigate("themes") },
+                    modifier = Modifier.size(width = 300.dp, height = 50.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 5.dp,
+                        topEnd = 5.dp,
+                        bottomStart = 5.dp,
+                        bottomEnd = 15.dp
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = StarsColors.Accent3,
+                        contentColor = StarsColors.OnAccent
+                    )
+                ) { Text("Themes", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+
+                Spacer(modifier = Modifier.size(10.dp))
 
                 // if has not clicked anything, show first become admin button
                 if (currentUser.permission != UserPermission.ADMIN && !showAdminSignUp) {
@@ -95,7 +112,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Accent3, StarsColors.OnAccent),
                         enabled = !currentUser.banned
                     ) { Text("Request Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
                 }
@@ -119,7 +136,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
                     ) {
                         Text("Confirm Become Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -135,7 +152,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 5.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent)
                     ) {
                         Text(
                             "Remove Admin Status",
@@ -175,7 +192,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Accent3, StarsColors.OnAccent),
                         enabled = !currentUser.banned
                     ) {
                         Text("Become Owner", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -202,7 +219,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 0.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
                     ) {
                         Text("Confirm Become Owner", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     }
@@ -222,7 +239,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             bottomStart = 5.dp,
                             bottomEnd = 15.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
                         modifier = Modifier.size(width = 300.dp, height = 50.dp).testTag("Remove Owner")
                     ) {
                         Text(
@@ -294,9 +311,9 @@ fun ConfirmCancelButtons(onConfirm: () -> Unit, onCancel: () -> Unit){
                 bottomStart = 5.dp,
                 bottomEnd = 0.dp
             ),
-            colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+            colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
         ) {
-            Text("Confirm", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.White)
+            Text("Confirm", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.OnAccent)
         }
 
 
@@ -309,9 +326,9 @@ fun ConfirmCancelButtons(onConfirm: () -> Unit, onCancel: () -> Unit){
                 bottomStart = 0.dp,
                 bottomEnd = 15.dp
             ),
-            colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
+            colors = ButtonDefaults.buttonColors(StarsColors.Cancel)
         ){
-            Text("Cancel", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.White)
+            Text("Cancel", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = StarsColors.OnAccent)
         }
     }
 }

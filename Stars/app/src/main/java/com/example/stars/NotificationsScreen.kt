@@ -48,7 +48,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile, 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(StarsColors.Purple)
+            .background(StarsColors.Background)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -71,7 +71,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile, 
                 Text(
                     "No notifications found",
                     modifier = Modifier.fillMaxWidth(),
-                    color = StarsColors.White,
+                    color = StarsColors.OnBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center
@@ -118,7 +118,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
             .fillMaxWidth()
             .padding(12.dp)
             .clip(RoundedCornerShape(20.0f))
-            .background(StarsColors.White)
+            .background(StarsColors.Surface)
             .clickable {
                 notificationRepository.markAsRead(notification)
                 if (notification.navDestination.isNotBlank()) {
@@ -133,7 +133,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
         ) {
             Text(
                 text = notification.content,
-                color = StarsColors.Purple,
+                color = StarsColors.OnSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
@@ -143,7 +143,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
                 modifier = Modifier.clickable { 
                     navController.navigate("campsite/${Uri.encode(notification.sender)}")
                 },
-                color = StarsColors.Purple,
+                color = StarsColors.OnSurface,
                 fontWeight = FontWeight.Normal,
                 fontSize = 15.sp
             )
