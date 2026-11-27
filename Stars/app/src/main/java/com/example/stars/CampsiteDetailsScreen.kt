@@ -387,6 +387,24 @@ fun CampsiteDetailsScreen(
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
+                            // Get campsite location
+                            // TODO for Cameron: Make this pretty
+                            Button(
+                                onClick = { navController.navigate("location/${campsite.location.latitude},${campsite.location.longitude}") },
+                                shape = RoundedCornerShape(
+                                    topStart = 0.dp,
+                                    topEnd = 0.dp,
+                                    bottomStart = 0.dp,
+                                    bottomEnd = corner
+                                ),
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent),
+                                modifier = Modifier.weight(1F)
+                            ) {
+                                Text(
+                                    "Location", textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
                 }
