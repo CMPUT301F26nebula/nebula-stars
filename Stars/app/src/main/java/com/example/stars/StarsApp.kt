@@ -215,7 +215,7 @@ fun StarsApp(notifs: Boolean = false) {
                     AppPolicyScreen(navController)
                 }
 
-                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
+                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, userRepository) }
                 composable("settings") {
                     SettingsScreen(
                         navController,
@@ -254,7 +254,8 @@ fun StarsApp(notifs: Boolean = false) {
                 composable("notification log") {
                     AdminViewNotifications(
                         navController,
-                        notificationRepository
+                        notificationRepository,
+                        userRepository
                     )
                 }
                 composable(
