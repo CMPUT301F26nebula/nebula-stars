@@ -277,14 +277,14 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         .testTag("appPolicyButton"),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = StarsColors.Cyan
+                        containerColor = StarsColors.Accent1
                     )
                 ) {
                     Text(
                         text = "Policies & Guidelines",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = StarsColors.White
+                        color = StarsColors.OnBackground
                     )
                 }
             }
