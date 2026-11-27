@@ -45,7 +45,7 @@ fun ScreenHeader(
         verticalAlignment = Alignment.Bottom
     ) {
         // Back button
-        BackButton(navController)
+        BackButton(navController, tint = StarsColors.Purple)
 
         Spacer(Modifier.width(12.dp))
 
