@@ -42,7 +42,7 @@ fun CampsiteRow(
         onClick = onClick,
         colors  = CardDefaults.cardColors(
             containerColor = color,
-            contentColor = StarsColors.White
+            contentColor = StarsColors.OnAccent
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -111,7 +111,9 @@ fun CampsiteRow(
                 // Rating
                 StarRatingDisplay(
                     average = campsite.averageRating,
-                    count = campsite.ratingCount
+                    count = campsite.ratingCount,
+                    color = StarsColors.OnAccent,
+                    numberColor= StarsColors.OnAccent
                 )
                 // Description
                 Text(

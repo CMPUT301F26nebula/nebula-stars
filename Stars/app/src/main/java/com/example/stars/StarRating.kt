@@ -57,10 +57,10 @@ fun StarRatingDisplay(
     average: Double,
     count: Int?,
     modifier: Modifier = Modifier,
-    color: Color = StarsColors.White,
+    color: Color = StarsColors.OnSurface,
     starSize: TextUnit = 16.sp,
     numberSize: TextUnit = 16.sp,
-    numberColor: Color = StarsColors.White
+    numberColor: Color = StarsColors.OnSurface
 ) {
     // the avg as text with one decimal place (4.6667 -> 4.7)
     val averageText = String.format(Locale.CANADA, "%.1f", average)
@@ -151,17 +151,17 @@ fun RatingDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(cardShape)
-                .background(StarsColors.White)
+                .background(StarsColors.OnBackground)
         ) {
             //header
             Text(
                 "Rate Campsite",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium,
-                color = StarsColors.White,
+                color = StarsColors.OnBackground,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(StarsColors.Purple)
+                    .background(StarsColors.Background)
                     .padding(10.dp)
             )
 
@@ -170,10 +170,10 @@ fun RatingDialog(
                 StarRatingDisplay(
                     average = stars,
                     count = null,
-                    color = StarsColors.Yellow,
+                    color = StarsColors.Accent3,
                     starSize = 48.sp,
                     numberSize = 40.sp,
-                    numberColor = StarsColors.Purple
+                    numberColor = StarsColors.OnSurface
                 )
                 Slider(
                     value = sliderValue,
@@ -181,11 +181,11 @@ fun RatingDialog(
                     valueRange = 1f..5f,
                     steps = 7,
                     colors = SliderDefaults.colors(
-                        thumbColor = StarsColors.Purple,
-                        activeTrackColor = StarsColors.Purple,
-                        inactiveTrackColor = StarsColors.Purple.copy(alpha = 0.2f),
-                        activeTickColor = StarsColors.White,
-                        inactiveTickColor = StarsColors.Purple
+                        thumbColor = StarsColors.OnSurface,
+                        activeTrackColor = StarsColors.OnSurface,
+                        inactiveTrackColor = StarsColors.OnSurface.copy(alpha = 0.2f),
+                        activeTickColor = StarsColors.Surface,
+                        inactiveTickColor = StarsColors.OnSurface
                     )
                 )
 
@@ -198,9 +198,9 @@ fun RatingDialog(
                     label = { Text("How was your experience? (Optional)") },
                     supportingText = { Text("${comment.length}/$MAX_COMMENT_LENGTH") },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = StarsColors.Cyan,
-                        focusedLabelColor = StarsColors.Cyan,
-                        cursorColor = StarsColors.Cyan
+                        focusedBorderColor = StarsColors.OnSurface,
+                        focusedLabelColor = StarsColors.OnSurface,
+                        cursorColor = StarsColors.OnSurface
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -211,22 +211,22 @@ fun RatingDialog(
                 Button(
                     onClick = onDismiss,
                     shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Confirm),
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp)
                 ) {
-                    Text("Cancel", color = StarsColors.White)
+                    Text("Cancel", color = StarsColors.OnAccent)
                 }
                 Button(
                     onClick = { onSubmit(stars, comment) },
                     shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cancel),
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp)
                 ) {
-                    Text("Submit", color = StarsColors.White)
+                    Text("Submit", color = StarsColors.OnAccent)
                 }
             }
         }

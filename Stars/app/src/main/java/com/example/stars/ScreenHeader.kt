@@ -39,13 +39,13 @@ fun ScreenHeader(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(StarsColors.White)
+            .background(StarsColors.Surface)
             .statusBarsPadding(),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Bottom
     ) {
         // Back button
-        BackButton(navController)
+        BackButton(navController, tint = StarsColors.OnSurface)
 
         Spacer(Modifier.width(12.dp))
 
@@ -54,7 +54,7 @@ fun ScreenHeader(
             text = title,
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = StarsColors.Purple,
+            color = StarsColors.OnSurface,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             lineHeight = 34.sp

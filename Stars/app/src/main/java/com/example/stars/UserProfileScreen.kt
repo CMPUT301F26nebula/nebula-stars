@@ -118,7 +118,7 @@ fun UserProfileScreen(
                         bottomEnd = 10.dp
                     )
                 )
-                .background(StarsColors.White),
+                .background(StarsColors.Surface),
             contentAlignment = Alignment.TopStart
         ) {
             if (userProfile != null) {
@@ -162,7 +162,7 @@ fun UserProfileScreen(
                             text = userProfile?.name ?: "USER NOT FOUND",
                             fontSize = 40.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = StarsColors.Purple
+                            color = StarsColors.OnSurface
                         )
 
                         Text(
@@ -174,7 +174,7 @@ fun UserProfileScreen(
                                 },
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = StarsColors.Purple
+                            color = StarsColors.OnSurface
                         )
 
                         //ID
@@ -183,7 +183,7 @@ fun UserProfileScreen(
                                 text = userProfile?.id ?: "",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Light,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
                         }
 
@@ -230,21 +230,21 @@ fun UserProfileScreen(
                                 text = "Contact Info:",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
 
                             Text(
                                 text = userProfile?.email ?: "",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
 
                             Text(
                                 text = userProfile?.phone ?: "",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
                         }
 
@@ -257,17 +257,19 @@ fun UserProfileScreen(
                                 text = "Owned Campsites:",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = StarsColors.Purple)
+                                color = StarsColors.OnSurface)
                             if (ownedCampsites.isEmpty()) {
                                 Text(
                                     text = "No campsites found",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Normal,
-                                    color = StarsColors.Purple
+                                    color = StarsColors.OnSurface
                                 )
                             } else {
                                 // List of campsites
-                                LazyColumn (modifier = Modifier.clip(RoundedCornerShape(5.dp)).padding(12.dp)
+                                LazyColumn (modifier = Modifier.clip(RoundedCornerShape(5.dp))
+                                    .padding(12.dp)
+                                    .background(StarsColors.OnSurface)
                                 ) {
                                     itemsIndexed(ownedCampsites) { index, campsite ->
                                         Button(onClick = {
@@ -284,7 +286,7 @@ fun UserProfileScreen(
                                                 bottomStart = 5.dp,
                                                 bottomEnd = 5.dp
                                             ),
-                                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                                             modifier = Modifier.fillMaxWidth()
                                         ){
                                             Text(campsite.title,
@@ -295,7 +297,7 @@ fun UserProfileScreen(
                                                     maxFontSize = 20.sp,
                                                     stepSize = 1.sp
                                                 ),
-                                                color = StarsColors.White
+                                                color = StarsColors.OnAccent
                                             )
                                         }
 

@@ -123,8 +123,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
 
     Card(
         colors  = CardDefaults.cardColors(
-            contentColor = StarsColors.White,
-            containerColor = StarsColors.White
+            containerColor = StarsColors.Surface
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -143,7 +142,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -152,7 +151,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                     text = campsite.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
-                    color = StarsColors.White,
+                    color = StarsColors.OnAccent,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -204,7 +203,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                             content = { Text("Delete Image",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Medium,
-                                color = StarsColors.White,) },
+                                color = StarsColors.OnAccent,) },
                             modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete image " + campsite.title),
                             shape = RoundedCornerShape(
                                 topStart = 0.dp,
@@ -212,7 +211,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                                 bottomStart = 10.dp,
                                 bottomEnd = 10.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                            colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                         )
                     }
 
@@ -232,8 +231,7 @@ fun AdminViewProfilePicturesRow(navController: NavController, user: UserProfile,
 
     Card(
         colors  = CardDefaults.cardColors(
-            contentColor = StarsColors.White,
-            containerColor = StarsColors.White
+            containerColor = StarsColors.Surface
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -251,7 +249,7 @@ fun AdminViewProfilePicturesRow(navController: NavController, user: UserProfile,
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent3),
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -260,7 +258,7 @@ fun AdminViewProfilePicturesRow(navController: NavController, user: UserProfile,
                     text = user.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
-                    color = StarsColors.White,
+                    color = StarsColors.OnAccent,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -288,7 +286,7 @@ fun AdminViewProfilePicturesRow(navController: NavController, user: UserProfile,
                         content = { Text("Delete Image",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Medium,
-                            color = StarsColors.White,) },
+                            color = StarsColors.OnAccent,) },
                         modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete image " + user.name),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
@@ -296,7 +294,7 @@ fun AdminViewProfilePicturesRow(navController: NavController, user: UserProfile,
                             bottomStart = 10.dp,
                             bottomEnd = 10.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                     )
             }
 

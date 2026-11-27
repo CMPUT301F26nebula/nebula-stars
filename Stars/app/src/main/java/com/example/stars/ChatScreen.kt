@@ -112,8 +112,8 @@ fun ChatScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = StarsColors.Purple,
-        contentColor = StarsColors.White,
+        containerColor = StarsColors.Background,
+        contentColor = StarsColors.OnBackground,
         topBar = {
             ScreenHeader(
                 navController = navController,
@@ -172,7 +172,7 @@ fun ChatInput(onSend: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(StarsColors.White),
+            .background(StarsColors.OnBackground),
         verticalAlignment = Alignment.Bottom
     ) {
         TextField(
@@ -184,22 +184,22 @@ fun ChatInput(onSend: (String) -> Unit) {
             placeholder = {
                 Text(
                     text = "Message",
-                    color = StarsColors.Purple,
+                    color = StarsColors.OnSurface,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Thin
                 )
             },
             textStyle = TextStyle(
-                color = if (messageContent.length > ChatLimits.MAX_CHAR_LIMIT) StarsColors.Magenta else StarsColors.Purple,
+                color = if (messageContent.length > ChatLimits.MAX_CHAR_LIMIT) StarsColors.Confirm else StarsColors.OnSurface,
                 fontSize = 16.sp
             ),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
-                focusedIndicatorColor = StarsColors.Purple,
-                unfocusedIndicatorColor = StarsColors.Purple.copy(alpha = 0.6f),
-                cursorColor = StarsColors.Purple
+                focusedIndicatorColor = StarsColors.OnSurface,
+                unfocusedIndicatorColor = StarsColors.OnSurface.copy(alpha = 0.6f),
+                cursorColor = StarsColors.OnSurface
             ),
             modifier = Modifier
                 .weight(1f)
@@ -214,7 +214,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                     messageContent = ""
                 },
                 shape = RoundedCornerShape(10.dp, 0.dp, 0.dp, 0.dp),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                 modifier = Modifier
                     .width(PFPSize.width)
                     .height(PFPSize.height)
@@ -222,7 +222,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                 Text(
                     text = ">",
                     fontSize = 32.sp,
-                    color = StarsColors.White,
+                    color = StarsColors.OnAccent,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Visible,
                     textAlign = TextAlign.Center
@@ -320,7 +320,7 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (L
                     text = senderName,
                     maxLines = 1,
                     softWrap = false,
-                    color = StarsColors.White,
+                    color = StarsColors.OnBackground,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -329,7 +329,7 @@ fun ChatMessage(participants: ChatParticipants, message: Message, dateFormat: (L
                     text = dateFormat(message.timestamp),
                     maxLines = 1,
                     softWrap = false,
-                    color = StarsColors.White,
+                    color = StarsColors.OnBackground,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Thin
                 )
@@ -383,10 +383,10 @@ fun ChatCard(participants: ChatParticipants, chat: Chat, adminView: Boolean = fa
             .padding(12.dp),
         colors = if (adminView) {
             CardColors(
-                StarsColors.White,
-                StarsColors.Purple,
-                StarsColors.White,
-                StarsColors.Purple
+                StarsColors.Surface,
+                StarsColors.OnSurface,
+                StarsColors.Surface,
+                StarsColors.OnSurface
             )
         } else {
             participants.remote?.let { remote ->
