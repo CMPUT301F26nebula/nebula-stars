@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
+import kotlin.math.abs
 
 data class LocationCoordinates(
     val latitude: Double = 0.0,
@@ -60,54 +62,78 @@ private const val EDMONTON_LATITUDE = 53.5461
 private const val EDMONTON_LONGITUDE = -113.49028
 private const val DEFAULT_CITY_ZOOM = 11.0
 
+private fun isValidCoordinate(lat: Double, lng: Double): Boolean {
+    return lat.isFinite() &&
+            lng.isFinite() &&
+            lat in -90.0..90.0 &&
+            lng in -180.0..180.0
+}
+
+/**
+ * A location picker on a map
+ *
+ * @param onLocationConfirmed Callback for when a location is selected
+ * @param modifier
+ * @param initialLatitude
+ * @param initialLongitude
+ * @param initialZoom
+ * @param styleUrl any valid openfreemap map style
+ * @param selectable true when used as a location picker, false when used as a location display
+ */
 @Composable
 fun OpenStreetLocationPicker(
-    onLocationConfirmed: (LocationCoordinates) -> Unit,
+    onLocationConfirmed: (LocationCoordinates) -> Unit = {},
     modifier: Modifier = Modifier
         .fillMaxWidth()
         .height(360.dp),
     initialLatitude: Double = EDMONTON_LATITUDE,
     initialLongitude: Double = EDMONTON_LONGITUDE,
     initialZoom: Double = DEFAULT_CITY_ZOOM,
-    styleUrl: String = OPEN_FREE_MAP_LIBERTY_STYLE
+    styleUrl: String = OPEN_FREE_MAP_LIBERTY_STYLE,
+    selectable: Boolean = true
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentOnLocationConfirmed by rememberUpdatedState(onLocationConfirmed)
+    val latestLat by rememberUpdatedState(initialLatitude)
+    val latestLng by rememberUpdatedState(initialLongitude)
+    val latestZoom by rememberUpdatedState(initialZoom)
 
-    var selectedLocation by remember(initialLatitude, initialLongitude) {
+    var mapLibreMapRef by remember { mutableStateOf<MapLibreMap?>(null) }
+    var isStyleReady by remember { mutableStateOf(false) }
+    var selectedLocation by remember {
         mutableStateOf(LocationCoordinates(initialLatitude, initialLongitude))
     }
 
     val mapView = remember(context) {
         MapLibre.getInstance(context.applicationContext)
-        val startTarget = LatLng(latitude = initialLatitude, longitude = initialLongitude)
+        val startTarget = LatLng(latitude = latestLat, longitude = latestLng)
         val options = MapLibreMapOptions.createFromAttributes(context, null)
             .textureMode(true)
             .camera(
                 CameraPosition.Builder()
                     .target(startTarget)
-                    .zoom(initialZoom)
+                    .zoom(latestZoom)
                     .build()
             )
 
         val view = MapView(context, options)
         view.onCreate(Bundle())
         view.getMapAsync { mapLibreMap: MapLibreMap ->
+            mapLibreMapRef = mapLibreMap
             mapLibreMap.setStyle(
                 Style.Builder().fromUri(styleUrl),
                 object : Style.OnStyleLoaded {
                     override fun onStyleLoaded(style: Style) {
-                        val cameraPosition = CameraPosition.Builder()
-                            .target(
-                                LatLng(
-                                    latitude = initialLatitude,
-                                    longitude = initialLongitude
-                                )
-                            )
-                            .zoom(initialZoom)
-                            .build()
-                        mapLibreMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                        isStyleReady = true
+                        if (isValidCoordinate(latestLat, latestLng)) {
+                            val cameraPosition = CameraPosition.Builder()
+                                .target(LatLng(latitude = latestLat, longitude = latestLng))
+                                .zoom(latestZoom)
+                                .build()
+                            mapLibreMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                            selectedLocation = LocationCoordinates(latestLat, latestLng)
+                        }
 
                         mapLibreMap.addOnCameraMoveListener {
                             val target = mapLibreMap.cameraPosition.target
@@ -123,6 +149,27 @@ fun OpenStreetLocationPicker(
             )
         }
         view
+    }
+
+    // Move camera when external latitude/longitude props change (such as text field edits)
+    LaunchedEffect(mapLibreMapRef, isStyleReady, initialLatitude, initialLongitude) {
+        val map = mapLibreMapRef ?: return@LaunchedEffect
+        if (!isStyleReady || !isValidCoordinate(initialLatitude, initialLongitude)) return@LaunchedEffect
+
+        val currentTarget = map.cameraPosition.target
+        val alreadyAtTarget = currentTarget != null &&
+                abs(currentTarget.latitude - initialLatitude) < 1e-6 &&
+                abs(currentTarget.longitude - initialLongitude) < 1e-6
+
+        if (!alreadyAtTarget) {
+            val zoomToUse = if (map.cameraPosition.zoom > 0.0) map.cameraPosition.zoom else initialZoom
+            val cameraPosition = CameraPosition.Builder()
+                .target(LatLng(latitude = initialLatitude, longitude = initialLongitude))
+                .zoom(zoomToUse)
+                .build()
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+            selectedLocation = LocationCoordinates(initialLatitude, initialLongitude)
+        }
     }
 
     DisposableEffect(lifecycleOwner, mapView) {
@@ -197,14 +244,15 @@ fun OpenStreetLocationPicker(
                 }
             }
         }
+        if (selectable) {
+            Spacer(modifier = Modifier.height(2.dp))
 
-        Spacer(modifier = Modifier.height(2.dp))
-
-        Button(
-            onClick = { currentOnLocationConfirmed(selectedLocation) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Confirm Location")
+            Button(
+                onClick = { currentOnLocationConfirmed(selectedLocation) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Confirm Location")
+            }
         }
     }
 }
