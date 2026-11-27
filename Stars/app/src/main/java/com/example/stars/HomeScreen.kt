@@ -22,6 +22,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
@@ -116,8 +118,12 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
 
                 UserPermission.OWNER -> listOf(
                     listOf(HomeButtonData("Add a Campsite", "uploadCampsiteButton", "upload campsite", Icons.Default.Add)),
-                    listOf(HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery", Icons.Default.Star))
+                    listOf(HomeButtonData("Create a Lottery", "uploadLotteryButton", "upload lottery", Icons.Default.Star)),
+                    listOf(HomeButtonData("My Campsites", "ownedCampsitesButton", "owned campsites", Icons.Default.Home)),
+                    listOf(HomeButtonData("Reservation Calendar", "ownedCampsiteReservationsButton", "owner calendar", Icons.Default.DateRange)),
+                    listOf(HomeButtonData("Reservation List", "OwnedCampsiteReservationsList", "owned reservations list", Icons.Default.List)),
                 )
+
 
                 UserPermission.ADMIN -> listOf(
                     listOf(HomeButtonData("Users List", "UsersButton", "users list", Icons.Default.AccountCircle),),
