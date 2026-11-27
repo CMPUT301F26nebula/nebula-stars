@@ -284,7 +284,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         text = "Policies & Guidelines",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = StarsColors.Surface
+                        color = StarsColors.OnBackground
                     )
                 }
             }

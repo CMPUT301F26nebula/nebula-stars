@@ -102,7 +102,7 @@ fun CampsitesScreen(
             },
             colors = ButtonDefaults.buttonColors(
             containerColor = StarsColors.Surface,
-            contentColor = StarsColors.OnBackground
+            contentColor = StarsColors.OnSurface
         ),
         modifier = Modifier
             .fillMaxWidth()
