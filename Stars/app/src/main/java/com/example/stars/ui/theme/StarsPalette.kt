@@ -1,8 +1,6 @@
 package com.example.stars.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import com.example.stars.ui.theme.ThemePresets.Default
-import com.example.stars.ui.theme.ThemePresets.all
 
 /**
  * App colors, each val has one job.
@@ -26,9 +24,9 @@ data class StarsPalette(
  * The built in themes the user can pick from settings
  */
 object ThemePresets {
-    //mockup colors/default theme
-    val Default = StarsPalette(
-        name = "Default",
+    //old mockup colors/legacy theme
+    val Legacy = StarsPalette(
+        name = "Legacy",
         background = Color(0xFF4B0082),
         onBackground = Color(0xFFFFFFFF),
         surface = Color(0xFFFFFFFF),
@@ -122,10 +120,10 @@ object ThemePresets {
         muted = Color(0xFF22412F)
     )
 
-    val all = listOf(Default, Light, Dark, Nebula, Moonlight, Forest)
+    val all = listOf(Legacy, Light, Dark, Nebula, Moonlight, Forest)
 
     /**
-     * Finds a preset by its saved name, or Default if it doesnt exist
+     * Finds a preset by its saved name, if it doesnt exist then the default is Moonlight
      */
-    fun byName(name: String): StarsPalette = all.find { it.name == name } ?: Default
+    fun byName(name: String): StarsPalette = all.find { it.name == name } ?: Moonlight
 }
