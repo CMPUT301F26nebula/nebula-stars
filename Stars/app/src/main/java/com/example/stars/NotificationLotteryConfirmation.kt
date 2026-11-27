@@ -323,7 +323,7 @@ fun NotificationLotteryConfirmation(
                                 lotteryRepository.addOrUpdate(
                                     Lottery(
                                         id = lottery.id,
-                                        ownerID = lottery.ownerID,
+                                        ownerIDs = lottery.ownerIDs,
                                         campsiteIDs = lottery.campsiteIDs,
                                         timePeriod = lottery.timePeriod,
                                         deadline = lottery.deadline,
@@ -354,7 +354,7 @@ fun NotificationLotteryConfirmation(
                                 lotteryRepository.addOrUpdate(
                                     Lottery(
                                         id = lottery.id,
-                                        ownerID = lottery.ownerID,
+                                        ownerIDs = lottery.ownerIDs,
                                         campsiteIDs = lottery.campsiteIDs,
                                         timePeriod = lottery.timePeriod,
                                         deadline = lottery.deadline,

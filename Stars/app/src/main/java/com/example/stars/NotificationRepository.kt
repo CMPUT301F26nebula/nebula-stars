@@ -39,7 +39,7 @@ class NotificationRepository (private val scope: CoroutineScope):
      * Marks a notification [notification] as read
      */
     fun markAsRead(notification: Notification) {
-        val newNotification = Notification(notification.id, notification.userId, true, notification.content, notification.navDestination, notification.sender, notification.timestamp)
+        val newNotification = Notification(notification.id, notification.userId, true, notification.content, notification.navDestination, notification.senderIds, notification.timestamp)
         addOrUpdateWithId(newNotification.id, newNotification)
     }
 
