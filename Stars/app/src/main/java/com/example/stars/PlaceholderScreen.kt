@@ -34,7 +34,7 @@ fun PlaceholderScreen(title: String = "", navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(StarsColors.Purple)
+            .background(StarsColors.Background)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween

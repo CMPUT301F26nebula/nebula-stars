@@ -113,7 +113,7 @@ fun UserProfileScreen(
                         bottomEnd = 10.dp
                     )
                 )
-                .background(StarsColors.White),
+                .background(StarsColors.Surface),
             contentAlignment = Alignment.TopStart
         ) {
             if (userProfile != null) {
@@ -265,7 +265,7 @@ fun UserProfileScreen(
                                 LazyColumn (modifier = Modifier
                                     .height(290.dp)
                                     .clip(RoundedCornerShape(5.dp))
-                                    .background(StarsColors.Purple)
+                                    .background(StarsColors.OnSurface)
                                 ) {
                                     itemsIndexed(ownedCampsites) { index, campsite ->
                                         CampsiteRow(

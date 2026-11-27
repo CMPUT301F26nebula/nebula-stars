@@ -1,6 +1,7 @@
 package com.example.stars
 
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +49,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(StarsColors.Purple)
+            .background(StarsColors.Background)
             .navigationBarsPadding(),
         topBar = {
             //Header
@@ -83,9 +84,10 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                             tab = UserPermission.ENTRANT
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = StarsColors.BrightPurple,
-                            contentColor = StarsColors.OnHighlight
-                        )
+                            containerColor = StarsColors.Accent3,
+                            contentColor = StarsColors.OnAccent
+                        ),
+                        border = BorderStroke(2.dp, StarsColors.OnBackground)
                     ) {
                         Text(
                             text = "Entrant"
@@ -100,9 +102,10 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                             tab = UserPermission.OWNER
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = StarsColors.BrightPurple,
-                            contentColor = StarsColors.OnHighlight
-                        )
+                            containerColor = StarsColors.Accent1,
+                            contentColor = StarsColors.OnAccent
+                        ),
+                        border = BorderStroke(2.dp, StarsColors.OnBackground)
                     ) {
                         Text(
                             text = "Owner"
@@ -118,9 +121,10 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                                 tab = UserPermission.ADMIN
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = StarsColors.BrightPurple,
-                                contentColor = StarsColors.OnHighlight
-                            )
+                                containerColor = StarsColors.Accent2,
+                                contentColor = StarsColors.OnAccent
+                            ),
+                            border = BorderStroke(2.dp, StarsColors.OnBackground)
                         ) {
                             Text(
                                 text = "Admin"
@@ -135,7 +139,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(StarsColors.Purple)
+                .background(StarsColors.Background)
                 .padding(padding)
         ) {
             HomeLayout(

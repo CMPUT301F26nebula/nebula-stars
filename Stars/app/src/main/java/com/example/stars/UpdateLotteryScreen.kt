@@ -147,7 +147,7 @@ fun UpdateLotteryScreen(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(StarsColors.White, shape = cardShape)
+                    .background(StarsColors.Surface, shape = cardShape)
                     .padding(16.dp)
             ) {
                 Column(
@@ -182,8 +182,8 @@ fun UpdateLotteryScreen(
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -215,8 +215,8 @@ fun UpdateLotteryScreen(
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -278,7 +278,7 @@ fun UpdateLotteryScreen(
                                     deadline = newDate
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                             shape = buttonShape,
                             modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
@@ -324,7 +324,7 @@ fun UpdateLotteryScreen(
                                             }
                                         },
                                         colors = CheckboxDefaults.colors(
-                                            checkedColor = StarsColors.Cyan, checkmarkColor = StarsColors.OnAccent,
+                                            checkedColor = StarsColors.Accent1, checkmarkColor = StarsColors.OnAccent,
                                             uncheckedColor = StarsColors.OnSurface
                                         )
                                     )
@@ -397,7 +397,7 @@ fun UpdateLotteryScreen(
                                     timePeriod = EpochRange(newStart, newEnd)
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                             shape = buttonShape,
                             modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
@@ -426,7 +426,7 @@ fun UpdateLotteryScreen(
                                 Log.d("Lottery Update Submission", "Lottery ${lotteryId} Uploaded")
                                 navController.popBackStack()
                             },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                             shape = buttonShape,
                             modifier = Modifier
                                 .fillMaxWidth()

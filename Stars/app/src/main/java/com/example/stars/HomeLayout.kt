@@ -68,10 +68,10 @@ fun HomeLayout(navController: NavController, boxData: Array<HomeButtonData>, mod
             column = (i/maxHeight)
             HomeLayoutBox(navController, data, ((row+1)*boxSize - column*50).dp, (((column+1)*boxSize) - row*10).dp,
                 when ((i + column)%3) {
-                    0 -> StarsColors.Yellow
-                    1 -> StarsColors.Cyan
-                    2 -> StarsColors.Magenta
-                    else -> StarsColors.Cyan
+                    0 -> StarsColors.Accent3
+                    1 -> StarsColors.Accent1
+                    2 -> StarsColors.Accent2
+                    else -> StarsColors.Accent1
                 })
             i--
         }

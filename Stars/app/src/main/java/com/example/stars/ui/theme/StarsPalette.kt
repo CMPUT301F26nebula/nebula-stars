@@ -19,7 +19,9 @@ data class StarsPalette(
     val onAccent: Color,
     val highlight: Color,
     val onHighlight: Color,
-    val muted: Color
+    val muted: Color,
+    val confirm: Color = Color.Green,
+    val cancel: Color = Color.Red
 )
 
 /**
@@ -39,7 +41,9 @@ object ThemePresets {
         onAccent = Color(0xFFFFFFFF),
         highlight = Color(0xFFB758E8),
         onHighlight = Color(0xFFFFFFFF),
-        muted = Color(0xFF800080)
+        muted = Color(0xFF800080),
+        confirm = Color(0xFFFF1493),
+        cancel = Color(0xFF008B8B),
     )
 
     // light theme
@@ -55,7 +59,9 @@ object ThemePresets {
         onAccent = Color(0xFFFFFFFF),
         highlight = Color(0xFF7E57C2),
         onHighlight = Color(0xFFFFFFFF),
-        muted = Color(0xFFD9CCEB)
+        muted = Color(0xFFD9CCEB),
+        confirm = Color(0xFFC2185B),
+        cancel = Color(0xFF00796B)
     )
 
     // dark theme
@@ -71,7 +77,9 @@ object ThemePresets {
         onAccent = Color(0xFFF2EEF8),
         highlight = Color(0xFFD0BCFF),
         onHighlight = Color(0xFF381E72),
-        muted = Color(0xFF2B2930)
+        muted = Color(0xFF2B2930),
+        confirm = Color(0xFF7A2048),
+        cancel = Color(0xFF1F5C57)
     )
 
     // dark purple theme

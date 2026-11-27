@@ -57,10 +57,10 @@ fun StarRatingDisplay(
     average: Double,
     count: Int?,
     modifier: Modifier = Modifier,
-    color: Color = StarsColors.White,
+    color: Color = StarsColors.OnSurface,
     starSize: TextUnit = 16.sp,
     numberSize: TextUnit = 16.sp,
-    numberColor: Color = StarsColors.White
+    numberColor: Color = StarsColors.OnSurface
 ) {
     // the avg as text with one decimal place (4.6667 -> 4.7)
     val averageText = String.format(Locale.CANADA, "%.1f", average)
@@ -151,7 +151,7 @@ fun RatingDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(cardShape)
-                .background(StarsColors.White)
+                .background(StarsColors.OnBackground)
         ) {
             //header
             Text(
@@ -161,7 +161,7 @@ fun RatingDialog(
                 color = StarsColors.OnBackground,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(StarsColors.Purple)
+                    .background(StarsColors.Background)
                     .padding(10.dp)
             )
 
@@ -170,7 +170,7 @@ fun RatingDialog(
                 StarRatingDisplay(
                     average = stars,
                     count = null,
-                    color = StarsColors.Yellow,
+                    color = StarsColors.Accent3,
                     starSize = 48.sp,
                     numberSize = 40.sp,
                     numberColor = StarsColors.OnSurface
@@ -184,7 +184,7 @@ fun RatingDialog(
                         thumbColor = StarsColors.OnSurface,
                         activeTrackColor = StarsColors.OnSurface,
                         inactiveTrackColor = StarsColors.OnSurface.copy(alpha = 0.2f),
-                        activeTickColor = StarsColors.White,
+                        activeTickColor = StarsColors.Surface,
                         inactiveTickColor = StarsColors.OnSurface
                     )
                 )
@@ -211,7 +211,7 @@ fun RatingDialog(
                 Button(
                     onClick = onDismiss,
                     shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Confirm),
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp)
@@ -221,7 +221,7 @@ fun RatingDialog(
                 Button(
                     onClick = { onSubmit(stars, comment) },
                     shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                    colors = ButtonDefaults.buttonColors(StarsColors.Cancel),
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp)

@@ -64,27 +64,27 @@ fun ReservationCalendarDay(
     var circleColor = StarsColors.Transparent
     var modifier = Modifier
         .fillMaxSize()
-        .background(StarsColors.Purple)
-        .border(1.dp, StarsColors.White)
+        .background(StarsColors.OnSurface)
+        .border(1.dp, StarsColors.Surface)
 
 
     if (day.isCurrent) {
         fg = StarsColors.OnSurface
-        circleColor = StarsColors.White
-        modifier = modifier.background(StarsColors.White)
+        circleColor = StarsColors.OnBackground
+        modifier = modifier.background(StarsColors.OnBackground)
     } else   if (day.isFiller) {
-        modifier = modifier.background(StarsColors.DullPurple)
+        modifier = modifier.background(StarsColors.Muted)
     }
     if (day.events.isNotEmpty()) {
         val colorStops = buildList {
             val stopInc = 1.0f / day.events.size
             var stop = 0.0f
             for ((id) in day.events) {
-                add(stop to (eventColors[id] ?: StarsColors.Purple))
+                add(stop to (eventColors[id] ?: StarsColors.OnSurface))
                 stop += stopInc
-                add(stop to (eventColors[id] ?: StarsColors.Purple))
+                add(stop to (eventColors[id] ?: StarsColors.OnSurface))
             }
-            add(1.0f to (eventColors[day.events.last().id] ?: StarsColors.Purple))
+            add(1.0f to (eventColors[day.events.last().id] ?: StarsColors.OnSurface))
         }.toTypedArray()
         modifier = modifier
             .background(Brush.verticalGradient(colorStops = colorStops))
@@ -127,7 +127,7 @@ fun ReservationCalendarDay(
 @OptIn(ExperimentalGridApi::class)
 @Composable
 fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDay) -> Unit = {}) {
-    val colors = listOf(StarsColors.Cyan, StarsColors.Magenta, StarsColors.Yellow)
+    val colors = listOf(StarsColors.Accent1, StarsColors.Accent2, StarsColors.Accent3)
     val dayNames = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
     // make sure reservation colour if consistent for all days
@@ -224,12 +224,12 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
         }
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.background(StarsColors.White)
+            modifier = Modifier.background(StarsColors.Surface)
         ) {
             items(dayNames) { dayName ->
                 Box(
                     modifier = Modifier
-                        .background(color = StarsColors.White)
+                        .background(color = StarsColors.Surface)
                         .height(40.dp)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
@@ -262,9 +262,9 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
                         modifier = Modifier
                             .gridItem(row = week, column = day)
                             .fillMaxSize()
-                            .background(StarsColors.White)
+                            .background(StarsColors.Surface)
                     ) {
-                        Box(modifier = Modifier.padding(1.dp).background(StarsColors.Purple)) {
+                        Box(modifier = Modifier.padding(1.dp).background(StarsColors.OnSurface)) {
                             if (calendarDays.hasNext()) {
                                 ReservationCalendarDay(
                                     calendarDays.next(),

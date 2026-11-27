@@ -89,7 +89,7 @@ fun FilterDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = StarsColors.White,
+            color = StarsColors.Surface,
         ) {
             if (showMap) {
                 Box(modifier = Modifier.fillMaxWidth().height(500.dp)) {
@@ -130,7 +130,7 @@ fun FilterDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(
                             onClick = { showMap = true },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent3, StarsColors.OnAccent),
                         ) {
                             Text(if (location == null) "Pick location" else "Change location")
                         }
@@ -162,7 +162,7 @@ fun FilterDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(
                             onClick = { showDatePicker = true },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent)
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent2, StarsColors.OnAccent)
                         ) {
                             Text(if (dateRange == null) "Pick dates" else "Change dates")
                         }
@@ -245,7 +245,7 @@ fun FilterDialog(
                                         CampsiteSort(sortField, ascending)
                                     )
                                 },
-                                colors = ButtonDefaults.buttonColors(StarsColors.Purple, StarsColors.OnBackground)
+                                colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent)
                             ) {
                                 Text("Apply")
                             }

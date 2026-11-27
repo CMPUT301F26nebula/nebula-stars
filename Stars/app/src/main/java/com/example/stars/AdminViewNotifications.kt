@@ -39,7 +39,7 @@ fun AdminViewNotifications(navController: NavController, notificationRepository:
     }
 
     // column to hold things and make background purple
-    Column(modifier = Modifier.fillMaxSize().background(color = StarsColors.Purple)) {
+    Column(modifier = Modifier.fillMaxSize()) {
         // Header
         ScreenHeader(
             navController = navController,

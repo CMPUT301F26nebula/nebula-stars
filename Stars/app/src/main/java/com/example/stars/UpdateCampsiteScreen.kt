@@ -169,7 +169,7 @@ fun UpdateCampsiteScreen(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(StarsColors.White, shape = cardShape)
+                        .background(StarsColors.Surface, shape = cardShape)
                         .padding(16.dp)
                 ) {
                     Column(
@@ -197,8 +197,8 @@ fun UpdateCampsiteScreen(
                             value = title,
                             onValueChange = { title = it },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -220,8 +220,8 @@ fun UpdateCampsiteScreen(
                             value = description,
                             onValueChange = { description = it },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -249,8 +249,8 @@ fun UpdateCampsiteScreen(
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -279,8 +279,8 @@ fun UpdateCampsiteScreen(
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -303,8 +303,8 @@ fun UpdateCampsiteScreen(
                             value = rules,
                             onValueChange = { rules = it },
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = StarsColors.Purple,
-                                focusedContainerColor = StarsColors.Purple,
+                                unfocusedContainerColor = StarsColors.OnSurface,
+                                focusedContainerColor = StarsColors.OnSurface,
                                 unfocusedTextColor = StarsColors.OnBackground,
                                 focusedTextColor = StarsColors.OnBackground,
                                 unfocusedLabelColor = StarsColors.OnBackground,
@@ -357,7 +357,7 @@ fun UpdateCampsiteScreen(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
                             },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                             shape = buttonShape,
                             modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
@@ -543,7 +543,7 @@ fun UpdateCampsiteScreen(
                             onClick = {
                                 dateRangeDialogState = true
                             },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                             shape = buttonShape,
                             modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
@@ -611,7 +611,7 @@ fun UpdateCampsiteScreen(
                                     navController.popBackStack()
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan, StarsColors.OnAccent),
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1, StarsColors.OnAccent),
                             shape = buttonShape,
                             modifier = Modifier
                                 .fillMaxWidth()

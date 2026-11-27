@@ -122,8 +122,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
 
     Card(
         colors  = CardDefaults.cardColors(
-            contentColor = StarsColors.White,
-            containerColor = StarsColors.White
+            containerColor = StarsColors.Surface
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -142,7 +141,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -211,7 +210,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                                 bottomStart = 10.dp,
                                 bottomEnd = 10.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                            colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                         )
                     }
 
@@ -231,8 +230,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
 
     Card(
         colors  = CardDefaults.cardColors(
-            contentColor = StarsColors.White,
-            containerColor = StarsColors.White
+            containerColor = StarsColors.Surface
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -250,7 +248,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Yellow),
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent3),
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -295,7 +293,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                             bottomStart = 10.dp,
                             bottomEnd = 10.dp
                         ),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                        colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                     )
             }
 

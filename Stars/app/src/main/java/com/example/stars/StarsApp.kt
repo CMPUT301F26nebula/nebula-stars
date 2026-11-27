@@ -44,18 +44,10 @@ object StarsColors {
     val Highlight: Color get() = palette.highlight
     val OnHighlight: Color get() = palette.onHighlight
     val Muted: Color get() = palette.muted
-
-    // old names kept here so existing screens still compile
-    val Purple: Color get() = palette.background
-    val DullPurple: Color get() = palette.muted
-    val BrightPurple: Color get() = palette.highlight
-    val Cyan: Color get() = palette.accent1
-    val Magenta: Color get() = palette.accent2
-    val Yellow: Color get() = palette.accent3
-    val White: Color get() = palette.surface
+    val Confirm: Color get() = palette.confirm
+    val Cancel: Color get() = palette.cancel
 
     // fixed colors that dont change with the theme
-    val Grey = Color(0xBBBBBBFF)
     val Black = Color(0xFF000000)
     val Transparent = Color(0x00FFFFFF)
 }

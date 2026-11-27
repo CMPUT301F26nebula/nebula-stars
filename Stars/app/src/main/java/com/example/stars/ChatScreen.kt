@@ -112,7 +112,7 @@ fun ChatScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = StarsColors.Purple,
+        containerColor = StarsColors.Background,
         contentColor = StarsColors.OnBackground,
         topBar = {
             ScreenHeader(
@@ -172,7 +172,7 @@ fun ChatInput(onSend: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(StarsColors.White),
+            .background(StarsColors.OnBackground),
         verticalAlignment = Alignment.Bottom
     ) {
         TextField(
@@ -190,7 +190,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                 )
             },
             textStyle = TextStyle(
-                color = if (messageContent.length > ChatLimits.MAX_CHAR_LIMIT) StarsColors.Magenta else StarsColors.OnSurface,
+                color = if (messageContent.length > ChatLimits.MAX_CHAR_LIMIT) StarsColors.Confirm else StarsColors.OnSurface,
                 fontSize = 16.sp
             ),
             colors = TextFieldDefaults.colors(
@@ -214,7 +214,7 @@ fun ChatInput(onSend: (String) -> Unit) {
                     messageContent = ""
                 },
                 shape = RoundedCornerShape(10.dp, 0.dp, 0.dp, 0.dp),
-                colors = ButtonDefaults.buttonColors(StarsColors.Cyan),
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent1),
                 modifier = Modifier
                     .width(PFPSize.width)
                     .height(PFPSize.height)
@@ -383,9 +383,9 @@ fun ChatCard(participants: ChatParticipants, chat: Chat, adminView: Boolean = fa
             .padding(12.dp),
         colors = if (adminView) {
             CardColors(
-                StarsColors.White,
+                StarsColors.Surface,
                 StarsColors.OnSurface,
-                StarsColors.White,
+                StarsColors.Surface,
                 StarsColors.OnSurface
             )
         } else {

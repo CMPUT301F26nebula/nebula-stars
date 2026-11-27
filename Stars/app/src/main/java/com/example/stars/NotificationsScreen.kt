@@ -47,7 +47,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile, 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(StarsColors.Purple)
+            .background(StarsColors.Background)
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -110,7 +110,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
             .fillMaxWidth()
             .padding(12.dp)
             .clip(RoundedCornerShape(20.0f))
-            .background(StarsColors.White)
+            .background(StarsColors.Surface)
             .clickable {
                 notificationRepository.markAsRead(notification)
                 if (notification.navDestination.isNotBlank()) {

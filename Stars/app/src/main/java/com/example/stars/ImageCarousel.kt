@@ -110,7 +110,7 @@ fun ImageCarousel(
                         bottomStart = 10.dp,
                         bottomEnd = 10.dp
                     ),
-                    colors = ButtonDefaults.buttonColors(StarsColors.Magenta)
+                    colors = ButtonDefaults.buttonColors(StarsColors.Confirm)
                 )
             }
         }

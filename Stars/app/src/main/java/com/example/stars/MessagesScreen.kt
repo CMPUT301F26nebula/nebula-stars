@@ -113,7 +113,7 @@ fun MessagesScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
-                    .background(StarsColors.White),
+                    .background(StarsColors.Surface),
                 verticalAlignment = Alignment.Bottom
             ) {
                 TextField(

@@ -87,7 +87,7 @@ fun ReviewsDialog (
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(cardShape)
-                .background(StarsColors.White)
+                .background(StarsColors.Surface)
         ) {
             //header
             Text(
@@ -97,7 +97,7 @@ fun ReviewsDialog (
                 color = StarsColors.OnBackground,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(StarsColors.Purple)
+                    .background(StarsColors.OnSurface)
                     .padding(10.dp)
             )
 
@@ -113,7 +113,7 @@ fun ReviewsDialog (
                         StarRatingDisplay(
                             average = average,
                             count = if (count == 0) 0 else null,
-                            color = StarsColors.Yellow,
+                            color = StarsColors.Accent3,
                             starSize = 32.sp,
                             numberSize = 24.sp,
                             numberColor = StarsColors.OnSurface
@@ -141,7 +141,7 @@ fun ReviewsDialog (
                     item {
                         Button(
                             onClick = onWriteReview,
-                            colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
+                            colors = ButtonDefaults.buttonColors(StarsColors.Accent1)
                         ) {
                             Text(
                                 if (userRating == null) "Write a review" else "Edit your review",
@@ -179,7 +179,7 @@ fun ReviewsDialog (
             Button(
                 onClick = onDismiss,
                 shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                colors = ButtonDefaults.buttonColors(StarsColors.Confirm),
                 modifier= Modifier
                     .fillMaxWidth()
                     .height(40.dp)
@@ -269,7 +269,7 @@ private fun ReviewItem(
             StarRatingDisplay(
                 average = rating.stars,
                 count = null,
-                color = StarsColors.Yellow,
+                color = StarsColors.Accent3,
                 numberColor = StarsColors.OnSurface
             )
         }
