@@ -94,7 +94,7 @@ fun ReviewsDialog (
                 "Reviews",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium,
-                color = StarsColors.White,
+                color = StarsColors.OnBackground,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(StarsColors.Purple)
@@ -116,7 +116,7 @@ fun ReviewsDialog (
                             color = StarsColors.Yellow,
                             starSize = 32.sp,
                             numberSize = 24.sp,
-                            numberColor = StarsColors.Purple
+                            numberColor = StarsColors.OnSurface
                         )
                     }
                 }
@@ -127,7 +127,7 @@ fun ReviewsDialog (
                             "Your review",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = StarsColors.Cyan
+                            color = StarsColors.OnSurface
 
                         )
                     }
@@ -145,7 +145,7 @@ fun ReviewsDialog (
                         ) {
                             Text(
                                 if (userRating == null) "Write a review" else "Edit your review",
-                                color = StarsColors.White
+                                color = StarsColors.OnAccent
                             )
                         }
                     }
@@ -156,7 +156,7 @@ fun ReviewsDialog (
                         "All reviews ($count)",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = StarsColors.Purple
+                        color = StarsColors.OnSurface
                     )
                 }
                 if (ratings.isEmpty()) {
@@ -186,7 +186,7 @@ fun ReviewsDialog (
             ) {
                 Text(
                     "Close",
-                    color = StarsColors.White,)
+                    color = StarsColors.OnAccent,)
             }
         }
     }
@@ -270,7 +270,7 @@ private fun ReviewItem(
                 average = rating.stars,
                 count = null,
                 color = StarsColors.Yellow,
-                numberColor = StarsColors.Purple
+                numberColor = StarsColors.OnSurface
             )
         }
 
@@ -298,14 +298,14 @@ private fun ReviewItem(
                     TextButton(onClick = onRemoveComment) {
                         Text(
                             "Remove comment",
-                            color = StarsColors.Cyan
+                            color = StarsColors.OnSurface
                         )
                     }
                 }
                 TextButton(onClick = onRemoveRating) {
                     Text(
                         "Remove rating",
-                        color =  StarsColors.Magenta
+                        color =  StarsColors.OnSurface
                     )
                 }
             }

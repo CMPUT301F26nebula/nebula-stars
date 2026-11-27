@@ -48,7 +48,7 @@ fun HomeLayoutBox(navController: NavController, data: HomeButtonData, height: Dp
     ) {
         Text(
             text = data.text,
-            color = StarsColors.White,
+            color = StarsColors.OnAccent,
             fontSize = (boxSize/7).sp,
             fontWeight = FontWeight.Bold
         )

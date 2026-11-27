@@ -129,7 +129,7 @@ fun NotificationLotteryConfirmation(
                     Button(
                         modifier = Modifier.border(
                             1.dp,
-                            StarsColors.White,
+                            StarsColors.OnBackground,
                             RoundedCornerShape(24.dp)
                         ),
                         onClick = {
@@ -140,7 +140,7 @@ fun NotificationLotteryConfirmation(
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Transparent,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnBackground
                         )
                     ) {
                         Text(
@@ -157,14 +157,14 @@ fun NotificationLotteryConfirmation(
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
-                    color = StarsColors.White
+                    color = StarsColors.OnBackground
                 )
 
                 if (campsites.size > 1) {
                     Button(
                         modifier = Modifier.border(
                             1.dp,
-                            StarsColors.White,
+                            StarsColors.OnBackground,
                             RoundedCornerShape(24.dp)
                         ),
                         onClick = {
@@ -173,7 +173,7 @@ fun NotificationLotteryConfirmation(
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Transparent,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnBackground
                         )
                     ) {
                         Text(
@@ -231,34 +231,34 @@ fun NotificationLotteryConfirmation(
                     dateFormatter = DatePickerDefaults.dateFormatter(selectedDateSkeleton = "MMMd"),
                     colors = DatePickerDefaults.colors(
                         containerColor = StarsColors.Purple,
-                        titleContentColor = StarsColors.White,
-                        headlineContentColor = StarsColors.White,
-                        weekdayContentColor = StarsColors.White,
-                        subheadContentColor = StarsColors.White,
-                        navigationContentColor = StarsColors.White,
+                        titleContentColor = StarsColors.OnBackground,
+                        headlineContentColor = StarsColors.OnBackground,
+                        weekdayContentColor = StarsColors.OnBackground,
+                        subheadContentColor = StarsColors.OnBackground,
+                        navigationContentColor = StarsColors.OnBackground,
                         dayContentColor = StarsColors.BrightPurple,
                         disabledDayContentColor = StarsColors.DullPurple,
-                        selectedDayContentColor = StarsColors.White,
+                        selectedDayContentColor = StarsColors.OnAccent,
                         selectedDayContainerColor = StarsColors.Cyan,
                         todayContentColor = StarsColors.BrightPurple,
                         todayDateBorderColor = StarsColors.Yellow,
                         dayInSelectionRangeContainerColor = StarsColors.Transparent,
-                        dayInSelectionRangeContentColor = StarsColors.Cyan,
+                        dayInSelectionRangeContentColor = StarsColors.OnBackground,
                         dividerColor = StarsColors.DullPurple,
                         dateTextFieldColors = TextFieldDefaults.colors(
-                            focusedTextColor = StarsColors.White,
-                            unfocusedTextColor = StarsColors.White,
-                            errorTextColor = StarsColors.White,
+                            focusedTextColor = StarsColors.OnBackground,
+                            unfocusedTextColor = StarsColors.OnBackground,
+                            errorTextColor = StarsColors.OnBackground,
                             focusedContainerColor = StarsColors.Purple,
                             unfocusedContainerColor = StarsColors.Purple,
                             errorContainerColor = StarsColors.Purple,
                             // A label is the text above it when something is typed
-                            focusedLabelColor = StarsColors.White,
+                            focusedLabelColor = StarsColors.OnBackground,
                             unfocusedLabelColor = StarsColors.BrightPurple,
                             // An indicator is the outline color
-                            focusedIndicatorColor = StarsColors.White,
+                            focusedIndicatorColor = StarsColors.OnBackground,
                             unfocusedIndicatorColor = StarsColors.BrightPurple,
-                            cursorColor = StarsColors.White
+                            cursorColor = StarsColors.OnBackground
                         )
                     ),
                     title = { Text(
@@ -290,7 +290,7 @@ fun NotificationLotteryConfirmation(
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Magenta,
-                            contentColor = StarsColors.White,
+                            contentColor = StarsColors.OnAccent,
                             disabledContainerColor = StarsColors.DullPurple,
                             disabledContentColor = StarsColors.Grey,
                         )
@@ -307,7 +307,7 @@ fun NotificationLotteryConfirmation(
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Cyan,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnAccent
                         )
                     ) {
                         Text("Decline")
@@ -370,7 +370,7 @@ fun NotificationLotteryConfirmation(
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Magenta,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnAccent
                         )
                     ) {
                         Text("Confirm")
@@ -386,7 +386,7 @@ fun NotificationLotteryConfirmation(
                         ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.Cyan,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnAccent
                         )
                     ) {
                         Text("Cancel")
@@ -399,7 +399,7 @@ fun NotificationLotteryConfirmation(
                     "LOTTERY NOT FOUND",
                     fontWeight = FontWeight.Bold,
                     fontSize = 50.sp,
-                    color = StarsColors.White,
+                    color = StarsColors.OnBackground,
                     textAlign = TextAlign.Center,
                     lineHeight = 50.sp
                 )

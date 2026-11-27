@@ -60,7 +60,7 @@ fun ReservationCalendarDay(
     eventColors: Map<String, Color> = emptyMap(),
     onClick: (CalendarDay) -> Unit = {}
 ) {
-    var fg = StarsColors.White
+    var fg = StarsColors.OnBackground
     var circleColor = StarsColors.Transparent
     var modifier = Modifier
         .fillMaxSize()
@@ -69,7 +69,7 @@ fun ReservationCalendarDay(
 
 
     if (day.isCurrent) {
-        fg = StarsColors.Purple
+        fg = StarsColors.OnSurface
         circleColor = StarsColors.White
         modifier = modifier.background(StarsColors.White)
     } else   if (day.isFiller) {
@@ -156,7 +156,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
     }
 
     val changeMonthButtonModifier = Modifier
-        .border(1.dp, StarsColors.White, shape = RoundedCornerShape(24.dp))
+        .border(1.dp, StarsColors.OnBackground, shape = RoundedCornerShape(24.dp))
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -171,7 +171,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
             Text(
                 text = currentYear.toString(),
                 fontSize = 32.sp,
-                color = StarsColors.White
+                color = StarsColors.OnBackground
             )
         }
         Row(
@@ -184,7 +184,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
             Text(
                 text = currentMonth,
                 fontSize = 38.sp,
-                color = StarsColors.White
+                color = StarsColors.OnBackground
             )
             Spacer(Modifier.weight(1.0f))
             // change month buttons
@@ -195,7 +195,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
-                    contentColor = StarsColors.White
+                    contentColor = StarsColors.OnBackground
                 )
             ) {
                 Text(
@@ -212,7 +212,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = StarsColors.Transparent,
-                    contentColor = StarsColors.White
+                    contentColor = StarsColors.OnBackground
                 )
             ) {
                 Text(
@@ -238,7 +238,7 @@ fun ReservationCalendar(reservations: List<Reservation>, onDayClick: (CalendarDa
                         text = dayName,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = StarsColors.Purple
+                        color = StarsColors.OnSurface
                     )
                 }
             }
@@ -378,7 +378,7 @@ fun ReservationCalendarScreen(
                 text = "+ ",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = StarsColors.Purple,
+                color = StarsColors.OnSurface,
                 // TODO debug, remove later
                 modifier = Modifier.combinedClickable(
                     onClick = {},

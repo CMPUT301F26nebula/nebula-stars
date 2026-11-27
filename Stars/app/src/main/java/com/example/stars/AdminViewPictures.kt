@@ -151,7 +151,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                     text = campsite.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
-                    color = StarsColors.White,
+                    color = StarsColors.OnAccent,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -203,7 +203,7 @@ fun AdminViewCampsitePicturesRow(navController: NavController, campsite: Campsit
                             content = { Text("Delete Image",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Medium,
-                                color = StarsColors.White,) },
+                                color = StarsColors.OnAccent,) },
                             modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete image " + campsite.title),
                             shape = RoundedCornerShape(
                                 topStart = 0.dp,
@@ -259,7 +259,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                     text = user.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
-                    color = StarsColors.White,
+                    color = StarsColors.OnAccent,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -287,7 +287,7 @@ fun AdminViewProfilePicturesRow(user: UserProfile, imageRepository: ImageReposit
                         content = { Text("Delete Image",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Medium,
-                            color = StarsColors.White,) },
+                            color = StarsColors.OnAccent,) },
                         modifier = Modifier.height(50.dp).fillMaxWidth().offset(y = 3.dp).testTag("Delete image " + user.name),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,

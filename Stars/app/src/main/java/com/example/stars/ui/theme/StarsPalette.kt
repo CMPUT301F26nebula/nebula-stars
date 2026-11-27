@@ -69,8 +69,8 @@ object ThemePresets {
         accent2 = Color(0xFF7A2048),
         accent3 = Color(0xFF6B5A1E),
         onAccent = Color(0xFFF2EEF8),
-        highlight = Color(0xFF4F378B),
-        onHighlight = Color(0xFFEADDFF),
+        highlight = Color(0xFFD0BCFF),
+        onHighlight = Color(0xFF381E72),
         muted = Color(0xFF2B2930)
     )
 

@@ -124,22 +124,22 @@ fun MessagesScreen(
                     placeholder = {
                         Text(
                             text = "Search Users",
-                            color = StarsColors.Purple,
+                            color = StarsColors.OnSurface,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Thin
                         )
                     },
                     textStyle = TextStyle(
-                        color = StarsColors.Purple,
+                        color = StarsColors.OnSurface,
                         fontSize = 16.sp
                     ),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = StarsColors.Purple,
-                        unfocusedIndicatorColor = StarsColors.Purple.copy(alpha = 0.6f),
-                        cursorColor = StarsColors.Purple
+                        focusedIndicatorColor = StarsColors.OnSurface,
+                        unfocusedIndicatorColor = StarsColors.OnSurface.copy(alpha = 0.6f),
+                        cursorColor = StarsColors.OnSurface
                     ),
                     modifier = Modifier
                         .weight(1f)

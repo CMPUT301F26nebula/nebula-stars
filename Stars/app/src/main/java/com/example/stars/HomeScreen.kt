@@ -55,7 +55,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(StarsColors.White)
+                    .background(StarsColors.Surface)
                     .statusBarsPadding(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -65,7 +65,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                     text = "Welcome ${currentUser.name}",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = StarsColors.Purple,
+                    color = StarsColors.OnSurface,
                 )
             }
         },
@@ -84,7 +84,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.BrightPurple,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnHighlight
                         )
                     ) {
                         Text(
@@ -101,7 +101,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = StarsColors.BrightPurple,
-                            contentColor = StarsColors.White
+                            contentColor = StarsColors.OnHighlight
                         )
                     ) {
                         Text(
@@ -119,7 +119,7 @@ fun HomeScreen(navController: NavController, currentUser: UserProfile) {
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = StarsColors.BrightPurple,
-                                contentColor = StarsColors.White
+                                contentColor = StarsColors.OnHighlight
                             )
                         ) {
                             Text(

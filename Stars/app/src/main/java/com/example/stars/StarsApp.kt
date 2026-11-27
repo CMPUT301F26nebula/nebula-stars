@@ -225,6 +225,9 @@ fun StarsApp(notifs: Boolean = false) {
                         userRepository
                     )
                 }
+                composable("themes") {
+                    ThemesScreen(navController, currentUser, userRepository)
+                }
                 composable("profile") { EditProfile(navController, currentUser, userRepository, imageRepository) }
                 composable("new profile") {
                     MakeNewProfile(

@@ -67,7 +67,7 @@ fun NotificationsScreen(navController: NavController, currentUser: UserProfile, 
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
             if (notifications.isEmpty()) {
-                Text("No notifications found", color = StarsColors.White)
+                Text("No notifications found", color = StarsColors.OnBackground)
             } else {
                 // List of notifications
                 LazyColumn {
@@ -125,7 +125,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
         ) {
             Text(
                 text = notification.content,
-                color = StarsColors.Purple,
+                color = StarsColors.OnSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
@@ -135,7 +135,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
                 modifier = Modifier.clickable { 
                     navController.navigate("campsite/${Uri.encode(notification.sender)}")
                 },
-                color = StarsColors.Purple,
+                color = StarsColors.OnSurface,
                 fontWeight = FontWeight.Normal,
                 fontSize = 15.sp
             )

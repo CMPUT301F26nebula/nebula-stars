@@ -158,7 +158,7 @@ fun RatingDialog(
                 "Rate Campsite",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium,
-                color = StarsColors.White,
+                color = StarsColors.OnBackground,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(StarsColors.Purple)
@@ -173,7 +173,7 @@ fun RatingDialog(
                     color = StarsColors.Yellow,
                     starSize = 48.sp,
                     numberSize = 40.sp,
-                    numberColor = StarsColors.Purple
+                    numberColor = StarsColors.OnSurface
                 )
                 Slider(
                     value = sliderValue,
@@ -181,11 +181,11 @@ fun RatingDialog(
                     valueRange = 1f..5f,
                     steps = 7,
                     colors = SliderDefaults.colors(
-                        thumbColor = StarsColors.Purple,
-                        activeTrackColor = StarsColors.Purple,
-                        inactiveTrackColor = StarsColors.Purple.copy(alpha = 0.2f),
+                        thumbColor = StarsColors.OnSurface,
+                        activeTrackColor = StarsColors.OnSurface,
+                        inactiveTrackColor = StarsColors.OnSurface.copy(alpha = 0.2f),
                         activeTickColor = StarsColors.White,
-                        inactiveTickColor = StarsColors.Purple
+                        inactiveTickColor = StarsColors.OnSurface
                     )
                 )
 
@@ -198,9 +198,9 @@ fun RatingDialog(
                     label = { Text("How was your experience? (Optional)") },
                     supportingText = { Text("${comment.length}/$MAX_COMMENT_LENGTH") },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = StarsColors.Cyan,
-                        focusedLabelColor = StarsColors.Cyan,
-                        cursorColor = StarsColors.Cyan
+                        focusedBorderColor = StarsColors.OnSurface,
+                        focusedLabelColor = StarsColors.OnSurface,
+                        cursorColor = StarsColors.OnSurface
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -216,7 +216,7 @@ fun RatingDialog(
                         .weight(1f)
                         .height(40.dp)
                 ) {
-                    Text("Cancel", color = StarsColors.White)
+                    Text("Cancel", color = StarsColors.OnAccent)
                 }
                 Button(
                     onClick = { onSubmit(stars, comment) },
@@ -226,7 +226,7 @@ fun RatingDialog(
                         .weight(1f)
                         .height(40.dp)
                 ) {
-                    Text("Submit", color = StarsColors.White)
+                    Text("Submit", color = StarsColors.OnAccent)
                 }
             }
         }

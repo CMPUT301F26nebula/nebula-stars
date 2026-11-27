@@ -157,7 +157,7 @@ fun UserProfileScreen(
                             text = userProfile?.name ?: "USER NOT FOUND",
                             fontSize = 40.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = StarsColors.Purple
+                            color = StarsColors.OnSurface
                         )
 
                         Text(
@@ -169,7 +169,7 @@ fun UserProfileScreen(
                                 },
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = StarsColors.Purple
+                            color = StarsColors.OnSurface
                         )
 
                         //ID
@@ -178,7 +178,7 @@ fun UserProfileScreen(
                                 text = userProfile?.id ?: "",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Light,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
                         }
 
@@ -225,21 +225,21 @@ fun UserProfileScreen(
                                 text = "Contact Info:",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
 
                             Text(
                                 text = userProfile?.email ?: "",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
 
                             Text(
                                 text = userProfile?.phone ?: "",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Normal,
-                                color = StarsColors.Purple
+                                color = StarsColors.OnSurface
                             )
                         }
 
@@ -252,13 +252,13 @@ fun UserProfileScreen(
                                 text = "Owned Campsites:",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = StarsColors.Purple)
+                                color = StarsColors.OnSurface)
                             if (ownedCampsites.isEmpty()) {
                                 Text(
                                     text = "No campsites found",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Normal,
-                                    color = StarsColors.Purple
+                                    color = StarsColors.OnSurface
                                 )
                             } else {
                                 // List of campsites

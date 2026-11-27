@@ -20,12 +20,10 @@ import androidx.navigation.NavController
  */
 
 // https://chatgpt.com/share/6b08d456-c4f0-83e8-9715-d4edab7e83c4
-// "android studio kotlin what are ways to do a back
-// button symbol? Im using a special character right now
-// but is there other ways?"
-// Chatgpt, 2026-11-26.
+// "android studio kotlin what are ways to do a back button symbol? Im using a special character right now
+// but is there other ways?" Chatgpt, 2026-11-26.
 @Composable
-fun BackButton(navController: NavController, tint: Color = StarsColors.White) {
+fun BackButton(navController: NavController, tint: Color = StarsColors.OnBackground) {
     IconButton(
         onClick = {
             if (!navController.popBackStack()) {

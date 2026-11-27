@@ -224,7 +224,7 @@ fun CampsiteDetailsScreen(
                                         "View Entrants",
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = StarsColors.White
+                                        color = StarsColors.OnAccent
                                     )
                                 }
                             } else {
@@ -243,7 +243,7 @@ fun CampsiteDetailsScreen(
                                         "Create Lottery",
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = StarsColors.White
+                                        color = StarsColors.OnAccent
                                     )
                                 }
                             }
@@ -270,7 +270,7 @@ fun CampsiteDetailsScreen(
                                     "Edit Campsite",
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = StarsColors.White
+                                    color = StarsColors.OnAccent
                                 )
                             }
                         }
@@ -309,7 +309,7 @@ fun CampsiteDetailsScreen(
                                             "Join Lottery",
                                             textAlign = TextAlign.Center,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = StarsColors.White
+                                            color = StarsColors.OnAccent
                                         )
                                     }
                                 // are in the lottery show the exit button
@@ -338,7 +338,7 @@ fun CampsiteDetailsScreen(
                                             "Exit Lottery",
                                             textAlign = TextAlign.Center,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = StarsColors.White
+                                            color = StarsColors.OnAccent
                                         )
                                     }
                                 }
@@ -359,7 +359,7 @@ fun CampsiteDetailsScreen(
                                         "No Lottery",
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = StarsColors.White,
+                                        color = StarsColors.OnAccent,
                                     )
                                 }
                             }
@@ -373,7 +373,7 @@ fun CampsiteDetailsScreen(
                                     bottomStart = 0.dp,
                                     bottomEnd = corner
                                 ),
-                                colors = ButtonDefaults.buttonColors(StarsColors.Magenta),
+                                colors = ButtonDefaults.buttonColors(StarsColors.Magenta, StarsColors.OnAccent),
                                 modifier = Modifier.weight(1F)
                             ) {
                                 Text(
@@ -458,7 +458,7 @@ fun CampsiteDetailsScreen(
                             average = shownCampsite.averageRating,
                             count = null, //shownCampsite.ratingCount  <- replace null with this for review count if you want it
                             color = StarsColors.Yellow,
-                            numberColor = StarsColors.Black
+                            numberColor = StarsColors.OnSurface
                         )
                     }
 
