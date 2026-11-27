@@ -104,6 +104,21 @@ fun CampsitesScreen(
                 )
             }
         }
+        Button(
+            onClick = {
+                navController.navigate("scan qr code")
+            },
+            colors = ButtonDefaults.buttonColors(
+            containerColor = StarsColors.White,
+            contentColor = StarsColors.Purple
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag("scanQrButton")
+        ) {
+            Text("Scan QR Code")
+    }
 
         // Content
         Column(
