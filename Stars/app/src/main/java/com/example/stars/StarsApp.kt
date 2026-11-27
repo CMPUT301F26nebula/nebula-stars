@@ -194,6 +194,11 @@ fun StarsApp(notifs: Boolean = false) {
                         true
                     )
                 }
+
+                composable("app policies") {
+                    AppPolicyScreen(navController)
+                }
+
                 composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
                 composable("settings") {
                     SettingsScreen(
