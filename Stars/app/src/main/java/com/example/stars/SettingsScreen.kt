@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -245,6 +246,28 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             showOwnerRemove = false
                         },
                         { showOwnerRemove = false }
+                    )
+                }
+                Spacer(modifier = Modifier.size(10.dp))
+                // user story #58 - allow users to view app policies and guidelines
+
+                Button(
+                    onClick = {
+                        navController.navigate("app policies")
+                    },
+                    modifier = Modifier
+                        .size(width = 300.dp, height = 50.dp)
+                        .testTag("appPolicyButton"),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = StarsColors.Cyan
+                    )
+                ) {
+                    Text(
+                        text = "Policies & Guidelines",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = StarsColors.White
                     )
                 }
             }
