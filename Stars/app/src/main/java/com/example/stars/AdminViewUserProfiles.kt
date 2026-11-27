@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -297,11 +298,14 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
     var showButtons by remember { mutableStateOf(false) }
 
     if (!showButtons){
-        Column() {
-
+        Column(
+            modifier = Modifier.size(height = 40.dp, width = 310.dp)
+        ) {
             Button(
                 onClick = { showButtons = true },
-                modifier = Modifier.testTag("Admin Actions").size(height = 40.dp, width = 310.dp),
+                modifier = Modifier
+                    .testTag("Admin Actions")
+                    .fillMaxSize(),
                 shape = RoundedCornerShape(
                     topStart = 0.dp,
                     topEnd = 0.dp,
@@ -315,17 +319,17 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     style = MaterialTheme.typography.bodyMedium,
                     color = StarsColors.White)
             }
-
-            Spacer(modifier = Modifier.size(height = 40.dp, width = 310.dp))
         }
-    }
-    if (showButtons){
-
-        Column() {
-
+    } else {
+        Column(
+            modifier = Modifier.size(height = 80.dp, width = 310.dp)
+        ) {
             Button(
                 onClick = { showButtons = false },
-                modifier = Modifier.testTag("Admin Actions").size(height = 40.dp, width = 310.dp),
+                modifier = Modifier
+                    .testTag("Admin Actions")
+                    .weight(1f)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(
                     topStart = 0.dp,
                     topEnd = 0.dp,
@@ -341,8 +345,11 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     color = StarsColors.White
                 )
             }
-
-            Row() {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+            ) {
                 Button(
                     onClick = {
                         val user = runBlocking { userRepository.getWithId(campsite.id) }
@@ -351,7 +358,10 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                             runBlocking { userRepository.banOwner(user) }
                         }
                     },
-                    modifier = Modifier.testTag("Ban Owner").size(height = 40.dp, width = 155.dp),
+                    modifier = Modifier
+                        .testTag("Ban Owner")
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(
                         topStart = 0.dp,
                         topEnd = 0.dp,
@@ -372,8 +382,10 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     onClick = {
                         runBlocking { campsiteRepository.removeWithId(campsite.id) }
                     },
-                    modifier = Modifier.testTag("Remove Campsite")
-                        .size(height = 40.dp, width = 155.dp),
+                    modifier = Modifier
+                        .testTag("Remove Campsite")
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(
                         topStart = 0.dp,
                         topEnd = 0.dp,
@@ -381,7 +393,6 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                         bottomEnd = 10.dp
                     ),
                     colors = ButtonDefaults.buttonColors(StarsColors.Cyan)
-
                 ) {
                     Text(
                         "Remove Listing",

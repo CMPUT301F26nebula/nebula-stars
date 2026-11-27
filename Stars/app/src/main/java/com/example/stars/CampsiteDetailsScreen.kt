@@ -1,4 +1,10 @@
-
+/**
+ * the expanded view of a campsites details. if you are a user you can join/leave an active lottery
+ * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
+ * if you are an admin you can delete the listing or ban the owner.
+ * TODO: add time and place details
+ * BUG: images have white space on the left and do not fill
+ */
 package com.example.stars
 
 import android.net.Uri
@@ -12,9 +18,11 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -59,11 +67,16 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.runBlocking
 
 /**
- * the expanded view of a campsites details. if you are a user you can join/leave an active lottery
- * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
- * if you are an admin you can delete the listing or ban the owner.
- * TODO: add time and place details
- * BUG: images have white space on the left and do not fill
+ * Expanded [campsite] details screen
+ *
+ * @param navController navigation controller
+ * @param currentUser current [UserProfile]
+ * @param campsite [Campsite] to display
+ * @param campsiteRepository database accessor
+ * @param imageRepo database accessor
+ * @param userRepository database accessor
+ * @param lotteryRepository database accessor
+ * @param reservationRepository database accessor
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,8 +165,9 @@ fun CampsiteDetailsScreen(
         title = "CAMPSITE"
     )
 
-    Column(modifier = Modifier
-        .fillMaxSize(),
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -163,11 +177,11 @@ fun CampsiteDetailsScreen(
                     shape = RoundedCornerShape(
                         topStart = 10.dp,
                         topEnd = 30.dp,
-                        bottomStart = 10.dp,
-                        bottomEnd = 10.dp
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
                     )
                 )
-                .size(height = 500.dp, width = 310.dp), // TODO should prob do something about these hardcoded values since image carousel depends on it a bit
+                .size(height = 460.dp, width = 310.dp),
             topBar = {
                 val titleColor = RandomStarsColor.fromId(campsite.id)
                 Row(
@@ -189,7 +203,8 @@ fun CampsiteDetailsScreen(
             },
             bottomBar = {
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
                     // show the owner buttons if owner
                     if (currentUser.id == campsite.ownerId) {
@@ -374,15 +389,6 @@ fun CampsiteDetailsScreen(
                             }
                         }
                     }
-                    if (currentUser.permission == UserPermission.ADMIN) {
-                        Box(
-                            modifier = Modifier
-                                .height(40.dp)
-                                .fillMaxWidth()
-                        ) {
-                                AdminCampsiteActions(campsite, userRepository, campsiteRepository)
-                        }
-                    }
                 }
             }
         ) { innerPadding ->
@@ -554,6 +560,23 @@ fun CampsiteDetailsScreen(
                             }
                         )
                     }
+                }
+            }
+        }
+        if (currentUser.permission == UserPermission.ADMIN) {
+            // reserve space for second button row so everything doesnt move when u open this
+            Box(
+                modifier = Modifier.size(310.dp, 80.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        // needed to fill pixel gap
+                        .background(
+                            StarsColors.Yellow,
+                            RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
+                        )
+                ) {
+                    AdminCampsiteActions(campsite, userRepository, campsiteRepository)
                 }
             }
         }
