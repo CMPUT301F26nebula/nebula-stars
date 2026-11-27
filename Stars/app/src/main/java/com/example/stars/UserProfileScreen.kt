@@ -92,23 +92,6 @@ fun UserProfileScreen(
     var userPFP by remember { mutableStateOf<Uri?>(null) }
     var ownedCampsites by remember { mutableStateOf<List<Campsite>>(emptyList<Campsite>()) }
     var reservations by remember { mutableStateOf<List<Reservation>>(emptyList<Reservation>()) }
-    var campsites: Map<String, Campsite> by remember {
-        mutableStateOf(
-            emptyMap()
-        )
-    }
-
-
-    LaunchedEffect(reservations) {
-        campsites = buildMap {
-            for (res in reservations) {
-                Databases.campsiteRepository.getWithId(res.campsiteId)
-                    ?.let {
-                        put(res.id, it)
-                    }
-            }
-        }
-    }
 
     LaunchedEffect(true) {
         userProfile = userRepository.getWithId(userID)
