@@ -463,11 +463,11 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                                     if (currentUser.profilePic != "") {
 
                                         // check to ensure the images are not the same and that the image is not null
-                                        if (image != Uri.parse(runBlocking {
+                                        if (image != runBlocking {
                                                 imageRepository.getImageUri(
                                                     currentUser.profilePic
-                                                )
-                                            })
+                                                ).orEmpty()
+                                            }.toUri()
                                             && image != null
                                         ) {
 
@@ -861,11 +861,11 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                             if (currentUser.profilePic != "") {
 
                                 // check to ensure the images are not the same and that the image is not null
-                                if (image != Uri.parse(runBlocking {
+                                if (image != runBlocking {
                                         imageRepository.getImageUri(
                                             currentUser.profilePic
-                                        )
-                                    })
+                                        ).orEmpty()
+                                    }.toUri()
                                     && image != null
                                 ) {
 
