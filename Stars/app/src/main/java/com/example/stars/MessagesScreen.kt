@@ -182,9 +182,9 @@ fun MessagesScreen(
                                     }
                                 )
                             }
-                            if ((participants.local?.name?.contains(filter, true) ?: false) ||
-                                (participants.remote?.name?.contains(filter, true) ?: false)
-                            ) {
+                            // search through recipient names
+                            val remoteName = participants.remote?.name ?: ""
+                            if (remoteName.contains(filter, true)) {
                                 ChatCard(participants, chat, adminView) { chatInfo ->
                                     navController.navigate(
                                         if (adminView) {
