@@ -7,7 +7,7 @@ package com.example.stars
  * Possible statuses of a reservation
  */
 enum class ReservationStatus {
-    INVITED, ACCEPTED, DECLINED, CANCELLED_BY_ENTRANT, CANCELLED_BY_OWNER
+    INVITED, ACCEPTED, CANCELLED_BY_ENTRANT, CANCELLED_BY_OWNER
 }
 
 /**

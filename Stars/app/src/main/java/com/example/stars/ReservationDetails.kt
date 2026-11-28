@@ -131,7 +131,6 @@ fun ReservationDetails(
                 ReservationStatus.ACCEPTED -> "Accepted"
                 ReservationStatus.CANCELLED_BY_OWNER -> "Cancelled"
                 ReservationStatus.CANCELLED_BY_ENTRANT -> "Cancelled"
-                ReservationStatus.DECLINED -> "Declined"
             },
             maxLines = 1,
             autoSize = TextAutoSize.StepBased(

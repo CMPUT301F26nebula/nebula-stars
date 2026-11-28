@@ -467,6 +467,24 @@ fun StarsApp(notifs: Boolean = false) {
                     )
                 }
 
+                composable(
+                    route = "reservation csv/{reservationID}",
+                    arguments = listOf(
+                        navArgument("reservationID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val reservationID = backStackEntry.arguments
+                        ?.getString("reservationID").orEmpty()
+                    NotificationCSV(
+                        navController = navController,
+                        reservationId = reservationID,
+                        reservationRepository = reservationRepository,
+                        campsiteRepository = campsiteRepository
+                    )
+                }
+
                 composable("owner calendar"){
                     OwnerReservationsCalendar(
                         navController,

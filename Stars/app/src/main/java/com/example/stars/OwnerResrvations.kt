@@ -230,16 +230,6 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
     when(filter){
         "" -> {selectedReservations = userReservations}
 
-        "Declined" -> {
-            val tempSelectedList = ArrayList<Reservation>()
-
-            for (reservation in userReservations){
-                if (reservation.status == ReservationStatus.DECLINED){
-                    tempSelectedList.add(reservation)
-                }
-            }
-            selectedReservations = tempSelectedList
-        }
         "Invited" -> {
             val tempSelectedList = ArrayList<Reservation>()
 

@@ -1,6 +1,7 @@
 package com.example.stars
 
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -49,7 +50,7 @@ import kotlin.math.min
  * On accept:
  * moves user from pending winners to confirmed IDs
  * creates a reservation for selected campsite and date range
- * reservation status is [ReservationStatus.INVITED]
+ * reservation status is [ReservationStatus.ACCEPTED]
  * TODO: optionally sends owner notif?
  *
  * On decline:
@@ -290,6 +291,11 @@ fun NotificationLotteryConfirmation(
                     Button(
                         onClick = {
                             if (accept) {
+                                val reservationId = Reservation.uniqueIdFrom(
+                                    currentUser.id,
+                                    campsites[selectedCampsiteIndex].id,
+                                    EpochRange(startDate, endDate)
+                                )
                                 /*
                                 lotteryRepository.addOrUpdate(
                                     Lottery(
@@ -310,15 +316,9 @@ fun NotificationLotteryConfirmation(
 
                                 reservationRepository.addOrUpdate(
                                     Reservation(
-                                        Reservation.uniqueIdFrom(
-                                            currentUser.id,
-                                            campsites[selectedCampsiteIndex].id,
-                                            //EpochRange(startDate.timeInMillis, endDate.timeInMillis)
-                                            EpochRange(startDate, endDate)
-                                        ),
-                                        //EpochRange(startDate.timeInMillis, endDate.timeInMillis),
+                                        reservationId,
                                         EpochRange(startDate, endDate),
-                                        ReservationStatus.INVITED,
+                                        ReservationStatus.ACCEPTED,
                                         currentUser.id,
                                         campsites[selectedCampsiteIndex].id
                                     )
@@ -332,7 +332,7 @@ fun NotificationLotteryConfirmation(
                                         content = "Reservation made for ${campsites[selectedCampsiteIndex].title} " +
                                                 "from ${SimpleDateFormat.getDateInstance().format(startDate)} " +
                                                 "to ${SimpleDateFormat.getDateInstance().format(endDate)}",
-                                        navDestination = "",
+                                        navDestination = "reservation csv/${Uri.encode(reservationId)}",
                                         senderIds = lottery.ownerIDs,
                                     )
                                 )
