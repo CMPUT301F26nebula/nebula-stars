@@ -40,7 +40,8 @@ fun OwnerReservationsCalendar(navController: NavController,
                               currentUser: UserProfile,
                               reservationRepository: ReservationRepository,
                               campsiteRepository: CampsiteRepository,
-                              userRepository: UserRepository) {
+                              userRepository: UserRepository,
+                              notificationRepository: NotificationRepository) {
 
     var userReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
     var calendarReady by remember { mutableStateOf(false) }
@@ -104,6 +105,7 @@ fun OwnerReservationsCalendar(navController: NavController,
     if (selectedReservation != null) {
         ReservationDetailsModal(
             navController,
+            currentUser,
             selectedReservation!!,
             onClose = {
                 selectedReservation = null
@@ -113,7 +115,8 @@ fun OwnerReservationsCalendar(navController: NavController,
 
                 "User Booked: ${runBlocking { userRepository.getWithId(user)?.name} }"
             },
-            action = "Delete Reservation"
+            action = "Delete Reservation",
+            notificationRepository = notificationRepository
         )
     }
 
@@ -151,7 +154,8 @@ fun OwnerReservationsCalendar(navController: NavController,
 @Composable
 fun OwnerReservationsList(navController: NavController,reservationRepository: ReservationRepository,
                           campsiteRepository: CampsiteRepository, currentUser: UserProfile,
-                          userRepository: UserRepository){
+                          userRepository: UserRepository,
+                          notificationRepository: NotificationRepository){
 
     var userReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
     var selectedReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
@@ -213,6 +217,7 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
     if (selectedReservation != null) {
         ReservationDetailsModal(
             navController,
+            currentUser,
             selectedReservation!!,
             onClose = {
                 selectedReservation = null
@@ -222,7 +227,8 @@ fun OwnerReservationsList(navController: NavController,reservationRepository: Re
 
                 "User Booked: ${runBlocking { userRepository.getWithId(user)?.name} }"
             },
-            action = "Delete Reservation"
+            action = "Delete Reservation",
+            notificationRepository = notificationRepository
         )
     }
 

@@ -290,6 +290,7 @@ fun ReservationCalendarScreen(
     navController: NavController,
     currentUser: UserProfile,
     reservationRepository: ReservationRepository,
+    notificationRepository: NotificationRepository
 ) {
     var userReservations: List<Reservation> by remember { mutableStateOf(emptyList()) }
     var calendarReady by remember { mutableStateOf(false) }
@@ -337,13 +338,15 @@ fun ReservationCalendarScreen(
     if (selectedReservation != null) {
         ReservationDetailsModal(
             navController,
+            currentUser,
             selectedReservation!!,
             onClose = {
                 selectedReservation = null
             },
             onClickOtherPerson = {user, owner -> navController.navigate("user profile/${owner}")},
             otherPersonText = {user, owner -> "Owner: $owner"},
-            action = "Leave Reservation"
+            action = "Leave Reservation",
+            notificationRepository = notificationRepository
         )
     }
 

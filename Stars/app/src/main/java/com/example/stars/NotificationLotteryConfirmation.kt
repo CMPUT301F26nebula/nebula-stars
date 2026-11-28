@@ -296,7 +296,7 @@ fun NotificationLotteryConfirmation(
                                     campsites[selectedCampsiteIndex].id,
                                     EpochRange(startDate, endDate)
                                 )
-                                /*
+
                                 lotteryRepository.addOrUpdate(
                                     Lottery(
                                         id = lottery.id,
@@ -311,8 +311,6 @@ fun NotificationLotteryConfirmation(
                                         confirmedIDs = (lottery.confirmedIDs + currentUser.id)
                                     )
                                 )
-
-                                 */
 
                                 reservationRepository.addOrUpdate(
                                     Reservation(

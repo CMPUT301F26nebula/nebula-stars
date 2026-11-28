@@ -4,6 +4,7 @@ package com.example.stars
  */
 
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.UUID
 
 /**
  * Detailed view of a reservation, clicking on the campsite brings you there and same with the
@@ -47,13 +49,15 @@ import java.util.Date
 fun ReservationDetails(
     modifier: Modifier = Modifier,
     navController: NavController,
+    currentUser: UserProfile,
     reservation: Reservation,
     campsite: Campsite,
     campOwner: UserProfile,
     onClickOtherPerson: (String, String) -> Unit,
     otherPersonText: (String, String) -> String,
     onDelete: () -> Unit,
-    action: String
+    action: String,
+    notificationRepository: NotificationRepository
 ) {
     // date format
     val simpleDateFormat = SimpleDateFormat("MMM dd, yyyy", LocalLocale.current.platformLocale)
@@ -185,7 +189,6 @@ fun ReservationDetails(
                     onConfirm = {
 
                         // set cancelled base on who did it
-                        // TODO: notify the person who this effects
                         if (action == "Delete Reservation") {
                             val newReservation =
                                 reservation.copy(status = ReservationStatus.CANCELLED_BY_OWNER)
@@ -196,7 +199,17 @@ fun ReservationDetails(
                             Databases.reservationRepository.addOrUpdate(newReservation)
 
                         }
-
+                        notificationRepository.sendNotification(
+                            Notification(
+                                UUID.randomUUID().toString(),
+                                userId = reservation.entrantId,
+                                content = "Cancelled reservation for ${campsite.title} " +
+                                        "from ${android.icu.text.SimpleDateFormat.getDateInstance().format(reservation.timeRange.start)} " +
+                                        "to ${android.icu.text.SimpleDateFormat.getDateInstance().format(reservation.timeRange.end)}",
+                                navDestination = "reservation csv/${Uri.encode(reservation.id)}",
+                                senderIds = listOf(currentUser.id),
+                            )
+                        )
                         confirmLeaveDialogState = false
                         onDelete()
                     },
@@ -213,11 +226,13 @@ fun ReservationDetails(
  */
 @Composable
 fun ReservationDetailsModal(navController: NavController,
+                            currentUser: UserProfile,
                             reservation: Reservation,
                             onClose: () -> Unit,
                             onClickOtherPerson: (String, String) -> Unit,
                             otherPersonText: (String, String) -> String,
-                            action: String
+                            action: String,
+                            notificationRepository: NotificationRepository
 ) {
     var campsite: Campsite? by remember { mutableStateOf(null) }
     var campOwner: UserProfile? by remember { mutableStateOf(null) }
@@ -242,14 +257,15 @@ fun ReservationDetailsModal(navController: NavController,
             if (campsite != null && campOwner != null) {
                 ReservationDetails(
                     navController = navController,
+                    currentUser = currentUser,
                     reservation = reservation,
                     campsite = campsite!!,
                     campOwner = campOwner!!,
                     onClickOtherPerson = onClickOtherPerson,
                     otherPersonText = otherPersonText,
                     onDelete = {onClose()},
-                    action = action
-
+                    action = action,
+                    notificationRepository = notificationRepository
                 )
             }
         }

@@ -71,6 +71,8 @@ fun NotificationCSV(
 
         //TODO: Display CSV contents in a preview
 
+        // should be noted that downloading a reservation you already have downloaded will overwrite it
+        // this means a canceled notif csv will always overwrite the accepted one
         Button(
             onClick = {
                 val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
