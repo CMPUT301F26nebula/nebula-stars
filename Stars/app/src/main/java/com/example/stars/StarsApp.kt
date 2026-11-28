@@ -4,6 +4,10 @@
 package com.example.stars
 
 import android.provider.Settings
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -15,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -104,6 +109,8 @@ fun StarsApp(notifs: Boolean = false) {
     CompositionLocalProvider(App.navController provides navController) { }
 
     val context = LocalContext.current
+    val isOnline by remember(context) { context.observeConnectivity() }
+        .collectAsStateWithLifecycle(initialValue = true)
     LaunchedEffect(Unit) {
         currentUser = getUserID(navController, context, userRepository, notifs)
         if (currentUser.name.isNotEmpty() && currentUser.email.isNotEmpty()) {
@@ -112,6 +119,7 @@ fun StarsApp(notifs: Boolean = false) {
         if (currentUser.name.isEmpty() || currentUser.email.isEmpty()) {
             startAt = "new profile"
         }
+
     }
 
     /**
@@ -162,9 +170,19 @@ fun StarsApp(notifs: Boolean = false) {
     
     if (currentUser.id.isNotBlank()) {
         StarsBackground {
-            NavHost(navController = navController, startDestination = startAt) {
+
+            Box(Modifier.fillMaxSize()) {
+            NavHost(
+                navController = navController,
+                startDestination = startAt,
+                enterTransition = { EnterTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popExitTransition = { ExitTransition.None }
+
+            ) {
                 composable("home") { HomeScreen(navController, currentUser) }
-                composable("scan qr code"){QRCodeScannerScreen(navController)}
+                composable("scan qr code") { QRCodeScannerScreen(navController) }
                 composable("campsites") {
                     CampsitesScreen(
                         navController,
@@ -180,7 +198,12 @@ fun StarsApp(notifs: Boolean = false) {
                 }
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
-                    ReservationCalendarScreen(navController, currentUser, reservationRepository, notificationRepository)
+                    ReservationCalendarScreen(
+                        navController,
+                        currentUser,
+                        reservationRepository,
+                        notificationRepository
+                    )
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
                 composable(
@@ -216,18 +239,33 @@ fun StarsApp(notifs: Boolean = false) {
                     AppPolicyScreen(navController)
                 }
 
-                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, userRepository) }
+                composable("notifications") {
+                    NotificationsScreen(
+                        navController,
+                        currentUser,
+                        notificationRepository,
+                        userRepository
+                    )
+                }
                 composable("settings") {
                     SettingsScreen(
                         navController,
                         currentUser,
-                        userRepository
+                        userRepository,
+                        notificationRepository
                     )
                 }
                 composable("themes") {
                     ThemesScreen(navController, currentUser, userRepository)
                 }
-                composable("profile") { EditProfile(navController, currentUser, userRepository, imageRepository) }
+                composable("profile") {
+                    EditProfile(
+                        navController,
+                        currentUser,
+                        userRepository,
+                        imageRepository
+                    )
+                }
                 composable("new profile") {
                     MakeNewProfile(
                         navController,
@@ -259,8 +297,9 @@ fun StarsApp(notifs: Boolean = false) {
                         userRepository
                     )
                 }
-                composable("owned campsites"){
-                    OwnerViewCampsites(navController,
+                composable("owned campsites") {
+                    OwnerViewCampsites(
+                        navController,
                         campsiteRepository,
                         imageRepository,
                         currentUser
@@ -291,7 +330,14 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryRepository
                     )
                 }
-                composable("admin images"){ AdminViewPictures(navController, userRepository, campsiteRepository,imageRepository) }
+                composable("admin images") {
+                    AdminViewPictures(
+                        navController,
+                        userRepository,
+                        campsiteRepository,
+                        imageRepository
+                    )
+                }
 
 
                 composable(
@@ -333,15 +379,16 @@ fun StarsApp(notifs: Boolean = false) {
                     DisposableEffect(Unit) {
                         var listener: ListenerRegistration? = null
                         campsiteId?.let {
-                            listener = Databases.campsiteRepository.addListenerToId(it) { maybeCamp ->
-                                if (maybeCamp == null) {
-                                    // doesnt pop u back into the correct place for some reason
-                                    // TODO someone who knows more about the nav system can figure this out
-                                    navController.popBackStack()
-                                } else {
-                                    campsite = maybeCamp
+                            listener =
+                                Databases.campsiteRepository.addListenerToId(it) { maybeCamp ->
+                                    if (maybeCamp == null) {
+                                        // doesnt pop u back into the correct place for some reason
+                                        // TODO someone who knows more about the nav system can figure this out
+                                        navController.popBackStack()
+                                    } else {
+                                        campsite = maybeCamp
+                                    }
                                 }
-                            }
                         }
 
                         onDispose { listener?.remove() }
@@ -406,11 +453,11 @@ fun StarsApp(notifs: Boolean = false) {
                 composable(
                     route = "entrants/{lotteryID}",
                     arguments = listOf(
-                        navArgument("lotteryID"){
+                        navArgument("lotteryID") {
                             type = NavType.StringType
                         }
                     )
-                ){ backStackEntry ->
+                ) { backStackEntry ->
                     val lotteryID = backStackEntry.arguments
                         ?.getString("lotteryID")
                         .orEmpty()
@@ -485,7 +532,7 @@ fun StarsApp(notifs: Boolean = false) {
                     )
                 }
 
-                composable("owner calendar"){
+                composable("owner calendar") {
                     OwnerReservationsCalendar(
                         navController,
                         currentUser,
@@ -496,7 +543,7 @@ fun StarsApp(notifs: Boolean = false) {
                     )
                 }
 
-                composable("owned reservations list"){
+                composable("owned reservations list") {
                     OwnerReservationsList(
                         navController,
                         reservationRepository,
@@ -507,6 +554,13 @@ fun StarsApp(notifs: Boolean = false) {
                     )
                 }
             }
+
+                if (!isOnline) {
+                    OfflineOverlay()
+                }
+
+        }
+
         }
     }
 

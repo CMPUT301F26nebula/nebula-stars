@@ -178,7 +178,7 @@ fun UpdateCampsiteScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize().imePadding()
         ) {
             // Header
             ScreenHeader(

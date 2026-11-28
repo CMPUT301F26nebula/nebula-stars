@@ -183,7 +183,7 @@ fun CampsiteDetailsScreen(
                         bottomEnd = 0.dp
                     )
                 )
-                .size(height = 460.dp, width = 310.dp),
+                .size(height = 520.dp, width = 310.dp),
             topBar = {
                 val titleColor = RandomStarsColor.fromId(campsite.id)
                 Row(
@@ -415,7 +415,7 @@ fun CampsiteDetailsScreen(
                     .background(StarsColors.Surface)
                     .fillMaxSize()
             ) {
-                Box(Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().height(220.dp)) {
                     // if there is more than one image show the carousel
                     if (campsite.imageIds.size > 1) {
                         // images
@@ -440,6 +440,15 @@ fun CampsiteDetailsScreen(
                             )
                         }
 
+                    }
+                    else if (campsite.imageIds.size == 0){
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text("NO IMAGE", style = MaterialTheme.typography.titleLarge)
+                        }
                     }
                 }
 
@@ -521,15 +530,19 @@ fun CampsiteDetailsScreen(
                     Spacer(Modifier.height(4.dp))
 
                     Text(
-                        "Description:", style = MaterialTheme.typography.bodyLarge,
+                        "Description:",
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
 
                     Spacer(Modifier.height(4.dp))
 
-                    LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)) {
-                        item { Text(campsite.description) }
+                    LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)
+                        .heightIn(min = 80.dp)) {
+                        item { Text(campsite.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,) }
                     }
 
                     if (showReviewsDialog) {
