@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,6 +69,7 @@ fun NotificationLotteryConfirmation(
     lotteryRepository: LotteryRepository,
     reservationRepository: ReservationRepository,
     campsiteRepository: CampsiteRepository,
+    userRepository: UserRepository,
     notificationRepository: NotificationRepository) {
 
     var decline by remember { mutableStateOf(false) }
@@ -79,27 +81,37 @@ fun NotificationLotteryConfirmation(
     var endDate by remember { mutableLongStateOf(0L) }
 
     var lottery by remember { mutableStateOf(Lottery()) }
-    val campsites = remember { mutableListOf<Campsite>() }
+    val campsites = remember { mutableStateListOf<Campsite>() }
+    val reservedDays = remember { mutableStateListOf<Long>() }
     var selectedCampsiteIndex by remember { mutableIntStateOf(-1) }
 
     LaunchedEffect(Unit) {
-        lottery = lotteryRepository.getWithId(lotteryId) ?: Lottery()
+        // Lottery needs to enter composition last otherwise user may select dates invalidated by unloaded reservations
+        val tempLottery = lotteryRepository.getWithId(lotteryId) ?: Lottery()
 
-        lottery.campsiteIDs.forEach {
-            campsiteRepository.getWithId(it)?.let { element -> campsites.add(element) }
+        for (campsiteId in tempLottery.campsiteIDs) {
+            campsiteRepository.getWithId(campsiteId)?.let { campsites.add(it) }
+            for (reservation in reservationRepository.getWhereFieldEquals("campsiteId", campsiteId)){
+                if (reservation.timeRange.start < lottery.timePeriod.end || reservation.timeRange.end > lottery.timePeriod.start) {
+                    for (day in reservation.timeRange.start..reservation.timeRange.end step 100000) {
+                        reservedDays.add(day)
+                        Log.d("Lottery Confirmation Test", "day reserved")
+                    }
+                }
+            }
         }
 
         selectedCampsiteIndex = 0
-        Log.d("Lottery Confirmation Test", "IDs found: ${lottery.campsiteIDs.size}")
+        lottery = tempLottery
+
+        Log.d("Lottery Confirmation Test", "IDs found: ${tempLottery.campsiteIDs.size}")
         Log.d("Lottery Confirmation Test", "Campsites found: ${campsites.size}")
-        //startDate.timeInMillis = Long.MAX_VALUE
-        //endDate.timeInMillis = 0
     }
 
     val dateRangePickerState = rememberDateRangePickerState(selectableDates = object : SelectableDates{
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             //Seems to work? idk if there's time conversion weirdness and I haven't noticed
-            return utcTimeMillis < lottery.timePeriod.end && utcTimeMillis > lottery.timePeriod.start
+            return utcTimeMillis < lottery.timePeriod.end && utcTimeMillis > lottery.timePeriod.start && !(utcTimeMillis in reservedDays)
         }
     })
 

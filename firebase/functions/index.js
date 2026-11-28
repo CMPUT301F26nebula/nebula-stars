@@ -52,6 +52,9 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
     const pendingWinners = lotteryDoc.get("pendingWinnerIDs")
     if (pendingWinners.length > 0)
       continue;
+    const confirmed = lotteryDoc.get("confirmedIDs")
+    if (confirmed.length > 0)
+      continue;
     const entrantIDs = lotteryDoc.get("entrantIDs") || [];
     const numWinners = lotteryDoc.get("numWinners") || 0;
     const winners = getUniqueRandom(entrantIDs, numWinners);
@@ -73,7 +76,9 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
           userId: entrantID,
           read: false,
           content: notifContent,
-          navDestination: `lottery confirm/${lotteryDoc.get("id")}`, 
+          navDestination: winners.includes(entrantID) 
+          ? `lottery confirm/${lotteryDoc.get("id")}`
+          : "", 
           sender: lotteryDoc.get("ownerIDs"),
           timestamp: Date.now()
         };
