@@ -79,12 +79,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                 Button(
                     onClick = { navController.navigate("themes") },
                     modifier = Modifier.size(width = 300.dp, height = 50.dp),
-                    shape = RoundedCornerShape(
-                        topStart = 5.dp,
-                        topEnd = 5.dp,
-                        bottomStart = 5.dp,
-                        bottomEnd = 15.dp
-                    ),
+                    shape = RoundedCornerShape(5.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = StarsColors.Accent3,
                         contentColor = StarsColors.OnAccent

@@ -10,6 +10,7 @@ kotlin = "2.4.0"
 composeBom = "2026.02.01"
 junitJupiter = "5.14.0"
 navigationCompose = "2.10.2"
+playServicesCodeScanner = "16.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,6 +30,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 compose-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
+play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "playServicesCodeScanner" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

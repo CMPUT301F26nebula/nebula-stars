@@ -61,7 +61,6 @@ fun QRCodeScannerScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Scan a Campsite QR Code")
 
         Button(
             onClick = {
@@ -77,7 +76,7 @@ fun QRCodeScannerScreen(navController: NavController) {
                             )
                         } else {
                             errorMessage.value =
-                                "This QR code is not a valid Nebula Stars campsite code."
+                                "This QR code is not a valid campsite code."
                         }
                     }
                     .addOnCanceledListener {
