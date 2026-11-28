@@ -32,7 +32,7 @@ import com.example.stars.ui.theme.ThemePresets
 
 object StarsColors {
     // the active theme, changing this recolors the whole app
-    var palette: StarsPalette by mutableStateOf(ThemePresets.Moonlight)
+    var palette: StarsPalette by mutableStateOf(ThemePresets.Legacy)
     val Background: Color get() = palette.background
     val OnBackground: Color get() = palette.onBackground
     val Surface: Color get() = palette.surface

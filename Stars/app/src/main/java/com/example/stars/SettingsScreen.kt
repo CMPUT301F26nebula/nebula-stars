@@ -117,8 +117,7 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                         },
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
                             .testTag("Become Admin"),
-                        shape = RoundedCornerShape(
-                        5.dp),
+                        shape = RoundedCornerShape(5.dp),
                         colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
                     ) {
                         Text("Confirm Become Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold)
