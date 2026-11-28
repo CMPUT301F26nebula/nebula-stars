@@ -1,5 +1,7 @@
 package com.example.stars
 
+import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,10 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.internal.notify
+import java.util.UUID
 
 /**
  * Screen you can get to from the home page, shows all your settings options as well as register as
@@ -37,7 +44,10 @@ import kotlinx.coroutines.launch
  * TODO: any other settings we need
  */
 @Composable
-fun SettingsScreen(navController: NavController, currentUser: UserProfile, userRepository: UserRepository){
+fun SettingsScreen(navController: NavController,
+                   currentUser: UserProfile,
+                   userRepository: UserRepository,
+                   notificationRepository: NotificationRepository){
 
     val scope = rememberCoroutineScope()
 
@@ -95,6 +105,26 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
                             showAdminSignUp = true
                             showOwnerSignUp = false
                             showOwnerRemove = false
+
+                            scope.launch {
+                                val users = userRepository.getAll()
+
+                                for (user in users.filter { it.permission == UserPermission.ADMIN }) {
+                                    notificationRepository.sendNotification(
+                                        Notification(
+                                            UUID.randomUUID().toString(),
+                                            userId = user.id,
+                                            content = "${currentUser.name} Requesting Admin Status",
+                                            navDestination = "user profile/${currentUser.id}",
+                                            senderIds = listOf(currentUser.id)
+                                        )
+                                    )
+                                }
+
+
+                            }
+
+
                         },
                         modifier = Modifier.size(width = 300.dp, height = 50.dp)
                             .testTag("Request Admin"),
@@ -106,22 +136,19 @@ fun SettingsScreen(navController: NavController, currentUser: UserProfile, userR
 
                 // confirm become and admin
                 // very much a stop gap measures for now. Probably will notify admins the request later
-                if (showAdminSignUp) {
-                    Button(
-                        onClick = {
-                            currentUser.permission = UserPermission.ADMIN
-                            scope.launch {
-                                userRepository.addOrUpdate(currentUser)
-                                showAdminSignUp = false
-                            }
-                        },
-                        modifier = Modifier.size(width = 300.dp, height = 50.dp)
-                            .testTag("Become Admin"),
-                        shape = RoundedCornerShape(5.dp),
-                        colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent)
-                    ) {
-                        Text("Confirm Become Admin", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    }
+                if (showAdminSignUp && currentUser.permission != UserPermission.ADMIN) {
+                    Text(
+                        text = "Admin Requested",
+                        color = StarsColors.OnAccent,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .size(width = 300.dp, height = 50.dp)
+                            .testTag("Become Admin")
+                            .background(StarsColors.Cancel, RoundedCornerShape(5.dp))
+                            .wrapContentHeight(Alignment.CenterVertically)
+                    )
                 }
 
                 // if you are an admin, show the remove admin status button

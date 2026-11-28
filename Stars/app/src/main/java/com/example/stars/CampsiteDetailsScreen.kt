@@ -9,9 +9,6 @@ package com.example.stars
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,12 +29,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -188,7 +183,7 @@ fun CampsiteDetailsScreen(
                             bottomEnd = corner
                     )
                 )
-                .size(height = 460.dp, width = 310.dp),
+                .size(height = 520.dp, width = 310.dp),
             topBar = {
                 val titleColor = RandomStarsColor.fromId(campsite.id)
                 Row(
@@ -207,6 +202,19 @@ fun CampsiteDetailsScreen(
                         color = RandomStarsColor.contrast(titleColor),
                         modifier = Modifier.weight(0.7f)
                     )
+
+                    // Get campsite location
+                    Button(
+                        onClick = { navController.navigate("location/${campsite.location.latitude},${campsite.location.longitude}") },
+                        shape = RoundedCornerShape(0.dp),
+                        colors = ButtonDefaults.buttonColors(StarsColors.Transparent),
+                        modifier = Modifier.weight(0.3f)
+                    ) {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = "location symbol"
+                        )
+                    }
                 }
             },
             bottomBar = {
@@ -412,9 +420,8 @@ fun CampsiteDetailsScreen(
                     .padding(innerPadding)
                     .background(StarsColors.Surface)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
             ) {
-                Box(Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().height(220.dp)) {
                     // if there is more than one image show the carousel
                     if (campsite.imageIds.size > 1) {
                         // images
@@ -439,6 +446,15 @@ fun CampsiteDetailsScreen(
                             )
                         }
 
+                    }
+                    else if (campsite.imageIds.size == 0){
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text("NO IMAGE", style = MaterialTheme.typography.titleLarge)
+                        }
                     }
                 }
 
@@ -499,18 +515,6 @@ fun CampsiteDetailsScreen(
                     Spacer(Modifier.height(4.dp))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Price: $${campsite.price}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
-                    Spacer(Modifier.height(4.dp))
-
-                    Row(
                         modifier = Modifier
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -520,43 +524,31 @@ fun CampsiteDetailsScreen(
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium
                         )
-                    }
 
-                    Spacer(Modifier.height(4.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        // Get campsite location
-                        NameTag(
-                            // should we not have a human readable location name as well?
-                            // TODO if its not degrees north and degrees west plz change
-                            name = "%.3f° N, ".format(campsite.location.latitude) + "%.3f° W".format(campsite.location.longitude),
-                            id = "${campsite.location.latitude},${campsite.location.longitude}",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center
-                            ),
-                            label = "Location: ",
-                            navRoute = "location"
+                        Text(
+                            text = "$${campsite.price}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
                         )
                     }
 
                     Spacer(Modifier.height(4.dp))
 
                     Text(
-                        "Description:", style = MaterialTheme.typography.bodyLarge,
+                        "Description:",
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
 
                     Spacer(Modifier.height(4.dp))
 
-                    Box(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)
-                    ) {
-                        Text(campsite.description)
+                    LazyColumn(modifier = Modifier.padding(horizontal = 10.dp, vertical = 0.dp)
+                        .heightIn(min = 80.dp)) {
+                        item { Text(campsite.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,) }
                     }
 
                     if (showReviewsDialog) {

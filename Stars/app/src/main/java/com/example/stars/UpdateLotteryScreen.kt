@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -45,8 +47,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,6 +93,8 @@ fun UpdateLotteryScreen(
 
     val userCampsites = remember { mutableStateListOf<Campsite>() }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     // Shapes matching theme
     val fieldShape = RoundedCornerShape(
         topStart = 10.dp,
@@ -128,7 +134,7 @@ fun UpdateLotteryScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize().imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -194,7 +200,12 @@ fun UpdateLotteryScreen(
                             ),
                             shape = fieldShape,
                             modifier = Modifier.fillMaxWidth().testTag("numWinnersInput"),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            ),
+                            singleLine = true
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -227,7 +238,12 @@ fun UpdateLotteryScreen(
                             ),
                             shape = fieldShape,
                             modifier = Modifier.fillMaxWidth().testTag("waitlistCapacityInput"),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = { keyboardController?.hide() }
+                            ),
+                            singleLine = true
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))

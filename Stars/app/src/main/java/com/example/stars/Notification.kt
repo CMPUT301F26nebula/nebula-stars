@@ -5,7 +5,7 @@ package com.example.stars
 
 /**
  * Represents a notification containing information sent to a user
- * @param id
+ * @param id the notification id for the system
  * @param userId the user ID of the recipient
  * @param read true if the user has marked the notification as read, false otherwise
  * @param content the message within the notification

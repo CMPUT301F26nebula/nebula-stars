@@ -330,7 +330,7 @@ fun AdminCampsiteActions(campsite: Campsite, userRepository: UserRepository, cam
                     bottomStart = 10.dp,
                     bottomEnd = 10.dp
                 ),
-                colors = ButtonDefaults.buttonColors(StarsColors.Surface, StarsColors.Cancel)
+                colors = ButtonDefaults.buttonColors(StarsColors.Accent3, StarsColors.OnAccent)
             ) {
                 Text("Show Admin Actions",
                     textAlign = TextAlign.Center,

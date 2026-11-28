@@ -370,9 +370,8 @@ fun UserProfileScreen(
                             if (userProfile!!.permission != UserPermission.ADMIN) {
                                 Button(
                                     modifier = Modifier.fillMaxWidth(), onClick = {
-                                        val adminProfile =
-                                            userProfile!!.copy(permission = UserPermission.ADMIN)
-                                        userRepository.addOrUpdate(adminProfile)
+                                        userProfile = userProfile!!.copy(permission = UserPermission.ADMIN)
+                                        userRepository.addOrUpdate(userProfile!!)
                                     },
                                     colors = ButtonDefaults.buttonColors(StarsColors.Accent3),
                                     shape = RoundedCornerShape(5.dp)

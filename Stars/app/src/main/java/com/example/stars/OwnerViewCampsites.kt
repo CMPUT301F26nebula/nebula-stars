@@ -48,9 +48,20 @@ fun OwnerViewCampsites(navController: NavController,
 ){
     var search by remember { mutableStateOf("") }
     var campsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
+    var myCampsites by remember { mutableStateOf<List<Campsite>>(emptyList())}
     LaunchedEffect(Unit) {
         campsites = campsiteRepository.getAll()
+
+        val myCampsitesBuild: ArrayList<Campsite> = arrayListOf()
+        for (campsite in campsites){
+            if (campsite.ownerId == currentUser.id){
+                myCampsitesBuild.add(campsite)
+            }
+        }
+        myCampsites = myCampsitesBuild
     }
+
+
 
     Column(
         modifier = Modifier
@@ -73,22 +84,21 @@ fun OwnerViewCampsites(navController: NavController,
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (campsites.isEmpty()) {
+            if (myCampsites.isEmpty()) {
                 Text("No campsites found", color = StarsColors.OnBackground)
             } else {
                 // List of campsites
                 LazyColumn {
                     itemsIndexed(campsites) { index, campsite ->
 
-                        if (campsite.ownerId == currentUser.id) {
-                            CampsiteRow(
-                                campsite = campsite,
-                                color = StarsColors.Accent1,
-                                onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
-                                imageRepository = imageRepository
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
+                        CampsiteRow(
+                            campsite = campsite,
+                            color = StarsColors.Accent1,
+                            onClick = {navController.navigate("campsite/${Uri.encode(campsite.id)}")},
+                            imageRepository = imageRepository
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+
                     }
                 }
             }

@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -38,9 +42,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -116,16 +122,19 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
         showNewPhoneLabel = true
     }
 
-    Column(Modifier.statusBarsPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Column(Modifier.statusBarsPadding().imePadding(), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
             BackButton(navController)
         }
 
 
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -207,7 +216,12 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             NewNameLabelFocused = !NewNameLabelFocused
                         })
                             .testTag("Name Field"),
-                        enabled = !readonlyDetails
+                        enabled = !readonlyDetails,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = { keyboardController?.hide() }
+                        )
                     )
 
                     Spacer(modifier = Modifier.padding(10.dp))
@@ -262,7 +276,12 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             NewEmailLabelFocused = !NewEmailLabelFocused
                         })
                             .testTag("Email Field"),
-                        enabled = !readonlyDetails
+                        enabled = !readonlyDetails,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = { keyboardController?.hide() }
+                        )
                     )
 
                     Spacer(modifier = Modifier.padding(10.dp))
@@ -291,7 +310,8 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             }
                         },
                         visualTransformation = NanpVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done),
                         label = {
                             if (showNewPhoneLabel) {
                                 Text("(Optional)")
@@ -318,7 +338,11 @@ fun EditProfile(navController: NavController, currentUser: UserProfile, userRepo
                             NewPhoneLabelFocused = !NewPhoneLabelFocused
                         })
                             .testTag("Phone Field"),
-                        enabled = !readonlyDetails
+                        enabled = !readonlyDetails,
+                        singleLine = true,
+                        keyboardActions = KeyboardActions(
+                            onDone = { keyboardController?.hide() }
+                        )
                     )
 
                     Spacer(modifier = Modifier.padding(10.dp))
@@ -555,6 +579,8 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
     // Used to launch updater function
     val scope = rememberCoroutineScope()
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     // remove labels if there is a value in the text field
     if (newName.isNotEmpty() || NewNameLabelFocused){
         showNewNameLabel = false
@@ -573,7 +599,7 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
         showNewPhoneLabel = true
     }
 
-    Column(modifier = Modifier.fillMaxSize(),
+    Column(modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
 
@@ -653,7 +679,13 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     modifier = Modifier.onFocusChanged(onFocusChanged = {
                         NewNameLabelFocused = !NewNameLabelFocused
                     })
-                        .testTag("Name Field")
+                        .testTag("Name Field"),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() }
+                    )
+
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -705,7 +737,12 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     modifier = Modifier.onFocusChanged(onFocusChanged = {
                         NewEmailLabelFocused = !NewEmailLabelFocused
                     })
-                        .testTag("Email Field")
+                        .testTag("Email Field"),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() }
+                    )
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
@@ -734,7 +771,8 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                         }
                     },
                     visualTransformation = NanpVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done),
                     label = {
                         if (showNewPhoneLabel) {
                             Text("(Optional)")
@@ -756,7 +794,11 @@ fun MakeNewProfile(navController: NavController, currentUser: UserProfile, userR
                     modifier = Modifier.onFocusChanged(onFocusChanged = {
                         NewPhoneLabelFocused = !NewPhoneLabelFocused
                     })
-                        .testTag("Phone Field")
+                        .testTag("Phone Field"),
+                    singleLine = true,
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() }
+                    )
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
