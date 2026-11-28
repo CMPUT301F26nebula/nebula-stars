@@ -27,6 +27,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
+// Based on example from https://www.baeldung.com/kotlin/csv-files by Mikhail Rykov, last updated November 11, 2026
 fun OutputStream.writeReservationToCsv(reservation: Reservation, campsiteName: String) {
     val writer = bufferedWriter()
     writer.write("\"Status\", \"Start\", \"End\", \"Campsite\", \"CampsiteID\"")
