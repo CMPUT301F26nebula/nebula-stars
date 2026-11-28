@@ -65,6 +65,7 @@ fun ReservationDetails(
     var confirmLeaveDialogState by remember { mutableStateOf(false) }
 
     Column(
+        modifier = modifier,
         verticalArrangement = Arrangement.Center
     ) {
         Box(modifier = Modifier.fillMaxWidth().background(color = StarsColors.Background).padding(12.dp)

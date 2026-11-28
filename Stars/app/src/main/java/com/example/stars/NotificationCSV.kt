@@ -3,10 +3,16 @@ package com.example.stars
 import android.media.MediaScannerConnection
 import android.os.Environment
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fitOutside
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -18,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,18 +54,23 @@ fun OutputStream.writeReservationToCsv(reservation: Reservation, campsiteName: S
 @Composable
 fun NotificationCSV(
     navController: NavController,
+    currentUser: UserProfile,
     reservationId: String,
     reservationRepository: ReservationRepository,
-    campsiteRepository: CampsiteRepository
+    campsiteRepository: CampsiteRepository,
+    userRepository: UserRepository,
+    notificationRepository: NotificationRepository
 ) {
 
     var reservation by remember { mutableStateOf(Reservation()) }
-    var campsiteName by remember { mutableStateOf("") }
+    var campsite by remember { mutableStateOf(Campsite()) }
+    var campOwner by remember { mutableStateOf(UserProfile()) }
     val context = LocalContext.current
 
     LaunchedEffect(reservationId) {
         reservation = reservationRepository.getWithId(reservationId) ?: Reservation()
-        campsiteName = campsiteRepository.getWithId(reservation.campsiteId)?.title ?: ""
+        campsite = campsiteRepository.getWithId(reservation.campsiteId)?: Campsite()
+        campOwner = userRepository.getWithId(campsite.ownerId) ?: UserProfile()
     }
 
     Column(
@@ -70,7 +82,24 @@ fun NotificationCSV(
     ) {
         ScreenHeader(Modifier, navController, "Download CSV")
 
-        //TODO: Display CSV contents in a preview
+        Box(modifier = Modifier
+            .padding(20.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(StarsColors.Surface)) {
+            ReservationDetails(
+                Modifier.clip(RoundedCornerShape(15.dp)).border(2.dp, StarsColors.Surface),
+                navController,
+                currentUser,
+                reservation,
+                campsite,
+                campOwner,
+                { user, owner -> navController.navigate("user profile/${owner}") },
+                { user, owner -> "Owner: $owner" },
+                { navController.popBackStack() },
+                action = "Leave Reservation",
+                notificationRepository,
+            )
+        }
 
         // should be noted that downloading a reservation you already have downloaded will overwrite it
         // this means a canceled notif csv will always overwrite the accepted one
@@ -78,7 +107,7 @@ fun NotificationCSV(
             onClick = {
                 val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val file = File(path, "reservation_${reservation.id}.csv")
-                FileOutputStream(file).writeReservationToCsv(reservation, campsiteName)
+                FileOutputStream(file).writeReservationToCsv(reservation, campsite.title)
                 MediaScannerConnection.scanFile(
                     context,
                     arrayOf(file.toString()),

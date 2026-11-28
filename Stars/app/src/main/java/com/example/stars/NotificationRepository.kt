@@ -60,4 +60,19 @@ class NotificationRepository (private val scope: CoroutineScope):
                 .await()
         }
     }
+
+    /**
+     * Triggers the redraw function on firebase, drawing winners back up to number of winners
+     */
+    fun redrawLottery(lotteryId: String) {
+        scope.launch {
+            val data = mapOf(
+                "lotteryId" to lotteryId
+            )
+            Firebase.functions
+                .getHttpsCallable("RedrawLottery")
+                .call(data)
+                .await()
+        }
+    }
 }

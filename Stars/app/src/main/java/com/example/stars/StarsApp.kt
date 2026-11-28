@@ -463,6 +463,7 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryRepository = lotteryRepository,
                         reservationRepository = reservationRepository,
                         campsiteRepository = campsiteRepository,
+                        userRepository = userRepository,
                         notificationRepository = notificationRepository
                     )
                 }
@@ -479,9 +480,12 @@ fun StarsApp(notifs: Boolean = false) {
                         ?.getString("reservationID").orEmpty()
                     NotificationCSV(
                         navController = navController,
+                        currentUser = currentUser,
                         reservationId = reservationID,
                         reservationRepository = reservationRepository,
-                        campsiteRepository = campsiteRepository
+                        campsiteRepository = campsiteRepository,
+                        userRepository = userRepository,
+                        notificationRepository = notificationRepository
                     )
                 }
 
