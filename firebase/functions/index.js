@@ -102,6 +102,71 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
   }
 });
 
+// Redraw
+exports.RedrawLottery = onCall(async (request) => {
+  const lotteryId = request.data.lotteryId;
+
+  // Fetch lottery snapshot
+  const lotterySnap = await db.collection("lotteries").doc(lotteryId).get();
+  if (!lotterySnap.exists) {
+    return
+  }
+
+
+  const pendingWinners = lotterySnap.get("pendingWinnerIDs")
+  const confirmed = lotterySnap.get("confirmedIDs")
+  const totalWinners = pendingWinners.length + confirmed.length
+
+  const numWinners = lotterySnap.get("numWinners") || 0;
+  if (totalWinners >= numWinners) {
+    return
+  }
+
+  const entrantIDs = (lotterySnap.get("entrantIDs") || []).filter(entrant => !pendingWinners.includes(entrant) && !confirmed.includes(entrant));
+  const winners = getUniqueRandom(entrantIDs, numWinners - totalWinners);
+
+  // Update the lottery document directly via its DocumentReference
+  await lotterySnap.ref.update({
+    pendingWinnerIDs: pendingWinners.concat(winners),
+  });
+
+  // Create notifications and send push messages for all entrants
+  await Promise.all(
+    entrantIDs.map(async (entrantID) => {
+      const notifId = crypto.randomUUID();
+      const notifContent = winners.includes(entrantID)
+        ? "You won a lottery"
+        : "You lost a lottery";
+      const notifData = {
+        id: notifId,
+        userId: entrantID,
+        read: false,
+        content: notifContent,
+        navDestination: winners.includes(entrantID) 
+        ? `lottery confirm/${lotterySnap.get("id")}`
+        : "", 
+        sender: lotterySnap.get("ownerIDs"),
+        timestamp: Date.now()
+      };
+
+      // Add to Firestore
+      await db.collection("notifications").doc(notifId).set(notifData);
+
+      // Fetch user snapshot and send push notification if enabled
+      const userSnap = await db.collection("users").doc(entrantID).get();
+      const fid = userSnap.get("firebaseId");
+
+      if (userSnap.exists && userSnap.get("notifs") && fid) {
+        await messaging.send({
+          token: fid,
+          notification: { title: "Lottery Update", body: notifContent },
+          data: {},
+        });
+      }
+    })
+  );
+});
+
 // Generic Push Notification Sender
 exports.sendPushNotification = onCall(async (request) => {
   const userId = request.data.userId;

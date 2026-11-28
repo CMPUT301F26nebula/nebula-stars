@@ -95,7 +95,7 @@ fun NotificationLotteryConfirmation(
                 if (reservation.timeRange.start < lottery.timePeriod.end || reservation.timeRange.end > lottery.timePeriod.start) {
                     for (day in reservation.timeRange.start..reservation.timeRange.end step 100000) {
                         reservedDays.add(day)
-                        Log.d("Lottery Confirmation Test", "day reserved")
+                        //Log.d("Lottery Confirmation Test", "day reserved")
                     }
                 }
             }
