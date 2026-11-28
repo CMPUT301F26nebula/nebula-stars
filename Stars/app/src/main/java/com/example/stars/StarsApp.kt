@@ -479,9 +479,12 @@ fun StarsApp(notifs: Boolean = false) {
                         ?.getString("reservationID").orEmpty()
                     NotificationCSV(
                         navController = navController,
+                        currentUser = currentUser,
                         reservationId = reservationID,
                         reservationRepository = reservationRepository,
-                        campsiteRepository = campsiteRepository
+                        campsiteRepository = campsiteRepository,
+                        userRepository = userRepository,
+                        notificationRepository = notificationRepository
                     )
                 }
 
