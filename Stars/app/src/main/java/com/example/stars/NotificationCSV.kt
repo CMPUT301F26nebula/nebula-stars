@@ -2,6 +2,7 @@ package com.example.stars
 
 import android.media.MediaScannerConnection
 import android.os.Environment
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import java.io.File
@@ -85,7 +87,8 @@ fun NotificationCSV(
                     null
                 )
             },
-            colors = ButtonDefaults.buttonColors(containerColor = StarsColors.Accent1, contentColor = StarsColors.OnAccent)
+            colors = ButtonDefaults.buttonColors(containerColor = StarsColors.OnSurface, contentColor = StarsColors.OnBackground),
+            border = BorderStroke(8.dp, StarsColors.OnBackground)
         ) {
             Text("Download", fontWeight = FontWeight.Bold, fontSize = 60.sp)
         }
