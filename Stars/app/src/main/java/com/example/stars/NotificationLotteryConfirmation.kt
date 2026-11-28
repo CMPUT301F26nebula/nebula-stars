@@ -370,6 +370,8 @@ fun NotificationLotteryConfirmation(
                                         confirmedIDs = lottery.confirmedIDs
                                     )
                                 )
+
+                                notificationRepository.redrawLottery(lottery.id)
                             }
 
                             navController.popBackStack()
