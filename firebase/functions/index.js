@@ -74,7 +74,7 @@ exports.LotteryDraw = onSchedule("5 * * * *", async (event) => {
           read: false,
           content: notifContent,
           navDestination: `lottery confirm/${lotteryDoc.get("id")}`, 
-          sender: "SYSTEM",
+          sender: lotteryDoc.get("ownerIDs"),
           timestamp: Date.now()
         };
 
