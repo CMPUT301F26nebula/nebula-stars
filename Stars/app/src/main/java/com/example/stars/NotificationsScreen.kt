@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSizeDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -145,7 +146,7 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
 
             if (!collapsed) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().padding(start = 50.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -153,7 +154,8 @@ fun NotificationRow(navController: NavController, notificationRepository: Notifi
                         text = notification.content,
                         color = StarsColors.OnSurface,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp
+                        fontSize = 30.sp,
+                        lineHeight = 30.sp
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))

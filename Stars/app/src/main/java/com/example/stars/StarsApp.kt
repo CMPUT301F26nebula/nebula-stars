@@ -180,7 +180,7 @@ fun StarsApp(notifs: Boolean = false) {
                 }
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
-                    ReservationCalendarScreen(navController, currentUser, reservationRepository)
+                    ReservationCalendarScreen(navController, currentUser, reservationRepository, notificationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
                 composable(
@@ -462,6 +462,25 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryId = lotteryId,
                         lotteryRepository = lotteryRepository,
                         reservationRepository = reservationRepository,
+                        campsiteRepository = campsiteRepository,
+                        notificationRepository = notificationRepository
+                    )
+                }
+
+                composable(
+                    route = "reservation csv/{reservationID}",
+                    arguments = listOf(
+                        navArgument("reservationID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val reservationID = backStackEntry.arguments
+                        ?.getString("reservationID").orEmpty()
+                    NotificationCSV(
+                        navController = navController,
+                        reservationId = reservationID,
+                        reservationRepository = reservationRepository,
                         campsiteRepository = campsiteRepository
                     )
                 }
@@ -472,7 +491,8 @@ fun StarsApp(notifs: Boolean = false) {
                         currentUser,
                         reservationRepository,
                         campsiteRepository,
-                        userRepository
+                        userRepository,
+                        notificationRepository
                     )
                 }
 
@@ -482,7 +502,8 @@ fun StarsApp(notifs: Boolean = false) {
                         reservationRepository,
                         campsiteRepository,
                         currentUser,
-                        userRepository
+                        userRepository,
+                        notificationRepository
                     )
                 }
             }

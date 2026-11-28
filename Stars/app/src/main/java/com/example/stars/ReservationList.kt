@@ -69,10 +69,6 @@ fun ReservationCard(
             colour = StarsColors.Accent2
             "Cancelled"
         }
-        ReservationStatus.DECLINED -> {
-            colour = StarsColors.Accent3
-            "Declined"
-        }
     }
 
     ElevatedCard(
