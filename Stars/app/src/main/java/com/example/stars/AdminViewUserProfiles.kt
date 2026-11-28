@@ -1,10 +1,6 @@
 package com.example.stars
 
-import android.R.attr.fontWeight
 import android.net.Uri
-import android.system.Os.link
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,8 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,32 +26,25 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import coil3.compose.AsyncImage
 
 /**
  * A screen that only admins have access to from (currently) the home screen.
  * Shows a list of all users
  */
 @Composable
-fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, campsiteRepository: CampsiteRepository, currentUser: UserProfile){
+fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepository, imageRepository: ImageRepository, currentUser: UserProfile){
 
     var users by remember { mutableStateOf<List<UserProfile>>(emptyList()) }
 
@@ -86,7 +75,7 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
                 // so that you can't ban or delete yourself from here
                 if (user != currentUser) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    AdminUserRow(navController, user, userRepository)
+                    AdminUserRow(navController, user, userRepository, imageRepository)
                 }
             }
         }
@@ -96,10 +85,9 @@ fun AdminViewUserProfiles(navController: NavController, userRepository: UserRepo
 /**
  * this screen shows all the users that exist, their name, email, phone, and permission level,
  * and offers ban owner and delete user options
- * TODO: expand cards to show more info
  */
 @Composable
-fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository) {
+fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRepository: UserRepository, imageRepository: ImageRepository){
     var pfpUri: Uri? by remember { mutableStateOf(null) }
 
     LaunchedEffect(userProfile) {
@@ -114,6 +102,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
     // until screen change (I think)
     var deleted by remember { mutableStateOf(false) }
 
+
     // default permission level string since it is not a string in the class
     var permissionLevel by remember { mutableStateOf("Entrant") }
     if (userProfile.permission == UserPermission.ADMIN){
@@ -125,6 +114,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
 
     // if the user has not been deleted
     if (!deleted) {
+
         Card(
             modifier = Modifier
                 .fillMaxWidth().padding(horizontal = 16.dp),
@@ -166,6 +156,7 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                     // used for phone number formating
                     val nanpVisualTransformation = NanpVisualTransformation()
 
+
                     // phone number
                     Text(
                         text = nanpVisualTransformation.filter(AnnotatedString(userProfile.phone)).text,
@@ -202,7 +193,8 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                                 deleted = true
                             }
                         },
-                        onCancel = { confirmDeletion = false }
+                        onCancel = { confirmDeletion = false },
+                        Modifier.weight(1f)
                     )
                 }
 
@@ -224,7 +216,8 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
                             confirmDeletion = false
                             deleted = true
                         },
-                        onCancel = { confirmBan = false }
+                        onCancel = { confirmBan = false },
+                        Modifier.weight(1f)
                     )
                 }
             }
@@ -237,27 +230,42 @@ fun AdminUserRow(navController: NavController, userProfile: UserProfile, userRep
  * only admins should see this
  */
 @Composable
-fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, onConfirm: () -> Unit, onCancel: () -> Unit){
+fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, onConfirm: () -> Unit, onCancel: () -> Unit, modifier: Modifier){
+
 
     // show the delete button if not AlreadyPressed
     if (!confirm) {
-        Button(onRequest,
+            Button(
+                onRequest,
 
-            shape = RoundedCornerShape(
-                topStart = 5.dp,
-                topEnd = 5.dp,
-                bottomStart = 5.dp,
-                bottomEnd = 5.dp
-            ),
-            colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
-            modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("get options")) {
-            Text(action, textAlign = TextAlign.Center)
-        }
+                shape = RoundedCornerShape(
+                    topStart = 5.dp,
+                    topEnd = 5.dp,
+                    bottomStart = 5.dp,
+                    bottomEnd = 5.dp
+                ),
+                colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
+                modifier = modifier
+            ) {
+                Text(
+                    action,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 1.sp,
+                        maxFontSize = 24.sp,
+                        stepSize = 1.sp
+                    ),
+                    color = StarsColors.OnAccent
+                )
+            }
     }
 
     // show the confirm and cancel buttons
     if (confirm) {
-        Row() {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally
+            ), verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()) {
 
             Button(onConfirm,
                 shape = RoundedCornerShape(
@@ -267,8 +275,13 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomEnd = 5.dp
                 ),
                 colors = ButtonDefaults.buttonColors(StarsColors.Confirm, StarsColors.OnAccent),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Confirm")) {
-                Text("Confirm",textAlign = TextAlign.Center)
+                modifier = Modifier.testTag("Confirm").weight(1f)) {
+                Text("Confirm",textAlign = TextAlign.Center, maxLines = 1, autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 24.sp,
+                    stepSize = 1.sp
+                ),
+                    color = StarsColors.OnAccent)
             }
 
             Spacer(modifier = Modifier.size(10.dp))
@@ -281,8 +294,13 @@ fun AdminActionOnUser(confirm: Boolean, action: String, onRequest: () -> Unit, o
                     bottomEnd = 5.dp
                 ),
                 colors = ButtonDefaults.buttonColors(StarsColors.Cancel, StarsColors.OnAccent),
-                modifier = Modifier.size(height = 40.dp, width = 150.dp).testTag("Cancel")) {
-                Text("Cancel", textAlign = TextAlign.Center)
+                modifier = Modifier.testTag("Cancel").weight(1f)) {
+                Text("Cancel", textAlign = TextAlign.Center, maxLines = 1, autoSize = TextAutoSize.StepBased(
+                    minFontSize = 1.sp,
+                    maxFontSize = 24.sp,
+                    stepSize = 1.sp
+                ),
+                    color = StarsColors.OnAccent)
             }
         }
     }

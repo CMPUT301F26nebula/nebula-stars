@@ -152,7 +152,7 @@ fun CampsitesScreen(
                 onValueChange = { search = it },
                 placeholder = {
                     Text(
-                        text = "Search",
+                        text = "Search or #tags",
                         color = StarsColors.OnSurface,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
@@ -202,6 +202,12 @@ fun searchCampsites(campsites: List<Campsite>, search: String): List<Campsite> {
     // if no search, return all campsites (i.e. when the user first opens the campsite page)
     if (s.isEmpty()) return campsites
 
+    if (s.startsWith("#")) {
+        val searchTags = extractTags(s)
+        if (searchTags.isEmpty()) return campsites // user has only typed "#" so far
+        return campsites.filter { extractTags(it.description).containsAll(searchTags) }
+    }
+
     // Splits search into matches and non matches
     val (titleMatches, others) = campsites.partition {
         it.title.contains(s, ignoreCase = true)
@@ -212,4 +218,15 @@ fun searchCampsites(campsites: List<Campsite>, search: String): List<Campsite> {
     }
     // Concats and returns list
     return titleMatches + descriptionMatches
+}
+
+/**
+ * Pulls every #tag out of some text, lowercase and without the #
+ * for example: "Nice spot #BEACH #Party" -> {"beach", "party"}
+ */
+fun extractTags(text: String): Set<String> {
+    return Regex("#(\\w+)")
+        .findAll(text)
+        .map { it.groupValues[1].lowercase() }
+        .toSet()
 }

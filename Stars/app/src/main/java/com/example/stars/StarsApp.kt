@@ -159,6 +159,7 @@ fun StarsApp(notifs: Boolean = false) {
         }
     }
 
+    
     if (currentUser.id.isNotBlank()) {
         StarsBackground {
             NavHost(navController = navController, startDestination = startAt) {
@@ -179,7 +180,7 @@ fun StarsApp(notifs: Boolean = false) {
                 }
                 composable("waitlists") { PlaceholderScreen("WAITLISTS", navController) }
                 composable("reservations") {
-                    ReservationCalendarScreen(navController, currentUser, reservationRepository)
+                    ReservationCalendarScreen(navController, currentUser, reservationRepository, notificationRepository)
                 }
                 composable("messages") { MessagesScreen(navController, currentUser) }
                 composable(
@@ -215,7 +216,7 @@ fun StarsApp(notifs: Boolean = false) {
                     AppPolicyScreen(navController)
                 }
 
-                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, campsiteRepository) }
+                composable("notifications") { NotificationsScreen(navController, currentUser, notificationRepository, userRepository) }
                 composable("settings") {
                     SettingsScreen(
                         navController,
@@ -247,16 +248,25 @@ fun StarsApp(notifs: Boolean = false) {
                     AdminViewUserProfiles(
                         navController,
                         userRepository,
-                        campsiteRepository,
+                        imageRepository,
                         currentUser
                     )
                 }
                 composable("notification log") {
                     AdminViewNotifications(
                         navController,
-                        notificationRepository
+                        notificationRepository,
+                        userRepository
                     )
                 }
+                composable("owned campsites"){
+                    OwnerViewCampsites(navController,
+                        campsiteRepository,
+                        imageRepository,
+                        currentUser
+                    )
+                }
+
                 composable(
                     route = "edit campsite {campsiteId}",
                     arguments = listOf(
@@ -431,7 +441,8 @@ fun StarsApp(notifs: Boolean = false) {
                         userID = userID,
                         campsiteRepository = campsiteRepository,
                         imageRepository = imageRepository,
-                        userRepository = userRepository
+                        userRepository = userRepository,
+                        reservationRepository = reservationRepository
                     )
                 }
 
@@ -451,10 +462,52 @@ fun StarsApp(notifs: Boolean = false) {
                         lotteryId = lotteryId,
                         lotteryRepository = lotteryRepository,
                         reservationRepository = reservationRepository,
+                        campsiteRepository = campsiteRepository,
+                        notificationRepository = notificationRepository
+                    )
+                }
+
+                composable(
+                    route = "reservation csv/{reservationID}",
+                    arguments = listOf(
+                        navArgument("reservationID") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val reservationID = backStackEntry.arguments
+                        ?.getString("reservationID").orEmpty()
+                    NotificationCSV(
+                        navController = navController,
+                        reservationId = reservationID,
+                        reservationRepository = reservationRepository,
                         campsiteRepository = campsiteRepository
+                    )
+                }
+
+                composable("owner calendar"){
+                    OwnerReservationsCalendar(
+                        navController,
+                        currentUser,
+                        reservationRepository,
+                        campsiteRepository,
+                        userRepository,
+                        notificationRepository
+                    )
+                }
+
+                composable("owned reservations list"){
+                    OwnerReservationsList(
+                        navController,
+                        reservationRepository,
+                        campsiteRepository,
+                        currentUser,
+                        userRepository,
+                        notificationRepository
                     )
                 }
             }
         }
     }
+
 }

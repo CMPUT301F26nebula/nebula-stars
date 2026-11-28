@@ -134,7 +134,79 @@ object ThemePresets {
         cancel = Color(0xFF083304)
     )
 
-    val all = listOf(Legacy, Light, Dark, Nebula, Moonlight, Forest)
+    // dark and orange theme
+    val Campfire = StarsPalette(
+        name = "Campfire",
+        background = Color(0xFF1C1412),
+        onBackground = Color(0xFFF8EDE3),
+        surface = Color(0xFF2A1E1A),
+        onSurface = Color(0xFFFFC48C),
+        accent1 = Color(0xFF5C2E1F),
+        accent2 = Color(0xFF8C3B1E),
+        accent3 = Color(0xFFB5541C),
+        onAccent = Color(0xFFFFF4E6),
+        highlight = Color(0xFFFF9F43),
+        onHighlight = Color(0xFF1C1412),
+        muted = Color(0xFF3A2A24),
+        confirm = Color(0xFFB5541C),
+        cancel = Color(0xFF5C4033)
+    )
+
+    // sandy theme
+    val Dune = StarsPalette(
+        name = "Dune",
+        background = Color(0xFFFAF3E6),
+        onBackground = Color(0xFF3B2F2F),
+        surface = Color(0xFFFFFFFF),
+        onSurface = Color(0xFF7A4E2D),
+        accent1 = Color(0xFF7A4E2D),
+        accent2 = Color(0xFFB0603A),
+        accent3 = Color(0xFF8A7A2E),
+        onAccent = Color(0xFFFFFFFF),
+        highlight = Color(0xFFD4A373),
+        onHighlight = Color(0xFF3B2F2F),
+        muted = Color(0xFFEADBC8),
+        confirm = Color(0xFF2F6B5E),
+        cancel = Color(0xFFB0603A)
+    )
+
+    // protanopia
+    val Protanopia = StarsPalette(
+        name = "Protanopia",
+        background = Color(0xFF0D1B2A),
+        onBackground = Color(0xFFF5F5F5),
+        surface = Color(0xFF1B263B),
+        onSurface = Color(0xFFFFD166),
+        accent1 = Color(0xFF005A8C),
+        accent2 = Color(0xFFA35F00),
+        accent3 = Color(0xFF3A6EA5),
+        onAccent = Color(0xFFFFFFFF),
+        highlight = Color(0xFFFFD166),
+        onHighlight = Color(0xFF0D1B2A),
+        muted = Color(0xFF24344D),
+        confirm = Color(0xFF0072B2),
+        cancel = Color(0xFFA35F00)
+    )
+
+    // deuteranopia theme
+    val Deuteranopia = StarsPalette(
+        name = "Deuteranopia",
+        background = Color(0xFFF3F6FB),
+        onBackground = Color(0xFF102A43),
+        surface = Color(0xFFFFFFFF),
+        onSurface = Color(0xFF1F4E8C),
+        accent1 = Color(0xFF1F4E8C),
+        accent2 = Color(0xFFA35F00),
+        accent3 = Color(0xFF3F7FBF),
+        onAccent = Color(0xFFFFFFFF),
+        highlight = Color(0xFF0072B2),
+        onHighlight = Color(0xFFFFFFFF),
+        muted = Color(0xFFD6E0EE),
+        confirm = Color(0xFF1F4E8C),
+        cancel = Color(0xFFA35F00)
+    )
+
+    val all = listOf(Legacy, Light, Dark, Nebula, Moonlight, Forest, Campfire, Dune, Protanopia, Deuteranopia)
 
     /**
      * Finds a preset by its saved name, if it doesnt exist then the default is Moonlight

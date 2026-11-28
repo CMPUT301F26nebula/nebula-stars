@@ -3,7 +3,9 @@ Contains the location picker composable for campsites and its associated types
  */
 package com.example.stars
 
+import android.graphics.PointF
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +49,12 @@ import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import kotlin.math.abs
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.tan
 
 data class LocationCoordinates(
     val latitude: Double = 0.0,
@@ -67,6 +75,22 @@ private fun isValidCoordinate(lat: Double, lng: Double): Boolean {
             lng.isFinite() &&
             lat in -90.0..90.0 &&
             lng in -180.0..180.0
+}
+
+
+/*
+if statment from claude prompt: code +
+"how do I change this so that the location pointer stays in one spot?"
+claude sonnet 5.5 2026-11-27
+https://claude.ai/share/84b82f23-3aef-4f6f-af3e-2b24d9c15f0b
+*/
+// used to fix the pointer for showing location.
+private fun minZoomForLatitude(latitude: Double, viewHeightDp: Double): Double {
+    val latRad = Math.toRadians(latitude.coerceIn(-85.0, 85.0))
+    val y = (1.0 - ln(tan(latRad) + 1.0 / cos(latRad)) / PI) / 2.0
+    val nearestEdge = min(y, 1.0 - y)
+    val z = ln(viewHeightDp / (2.0 * 512.0 * nearestEdge)) / ln(2.0)
+    return max(z, 0.0) + 0.1 // small safety margin
 }
 
 /**
@@ -90,7 +114,8 @@ fun OpenStreetLocationPicker(
     initialLongitude: Double = EDMONTON_LONGITUDE,
     initialZoom: Double = DEFAULT_CITY_ZOOM,
     styleUrl: String = OPEN_FREE_MAP_LIBERTY_STYLE,
-    selectable: Boolean = true
+    selectable: Boolean = true,
+    onlyZoom: Boolean = false
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -117,10 +142,80 @@ fun OpenStreetLocationPicker(
                     .build()
             )
 
-        val view = MapView(context, options)
+        /*
+        from claude prompt: code + "how do I make it so that interacting with the map isn't jancky.
+        Currently, I think that interacting with the map doesn't lock you out of scrolling the page
+        so it doesn't respond to touch commands very well"
+        claude sonnet 5.5 2026-11-27
+        https://claude.ai/share/84b82f23-3aef-4f6f-af3e-2b24d9c15f0b
+         */
+        val view = object : MapView(context, options) {
+            override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                when (ev.actionMasked) {
+                    MotionEvent.ACTION_DOWN,
+                    MotionEvent.ACTION_POINTER_DOWN -> {
+                        // Map gets the gesture, page stops scrolling
+                        parent?.requestDisallowInterceptTouchEvent(true)
+                    }
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL -> {
+                        // Gesture finished, page can scroll again
+                        parent?.requestDisallowInterceptTouchEvent(false)
+                    }
+                }
+                return super.dispatchTouchEvent(ev)
+            }
+        }
+
         view.onCreate(Bundle())
         view.getMapAsync { mapLibreMap: MapLibreMap ->
             mapLibreMapRef = mapLibreMap
+
+            /*
+                if statment from claude prompt: code +
+                "how do I change this so that the location pointer stays in one spot?"
+                claude sonnet 5.5 2026-11-27
+                https://claude.ai/share/84b82f23-3aef-4f6f-af3e-2b24d9c15f0b
+            */
+            if (onlyZoom) {
+                mapLibreMap.uiSettings.apply {
+                    // Only allow zooming
+                    isScrollGesturesEnabled = false
+                    isRotateGesturesEnabled = false
+                    isTiltGesturesEnabled = false
+                    isZoomGesturesEnabled = true
+                    isDoubleTapGesturesEnabled = true
+                    isQuickZoomGesturesEnabled = true
+
+                    // Compass is pointless without rotation
+                    isCompassEnabled = false
+
+                    // Zoom around the center of the view, where the pin is
+                    focalPoint = PointF(view.width / 2f, view.height / 2f)
+                }
+
+                val density = context.resources.displayMetrics.density
+
+                // Initial minimum zoom, if the view has already been laid out
+                if (view.height > 0) {
+                    mapLibreMap.setMinZoomPreference(
+                        minZoomForLatitude(latestLat, view.height / density.toDouble())
+                    )
+                }
+
+                // Keep focal point and minimum zoom correct whenever the view size changes
+                view.addOnLayoutChangeListener { _, left, top, right, bottom, _, _, _, _ ->
+                    val widthPx = (right - left).toFloat()
+                    val heightPx = (bottom - top).toFloat()
+                    if (heightPx <= 0f) return@addOnLayoutChangeListener
+
+                    mapLibreMap.uiSettings.focalPoint = PointF(widthPx / 2f, heightPx / 2f)
+                    mapLibreMap.setMinZoomPreference(
+                        minZoomForLatitude(latestLat, (heightPx / density).toDouble())
+                    )
+                }
+            }
+
             mapLibreMap.setStyle(
                 Style.Builder().fromUri(styleUrl),
                 object : Style.OnStyleLoaded {

@@ -94,7 +94,7 @@ fun ReviewsDialog (
                 "Reviews",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium,
-                color = StarsColors.OnBackground,
+                color = StarsColors.Surface,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(StarsColors.OnSurface)

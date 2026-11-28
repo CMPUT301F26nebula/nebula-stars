@@ -1,5 +1,7 @@
 package com.example.stars
 
+import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -38,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
 
@@ -47,17 +50,14 @@ import kotlin.math.min
  * On accept:
  * moves user from pending winners to confirmed IDs
  * creates a reservation for selected campsite and date range
- * reservation status is [ReservationStatus.INVITED]
- * TODO: sends notif of reservation
- * optionally sends owner notif?
+ * reservation status is [ReservationStatus.ACCEPTED]
+ * TODO: optionally sends owner notif?
  *
  * On decline:
  * removes user from pending winners
  * removes user from entrant IDs
- * reservation status is [ReservationStatus.DECLINED] ?
- *  can't because you'd need to require a time to create the id
- * TODO: sends notif of cancellation confirmation
- * optionally sends owner notif?
+ * NOTE: does not make a cancelled reservation since no reservation existed to be cancelled
+ * NOTE: does not send a confirmation notification of cancellation
  */
 @OptIn(ExperimentalGridApi::class)
 @Composable
@@ -67,7 +67,8 @@ fun NotificationLotteryConfirmation(
     lotteryId: String,
     lotteryRepository: LotteryRepository,
     reservationRepository: ReservationRepository,
-    campsiteRepository: CampsiteRepository) {
+    campsiteRepository: CampsiteRepository,
+    notificationRepository: NotificationRepository) {
 
     var decline by remember { mutableStateOf(false) }
     var accept by remember { mutableStateOf(false) }
@@ -187,36 +188,6 @@ fun NotificationLotteryConfirmation(
                 }
             }
 
-            /*
-            // Calendar
-            // TODO: make calender open at the lottery date, prevent scrolling past month of lottery
-            ReservationCalendar(listOf(
-                Reservation(timeRange = lottery.timePeriod),
-                Reservation(
-                    id = "1",
-                    timeRange =
-                     if (startDate.timeInMillis < lottery.timePeriod.end && endDate.timeInMillis > lottery.timePeriod.start) {
-                        EpochRange(startDate.timeInMillis, endDate.timeInMillis)
-                    } else {
-                        EpochRange(0, 0)
-                    }
-                )
-            )) {
-                val dateClicked = it.date
-                if (startDate > dateClicked) {
-                    startDate = dateClicked
-                } else if (endDate < dateClicked) {
-                    endDate = dateClicked
-                } else {
-                    if (dateClicked.timeInMillis-startDate.timeInMillis  > endDate.timeInMillis-dateClicked.timeInMillis) {
-                        startDate = dateClicked
-                    } else {
-                        endDate = dateClicked
-                    }
-                }
-            }
-            */
-
             Box(Modifier
                 .fillMaxSize()
                 .padding(30.dp)
@@ -320,10 +291,16 @@ fun NotificationLotteryConfirmation(
                     Button(
                         onClick = {
                             if (accept) {
+                                val reservationId = Reservation.uniqueIdFrom(
+                                    currentUser.id,
+                                    campsites[selectedCampsiteIndex].id,
+                                    EpochRange(startDate, endDate)
+                                )
+
                                 lotteryRepository.addOrUpdate(
                                     Lottery(
                                         id = lottery.id,
-                                        ownerID = lottery.ownerID,
+                                        ownerIDs = lottery.ownerIDs,
                                         campsiteIDs = lottery.campsiteIDs,
                                         timePeriod = lottery.timePeriod,
                                         deadline = lottery.deadline,
@@ -337,24 +314,32 @@ fun NotificationLotteryConfirmation(
 
                                 reservationRepository.addOrUpdate(
                                     Reservation(
-                                        Reservation.uniqueIdFrom(
-                                            currentUser.id,
-                                            campsites[selectedCampsiteIndex].id,
-                                            //EpochRange(startDate.timeInMillis, endDate.timeInMillis)
-                                            EpochRange(startDate, endDate)
-                                        ),
-                                        //EpochRange(startDate.timeInMillis, endDate.timeInMillis),
+                                        reservationId,
                                         EpochRange(startDate, endDate),
-                                        ReservationStatus.INVITED,
+                                        ReservationStatus.ACCEPTED,
                                         currentUser.id,
                                         campsites[selectedCampsiteIndex].id
                                     )
                                 )
+
+                                // Send reservation csv
+                                notificationRepository.sendNotification(
+                                    Notification(
+                                        UUID.randomUUID().toString(),
+                                        userId = currentUser.id,
+                                        content = "Reservation made for ${campsites[selectedCampsiteIndex].title} " +
+                                                "from ${SimpleDateFormat.getDateInstance().format(startDate)} " +
+                                                "to ${SimpleDateFormat.getDateInstance().format(endDate)}",
+                                        navDestination = "reservation csv/${Uri.encode(reservationId)}",
+                                        senderIds = lottery.ownerIDs,
+                                    )
+                                )
+
                             } else if (decline) {
                                 lotteryRepository.addOrUpdate(
                                     Lottery(
                                         id = lottery.id,
-                                        ownerID = lottery.ownerID,
+                                        ownerIDs = lottery.ownerIDs,
                                         campsiteIDs = lottery.campsiteIDs,
                                         timePeriod = lottery.timePeriod,
                                         deadline = lottery.deadline,

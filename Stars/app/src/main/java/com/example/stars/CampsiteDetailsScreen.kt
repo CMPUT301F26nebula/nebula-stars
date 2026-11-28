@@ -2,7 +2,6 @@
  * the expanded view of a campsites details. if you are a user you can join/leave an active lottery
  * from here. If you are the owner you can edit your campsite and see the people in the waiting list.
  * if you are an admin you can delete the listing or ban the owner.
- * TODO: add time and place details
  * BUG: images have white space on the left and do not fill
  */
 package com.example.stars
@@ -36,12 +35,15 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -202,7 +204,8 @@ fun CampsiteDetailsScreen(
                         campsite.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium,
-                        color = RandomStarsColor.contrast(titleColor)
+                        color = RandomStarsColor.contrast(titleColor),
+                        modifier = Modifier.weight(0.7f)
                     )
                 }
             },
@@ -411,13 +414,33 @@ fun CampsiteDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                // images
-                ImageCarousel(
-                    imageIds = campsite.imageIds,
-                    imageRepo = imageRepo,
-                    editor = false,
-                    onDelete = {}
-                )
+                Box(Modifier.fillMaxWidth()) {
+                    // if there is more than one image show the carousel
+                    if (campsite.imageIds.size > 1) {
+                        // images
+                        ImageCarousel(
+                            imageIds = campsite.imageIds,
+                            imageRepo = imageRepo,
+                            editor = false,
+                        )
+                    }
+
+                    // if there is only one image show only that image
+                    else if (campsite.imageIds.size == 1) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            AsyncImage(
+                                model = runBlocking { imageRepo.getImageUri(campsite.imageIds[0]) },
+                                contentDescription = "campsite Image",
+                                modifier = Modifier,
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+
+                    }
+                }
 
                 Spacer(Modifier.height(4.dp))
 
