@@ -119,6 +119,14 @@ fun NotificationLotteryConfirmation(
         dateRangePickerState.selectedStartDateMillis,
         dateRangePickerState.selectedEndDateMillis
     ) {
+        for (reservedDay in reservedDays) {
+            if (reservedDay in
+                (dateRangePickerState.selectedStartDateMillis ?: 0)..
+                (dateRangePickerState.selectedEndDateMillis ?: 0)
+                step 100000) {
+                dateRangePickerState.setSelection(null, null)
+            }
+        }
         Log.d("Lottery Confirmation Test", "State Changed")
         startDate = dateRangePickerState.selectedStartDateMillis ?: 0L
         endDate = dateRangePickerState.selectedEndDateMillis ?: 0L
